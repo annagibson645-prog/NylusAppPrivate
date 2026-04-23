@@ -37,7 +37,7 @@ export default function GlobalSidebar() {
               { href: "/", label: "Dashboard" },
               { href: "/domains", label: "Domains" },
               { href: "/graph", label: "Graph" },
-              { href: "/timeline", label: "Timeline" },
+              { href: "/workshop", label: "Workshop" },
               { href: "/collisions", label: "Collisions" },
               { href: "/sparks", label: "Sparks" },
             ].map(({ href, label }) => (

@@ -75,7 +75,7 @@ export default function Nav() {
             {[
               { href: "/", label: "Dashboard" },
               { href: "/graph", label: "Graph" },
-              { href: "/timeline", label: "Timeline" },
+              { href: "/workshop", label: "Workshop" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
@@ -152,7 +152,7 @@ export default function Nav() {
             {[
               { href: "/", label: "Dashboard" },
               { href: "/graph", label: "Graph" },
-              { href: "/timeline", label: "Timeline" },
+              { href: "/workshop", label: "Workshop" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
