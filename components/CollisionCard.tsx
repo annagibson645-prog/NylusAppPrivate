@@ -14,21 +14,21 @@ function ageColor(days: number) {
 
 export default function CollisionCard({ collision: c }: Props) {
   return (
-    <div className="py-4 border-b group" style={{ borderColor: "var(--border)" }}>
-      <div className="flex items-start gap-3">
-        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: c.color }} />
+    <div className="py-5 sm:py-6 border-b group" style={{ borderColor: "var(--border)" }}>
+      <div className="flex items-start gap-4">
+        <span className="mt-2 w-2 h-2 rounded-full flex-shrink-0" style={{ background: c.color }} />
 
         <div className="flex-1 min-w-0">
           <Link
             href={`/collision/${c.id}`}
-            className="text-sm font-medium leading-snug hover:opacity-70 transition-opacity"
+            className="text-base font-medium leading-snug hover:opacity-70 transition-opacity"
             style={{ color: "var(--text)" }}
           >
             {c.title}
           </Link>
 
           {c.tension_a && c.tension_b && (
-            <div className="flex items-center gap-1.5 mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+            <div className="flex items-center gap-2 mt-1.5 text-sm" style={{ color: "var(--text-muted)" }}>
               <span className="truncate">{c.tension_a}</span>
               <span className="flex-shrink-0">·</span>
               <span className="truncate">{c.tension_b}</span>
@@ -36,18 +36,18 @@ export default function CollisionCard({ collision: c }: Props) {
           )}
 
           {c.candidate_idea && (
-            <p className="mt-1.5 text-xs leading-relaxed line-clamp-2" style={{ color: "var(--text-muted)" }}>
+            <p className="mt-2 text-sm leading-relaxed line-clamp-2" style={{ color: "var(--text-muted)" }}>
               {c.candidate_idea}
             </p>
           )}
 
-          <div className="flex items-center gap-3 mt-2">
-            <span className="text-[11px]" style={{ color: c.color }}>
+          <div className="flex items-center gap-4 mt-3">
+            <span className="text-xs" style={{ color: c.color }}>
               {DOMAIN_LABELS[c.domain] || c.domain}
             </span>
             <Link
               href={`/collision/${c.id}`}
-              className="text-[11px] hover:opacity-70 transition-opacity"
+              className="text-xs hover:opacity-70 transition-opacity"
               style={{ color: "var(--text-dim)" }}
             >
               Open brief →
@@ -55,7 +55,7 @@ export default function CollisionCard({ collision: c }: Props) {
           </div>
         </div>
 
-        <span className="text-[11px] font-mono flex-shrink-0 mt-0.5" style={{ color: ageColor(c.age_days) }}>
+        <span className="text-xs font-mono flex-shrink-0 mt-1" style={{ color: ageColor(c.age_days) }}>
           {c.age_days}d
         </span>
       </div>

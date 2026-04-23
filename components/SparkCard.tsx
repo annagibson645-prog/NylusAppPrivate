@@ -28,33 +28,33 @@ export default function SparkCard({ spark: s }: Props) {
   const subtypeLabel = SUBTYPE_LABEL[s.subtype || ""] || "spark";
 
   return (
-    <div className="py-4 border-b group" style={{ borderColor: "var(--border)" }}>
-      <div className="flex items-start gap-3">
-        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: subtypeColor }} />
+    <div className="py-5 sm:py-6 border-b group" style={{ borderColor: "var(--border)" }}>
+      <div className="flex items-start gap-4">
+        <span className="mt-2 w-2 h-2 rounded-full flex-shrink-0" style={{ background: subtypeColor }} />
 
         <div className="flex-1 min-w-0">
           <Link
             href={`/spark/${s.id}`}
-            className="text-sm font-medium leading-snug hover:opacity-70 transition-opacity"
+            className="text-base font-medium leading-snug hover:opacity-70 transition-opacity"
             style={{ color: "var(--text)" }}
           >
             {s.title}
           </Link>
 
           {s.live_wire && (
-            <p className="mt-1 text-xs leading-relaxed line-clamp-2 italic" style={{ color: "var(--text-muted)" }}>
-              {s.live_wire.slice(0, 180)}
+            <p className="mt-2 text-sm leading-relaxed line-clamp-2 italic" style={{ color: "var(--text-muted)" }}>
+              {s.live_wire.slice(0, 200)}
             </p>
           )}
 
-          <div className="flex items-center gap-3 mt-2">
-            <span className="text-[11px]" style={{ color: subtypeColor }}>{subtypeLabel}</span>
-            <span className="text-[11px]" style={{ color: "var(--text-dim)" }}>
+          <div className="flex items-center gap-4 mt-3">
+            <span className="text-xs" style={{ color: subtypeColor }}>{subtypeLabel}</span>
+            <span className="text-xs" style={{ color: "var(--text-dim)" }}>
               {DOMAIN_LABELS[s.domain] || s.domain}
             </span>
             <Link
               href={`/spark/${s.id}`}
-              className="text-[11px] hover:opacity-70 transition-opacity"
+              className="text-xs hover:opacity-70 transition-opacity"
               style={{ color: "var(--text-dim)" }}
             >
               Develop →
@@ -62,8 +62,8 @@ export default function SparkCard({ spark: s }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-1 flex-shrink-0 mt-0.5">
-          <span className="text-[11px] font-mono" style={{ color: "var(--text-dim)" }}>{s.age_days}d</span>
+        <div className="flex flex-col items-end gap-1.5 flex-shrink-0 mt-1">
+          <span className="text-xs font-mono" style={{ color: "var(--text-dim)" }}>{s.age_days}d</span>
           {isStale && <span className="text-[10px] text-red-500">stale</span>}
         </div>
       </div>
