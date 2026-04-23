@@ -53,6 +53,8 @@ export default function GraphView() {
         if (cancelled || !containerRef.current) return;
 
         const ForceGraph = mod.default ?? mod;
+        console.log("[graph] ForceGraph type:", typeof ForceGraph, ForceGraph);
+        console.log("[graph] container dims:", el.clientWidth, "x", el.clientHeight);
 
         // Tear down previous instance
         el.innerHTML = "";
