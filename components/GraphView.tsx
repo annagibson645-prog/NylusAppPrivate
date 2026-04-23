@@ -86,7 +86,7 @@ export default function GraphView() {
     n.type === "hub" ? 14 : Math.max(4, 4 + (n.sources || 0) * 0.8);
 
   return (
-    <div className="flex h-[calc(100vh-3rem)] overflow-hidden relative">
+    <div className="flex h-[calc(100vh-3rem)] overflow-hidden relative w-full">
       {/* Mobile sidebar toggle */}
       <button
         className="md:hidden absolute top-3 left-3 z-20 px-2.5 py-1.5 rounded text-xs border"
