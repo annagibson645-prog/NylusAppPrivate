@@ -23,10 +23,8 @@ function typeRoute(n: VaultNode) {
   return `/concept/${n.id}`;
 }
 
-// Squarified treemap layout
 function treemap(items: { id: string; value: number }[], x: number, y: number, w: number, h: number) {
   if (items.length === 0) return [];
-  const total = items.reduce((s, i) => s + i.value, 0);
   const results: { id: string; x: number; y: number; w: number; h: number }[] = [];
 
   function layout(items: { id: string; value: number }[], x: number, y: number, w: number, h: number) {
@@ -47,13 +45,11 @@ function treemap(items: { id: string; value: number }[], x: number, y: number, w
     const aSum = a.reduce((s, i) => s + i.value, 0);
     const ratio = aSum / (aSum + b.reduce((s, i) => s + i.value, 0));
     if (w >= h) {
-      const splitX = x + w * ratio;
       layout(a, x, y, w * ratio, h);
-      layout(b, splitX, y, w * (1 - ratio), h);
+      layout(b, x + w * ratio, y, w * (1 - ratio), h);
     } else {
-      const splitY = y + h * ratio;
       layout(a, x, y, w, h * ratio);
-      layout(b, x, splitY, w, h * (1 - ratio));
+      layout(b, x, y + h * ratio, w, h * (1 - ratio));
     }
   }
 
@@ -66,7 +62,7 @@ export default function GraphView() {
   const [data, setData] = useState<GraphData | null>(null);
   const [selected, setSelected] = useState<VaultNode | null>(null);
   const [hoveredDomain, setHoveredDomain] = useState<string | null>(null);
-  const [drillDomain, setDrillDomain] = useState<string | null>(null);
+  const [activeDomain, setActiveDomain] = useState<string | null>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
@@ -88,12 +84,12 @@ export default function GraphView() {
     </div>
   );
 
-  const GAP = 3;
-  const SIDEBAR_W = 220;
+  const NAV_H = 48;
+  const GAP = 4;
+  const SIDEBAR_W = 240;
   const canvasW = dims.w - SIDEBAR_W;
-  const canvasH = dims.h - 48;
+  const canvasH = dims.h - NAV_H;
 
-  // Build domain blocks
   const domainMap = new Map<string, VaultNode[]>();
   for (const n of data.nodes) {
     if (n.type === "source" || !n.domain || n.domain === "unknown") continue;
@@ -123,141 +119,131 @@ export default function GraphView() {
     };
   });
 
-  // Drill-down: show concept nodes within a domain
-  const drillBlock = drillDomain ? blocks.find((b) => b.domain === drillDomain) : null;
-  const drillNodes = drillBlock ? [...drillBlock.nodes].sort((a, b) => (b.backlinks?.length || 0) - (a.backlinks?.length || 0)) : [];
-
-  // Mini treemap for drilled domain
-  const conceptCells = drillBlock
-    ? treemap(
-        drillNodes.map((n) => ({ id: n.id, value: Math.max(1, (n.backlinks?.length || 0) + 1) })),
-        drillBlock.x + GAP,
-        drillBlock.y + 36,
-        drillBlock.w - GAP * 2,
-        drillBlock.h - 42
-      )
+  const activeBlock = activeDomain ? blocks.find((b) => b.domain === activeDomain) : null;
+  const activeNodes = activeBlock
+    ? [...activeBlock.nodes].sort((a, b) => (b.backlinks?.length || 0) - (a.backlinks?.length || 0))
     : [];
-  const conceptCellMap = new Map(conceptCells.map((c) => [c.id, c]));
 
   return (
-    <div className="flex h-[calc(100vh-3rem)] overflow-hidden" style={{ background: "var(--bg)" }}>
+    <div className="flex overflow-hidden" style={{ height: `calc(100vh - ${NAV_H}px)`, background: "var(--bg)" }}>
 
       {/* Treemap canvas */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="relative overflow-hidden flex-1">
         <svg width={canvasW} height={canvasH} style={{ display: "block" }}>
+          <defs>
+            {blocks.map((b) => (
+              <linearGradient key={`grad-${b.domain}`} id={`grad-${b.domain}`} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor={b.color} stopOpacity="0.22" />
+                <stop offset="100%" stopColor={b.color} stopOpacity="0.08" />
+              </linearGradient>
+            ))}
+          </defs>
+
           {blocks.map((b) => {
-            const isDrilled = drillDomain === b.domain;
+            const isActive = activeDomain === b.domain;
             const isHovered = hoveredDomain === b.domain;
-            const isDimmed = drillDomain && !isDrilled;
+            const isDimmed = activeDomain && !isActive;
+            const labelSize = Math.min(18, Math.max(11, Math.sqrt(b.w * b.h) / 12));
+            const topConcepts = b.nodes
+              .sort((a, c) => (c.backlinks?.length || 0) - (a.backlinks?.length || 0))
+              .slice(0, 4)
+              .map((n) => n.title);
 
             return (
               <g key={b.domain}>
-                {/* Domain block */}
+                {/* Background fill */}
                 <rect
                   x={b.x} y={b.y} width={b.w} height={b.h}
-                  rx={6}
-                  fill={b.color}
-                  fillOpacity={isDimmed ? 0.08 : isDrilled ? 0.25 : isHovered ? 0.2 : 0.12}
+                  rx={8}
+                  fill={`url(#grad-${b.domain})`}
+                  fillOpacity={isDimmed ? 0.4 : 1}
                   stroke={b.color}
-                  strokeOpacity={isDimmed ? 0.15 : isDrilled ? 0.9 : isHovered ? 0.7 : 0.35}
-                  strokeWidth={isDrilled ? 2 : 1}
-                  style={{ cursor: "pointer", transition: "fill-opacity 0.15s, stroke-opacity 0.15s" }}
-                  onClick={() => setDrillDomain(isDrilled ? null : b.domain)}
+                  strokeOpacity={isDimmed ? 0.1 : isActive ? 0.85 : isHovered ? 0.5 : 0.2}
+                  strokeWidth={isActive ? 1.5 : 1}
+                  style={{ cursor: "pointer", transition: "stroke-opacity 0.15s, fill-opacity 0.15s" }}
+                  onClick={() => {
+                    setActiveDomain(isActive ? null : b.domain);
+                    setSelected(null);
+                  }}
                   onMouseEnter={() => setHoveredDomain(b.domain)}
                   onMouseLeave={() => setHoveredDomain(null)}
                 />
 
-                {/* Domain label */}
-                {b.w > 60 && b.h > 30 && !isDimmed && (
-                  <>
+                {/* Content — only render if block is big enough */}
+                {b.w > 80 && b.h > 50 && !isDimmed && (
+                  <g style={{ pointerEvents: "none" }}>
+                    {/* Domain label */}
                     <text
-                      x={b.x + 12} y={b.y + 20}
-                      fontSize={Math.min(14, Math.max(10, b.w / 10))}
-                      fontWeight="600"
+                      x={b.x + 14} y={b.y + 22}
+                      fontSize={labelSize}
+                      fontWeight="700"
                       fill={b.color}
                       fillOpacity={0.95}
-                      style={{ pointerEvents: "none", userSelect: "none" }}
+                      style={{ userSelect: "none" }}
                     >
                       {b.label}
                     </text>
+
+                    {/* Count badge */}
                     {b.h > 44 && (
                       <text
-                        x={b.x + 12} y={b.y + 36}
-                        fontSize={10}
+                        x={b.x + 14} y={b.y + 22 + labelSize + 6}
+                        fontSize={Math.min(11, labelSize * 0.75)}
                         fill={b.color}
-                        fillOpacity={0.6}
-                        style={{ pointerEvents: "none", userSelect: "none" }}
+                        fillOpacity={0.45}
+                        style={{ userSelect: "none" }}
                       >
                         {b.count} concepts
                       </text>
                     )}
-                  </>
+
+                    {/* Top concept previews */}
+                    {b.h > 100 && b.w > 120 && topConcepts.map((title, i) => {
+                      const maxChars = Math.floor(b.w / 7);
+                      const truncated = title.length > maxChars ? title.slice(0, maxChars - 1) + "…" : title;
+                      const yOff = b.y + 22 + labelSize + 24 + i * 16;
+                      if (yOff + 12 > b.y + b.h - 10) return null;
+                      return (
+                        <text
+                          key={i}
+                          x={b.x + 14} y={yOff}
+                          fontSize={10}
+                          fill={b.color}
+                          fillOpacity={0.55}
+                          style={{ userSelect: "none" }}
+                        >
+                          {truncated}
+                        </text>
+                      );
+                    })}
+                  </g>
                 )}
 
-                {/* Concept nodes inside drilled domain */}
-                {isDrilled && conceptCells.map((cell) => {
-                  const node = drillNodes.find((n) => n.id === cell.id);
-                  if (!node) return null;
-                  const cw = cell.w - GAP;
-                  const ch = cell.h - GAP;
-                  const isSelected = selected?.id === node.id;
-                  if (cw < 4 || ch < 4) return null;
-                  return (
-                    <g key={node.id}>
-                      <rect
-                        x={cell.x} y={cell.y} width={cw} height={ch}
-                        rx={4}
-                        fill={b.color}
-                        fillOpacity={isSelected ? 0.45 : 0.18}
-                        stroke={b.color}
-                        strokeOpacity={isSelected ? 1 : 0.4}
-                        strokeWidth={isSelected ? 1.5 : 0.5}
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) => { e.stopPropagation(); setSelected(isSelected ? null : node); }}
-                      />
-                      {cw > 40 && ch > 18 && (
-                        <text
-                          x={cell.x + 6} y={cell.y + 13}
-                          fontSize={Math.min(11, Math.max(8, cw / 8))}
-                          fill={b.color}
-                          fillOpacity={0.9}
-                          style={{ pointerEvents: "none", userSelect: "none" }}
-                        >
-                          {node.title.slice(0, Math.floor(cw / 6))}
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
+                {/* Tiny block: just a dot indicator */}
+                {(b.w <= 80 || b.h <= 50) && !isDimmed && (
+                  <circle
+                    cx={b.x + b.w / 2} cy={b.y + b.h / 2} r={3}
+                    fill={b.color} fillOpacity={0.6}
+                    style={{ pointerEvents: "none" }}
+                  />
+                )}
               </g>
             );
           })}
         </svg>
-
-        {/* Click-outside to close drill */}
-        {drillDomain && (
-          <div className="absolute top-3 left-3 z-10">
-            <button
-              onClick={() => { setDrillDomain(null); setSelected(null); }}
-              className="text-xs px-3 py-1.5 rounded-lg border"
-              style={{ background: "var(--surface)", borderColor: "var(--border)", color: "var(--text-muted)" }}
-            >
-              ← All domains
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Right sidebar */}
       <div
-        className="w-56 flex-shrink-0 border-l flex flex-col overflow-y-auto"
-        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+        className="flex-shrink-0 flex flex-col overflow-hidden border-l"
+        style={{ width: SIDEBAR_W, borderColor: "var(--border)", background: "var(--surface)" }}
       >
         {selected ? (
-          <div className="px-5 py-6 flex flex-col flex-1">
+          /* Concept detail panel */
+          <div className="px-5 py-6 flex flex-col flex-1 overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full" style={{ background: selected.color }} />
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: selected.color }} />
                 <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-dim)" }}>
                   {selected.type}
                 </span>
@@ -289,48 +275,60 @@ export default function GraphView() {
               Open →
             </button>
           </div>
-        ) : (
-          <div className="px-5 py-6 space-y-6">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-dim)" }}>
-                {drillDomain ? (DOMAIN_LABELS[drillDomain] || drillDomain) : "Knowledge Map"}
-              </p>
-              {drillDomain ? (
-                <div className="space-y-2">
-                  {drillNodes.slice(0, 20).map((n) => (
-                    <button
-                      key={n.id}
-                      onClick={() => setSelected(n)}
-                      className="w-full text-left text-xs leading-snug hover:opacity-70 transition-opacity"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {n.title}
-                    </button>
-                  ))}
-                  {drillNodes.length > 20 && (
-                    <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>+{drillNodes.length - 20} more</p>
-                  )}
+        ) : activeBlock ? (
+          /* Domain concept list */
+          <div className="flex flex-col flex-1 overflow-hidden">
+            <div className="px-5 pt-5 pb-3 border-b flex-shrink-0" style={{ borderColor: "var(--border)" }}>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ background: activeBlock.color }} />
+                  <span className="text-xs font-semibold" style={{ color: "var(--text)" }}>{activeBlock.label}</span>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {blocks.map((b) => (
-                    <button
-                      key={b.domain}
-                      onClick={() => setDrillDomain(b.domain)}
-                      className="w-full text-left flex items-center gap-2.5 hover:opacity-70 transition-opacity"
-                    >
-                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: b.color }} />
-                      <span className="text-xs flex-1 min-w-0 truncate" style={{ color: "var(--text-muted)" }}>{b.label}</span>
-                      <span className="text-xs tabular-nums flex-shrink-0" style={{ color: "var(--text-dim)" }}>{b.count}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+                <button
+                  onClick={() => { setActiveDomain(null); setSelected(null); }}
+                  className="text-[10px] hover:opacity-70"
+                  style={{ color: "var(--text-dim)" }}
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>{activeBlock.count} concepts</p>
             </div>
-
+            <div className="flex-1 overflow-y-auto px-5 py-3 space-y-1">
+              {activeNodes.map((n) => (
+                <button
+                  key={n.id}
+                  onClick={() => setSelected(n)}
+                  className="w-full text-left text-xs leading-snug py-1.5 hover:opacity-70 transition-opacity"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  {n.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          /* Default: domain overview list */
+          <div className="px-5 py-6 space-y-5 overflow-y-auto flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--text-dim)" }}>
+              Knowledge Map
+            </p>
+            <div className="space-y-2">
+              {blocks.map((b) => (
+                <button
+                  key={b.domain}
+                  onClick={() => setActiveDomain(b.domain)}
+                  className="w-full text-left flex items-center gap-2.5 py-1 hover:opacity-70 transition-opacity"
+                >
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: b.color }} />
+                  <span className="text-xs flex-1 min-w-0 truncate" style={{ color: "var(--text-muted)" }}>{b.label}</span>
+                  <span className="text-xs tabular-nums flex-shrink-0" style={{ color: "var(--text-dim)" }}>{b.count}</span>
+                </button>
+              ))}
+            </div>
             <div className="pt-4 border-t text-[10px] space-y-1" style={{ borderColor: "var(--border)", color: "var(--text-dim)" }}>
-              <div>Click domain to drill in</div>
-              <div>Click concept to inspect</div>
+              <div>Click a domain to explore</div>
+              <div>Click a concept to inspect</div>
             </div>
           </div>
         )}
