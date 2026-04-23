@@ -5,7 +5,7 @@
   "scripts": {
     "parse": "npx ts-node --esm build-vault.ts",
     "dev": "npm run parse && next dev",
-    "build": "npm run parse && next build",
+    "build": "next build",
     "start": "next start"
   },
   "dependencies": {
