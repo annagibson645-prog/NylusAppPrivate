@@ -1,0 +1,28 @@
+{
+  "name": "nyluss-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "parse": "npx ts-node --esm build-vault.ts",
+    "dev": "npm run parse && next dev",
+    "build": "npm run parse && next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "force-graph": "^1.51.4",
+    "fuse.js": "^7.3.0",
+    "gray-matter": "^4.0.3",
+    "marked": "^18.0.2",
+    "next": "16.2.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

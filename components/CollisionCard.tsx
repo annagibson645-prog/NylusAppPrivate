@@ -1,0 +1,64 @@
+import Link from "next/link";
+import type { VaultNode } from "@/lib/types";
+import { DOMAIN_LABELS } from "@/lib/types";
+
+interface Props {
+  collision: VaultNode;
+}
+
+function ageColor(days: number) {
+  if (days < 7) return "#34d399";
+  if (days < 21) return "#f59e0b";
+  return "#f87171";
+}
+
+export default function CollisionCard({ collision: c }: Props) {
+  return (
+    <div className="py-4 border-b group" style={{ borderColor: "var(--border)" }}>
+      <div className="flex items-start gap-3">
+        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: c.color }} />
+
+        <div className="flex-1 min-w-0">
+          <Link
+            href={`/collision/${c.id}`}
+            className="text-sm font-medium leading-snug hover:opacity-70 transition-opacity"
+            style={{ color: "var(--text)" }}
+          >
+            {c.title}
+          </Link>
+
+          {c.tension_a && c.tension_b && (
+            <div className="flex items-center gap-1.5 mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+              <span className="truncate">{c.tension_a}</span>
+              <span className="flex-shrink-0">·</span>
+              <span className="truncate">{c.tension_b}</span>
+            </div>
+          )}
+
+          {c.candidate_idea && (
+            <p className="mt-1.5 text-xs leading-relaxed line-clamp-2" style={{ color: "var(--text-muted)" }}>
+              {c.candidate_idea}
+            </p>
+          )}
+
+          <div className="flex items-center gap-3 mt-2">
+            <span className="text-[11px]" style={{ color: c.color }}>
+              {DOMAIN_LABELS[c.domain] || c.domain}
+            </span>
+            <Link
+              href={`/collision/${c.id}`}
+              className="text-[11px] hover:opacity-70 transition-opacity"
+              style={{ color: "var(--text-dim)" }}
+            >
+              Open brief →
+            </Link>
+          </div>
+        </div>
+
+        <span className="text-[11px] font-mono flex-shrink-0 mt-0.5" style={{ color: ageColor(c.age_days) }}>
+          {c.age_days}d
+        </span>
+      </div>
+    </div>
+  );
+}
