@@ -12,10 +12,9 @@ interface NodePos {
 
 const W = 800;
 const H = 600;
-const R = 220; // orbit radius for hub layout
+const R = 220;
 
 function layoutNodes(nodes: VaultNode[]): NodePos[] {
-  // Arrange nodes in a rough circle, grouped by domain
   const byDomain = new Map<string, VaultNode[]>();
   for (const n of nodes) {
     if (!byDomain.has(n.domain)) byDomain.set(n.domain, []);
@@ -47,6 +46,7 @@ export default function GraphView() {
   const [selectedNode, setSelectedNode] = useState<VaultNode | null>(null);
   const [filter, setFilter] = useState<"hub" | "all">("hub");
   const [search, setSearch] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetch("/data/graph.json")
@@ -56,7 +56,7 @@ export default function GraphView() {
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-3.5rem)] text-slate-600 text-sm">
+      <div className="flex items-center justify-center h-[calc(100vh-3.5rem)] text-sm" style={{ color: "var(--text-muted)" }}>
         Loading graph…
       </div>
     );
@@ -86,30 +86,45 @@ export default function GraphView() {
     n.type === "hub" ? 14 : Math.max(4, 4 + (n.sources || 0) * 0.8);
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
-      {/* Sidebar */}
+    <div className="flex h-[calc(100vh-3rem)] overflow-hidden relative">
+      {/* Mobile sidebar toggle */}
+      <button
+        className="md:hidden absolute top-3 left-3 z-20 px-2.5 py-1.5 rounded text-xs border"
+        style={{ background: "var(--surface)", borderColor: "var(--border)", color: "var(--text-muted)" }}
+        onClick={() => setSidebarOpen((o) => !o)}
+      >
+        {sidebarOpen ? "✕ Close" : "⚙ Filter"}
+      </button>
+
+      {/* Sidebar — hidden on mobile unless toggled */}
       <div
-        className="w-52 flex-shrink-0 border-r px-3 py-4 space-y-4 overflow-y-auto"
+        className={`
+          absolute md:relative z-10 top-0 left-0 h-full
+          w-52 flex-shrink-0 border-r px-3 py-4 space-y-4 overflow-y-auto
+          transition-transform duration-200
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        `}
         style={{ background: "var(--surface)", borderColor: "var(--border)" }}
       >
-        <div>
+        <div className="pt-8 md:pt-0">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Highlight nodes…"
-            className="w-full text-xs px-2.5 py-1.5 rounded border bg-transparent text-white placeholder:text-slate-600 outline-none"
-            style={{ borderColor: "var(--border)" }}
+            className="w-full text-xs px-2.5 py-1.5 rounded border bg-transparent outline-none"
+            style={{ borderColor: "var(--border)", color: "var(--text)" }}
           />
         </div>
 
         <div>
-          <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">View</h3>
+          <h3 className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>View</h3>
           <div className="space-y-1">
             {(["hub", "all"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`text-xs py-0.5 w-full text-left transition-colors ${filter === f ? "text-white" : "text-slate-500"}`}
+                className="text-xs py-0.5 w-full text-left transition-opacity"
+                style={{ color: filter === f ? "var(--text)" : "var(--text-muted)", opacity: filter === f ? 1 : 0.6 }}
               >
                 {f === "hub" ? `Hubs only (${data.nodes.filter((n) => n.type === "hub").length})` : `Hubs + concepts (${data.nodes.filter((n) => ["hub","concept"].includes(n.type)).length})`}
               </button>
@@ -118,7 +133,7 @@ export default function GraphView() {
         </div>
 
         <div>
-          <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Domains</h3>
+          <h3 className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>Domains</h3>
           <div className="space-y-1.5">
             {Object.entries(DOMAIN_LABELS)
               .filter(([d]) => d !== "unknown")
@@ -127,22 +142,30 @@ export default function GraphView() {
                 if (count === 0) return null;
                 const color = data.nodes.find((n) => n.domain === domain)?.color || "#6b7280";
                 return (
-                  <div key={domain} className="flex items-center gap-2 text-xs text-slate-400">
+                  <div key={domain} className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
                     <span>{label}</span>
-                    <span className="text-slate-600 ml-auto">{count}</span>
+                    <span className="ml-auto" style={{ color: "var(--text-dim)" }}>{count}</span>
                   </div>
                 );
               })}
           </div>
         </div>
 
-        <div className="text-[10px] text-slate-600 space-y-1 pt-3 border-t" style={{ borderColor: "var(--border)" }}>
+        <div className="text-[10px] space-y-1 pt-3 border-t" style={{ borderColor: "var(--border)", color: "var(--text-dim)" }}>
           <div>Click — select node</div>
           <div>Double-click — open page</div>
           <div>{visibleNodes.length} nodes · {visibleEdges.length} edges</div>
         </div>
       </div>
+
+      {/* Tap outside overlay to close mobile sidebar */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-[5]"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* SVG Graph */}
       <div className="flex-1 relative overflow-hidden" style={{ background: "var(--bg)" }}>
@@ -153,7 +176,6 @@ export default function GraphView() {
           preserveAspectRatio="xMidYMid meet"
           className="w-full h-full"
         >
-          {/* Edges */}
           <g opacity="0.3">
             {visibleEdges.slice(0, 300).map((e, i) => {
               const src = posMap.get(e.source as string);
@@ -171,7 +193,6 @@ export default function GraphView() {
             })}
           </g>
 
-          {/* Nodes */}
           {positions.map(({ node: n, x, y }) => {
             const r = nodeRadius(n);
             const isSelected = selectedNode?.id === n.id;
@@ -211,41 +232,76 @@ export default function GraphView() {
         </svg>
       </div>
 
-      {/* Selected node panel */}
+      {/* Selected node panel — bottom sheet on mobile, right sidebar on desktop */}
       {selectedNode && (
-        <div
-          className="w-60 flex-shrink-0 border-l px-4 py-4 overflow-y-auto"
-          style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-        >
-          <button
-            onClick={() => setSelectedNode(null)}
-            className="text-xs text-slate-600 hover:text-slate-400 mb-3 block"
+        <>
+          {/* Mobile: bottom sheet */}
+          <div
+            className="md:hidden absolute bottom-0 left-0 right-0 z-20 rounded-t-xl border-t px-4 py-4"
+            style={{ background: "var(--surface)", borderColor: "var(--border)" }}
           >
-            ✕ close
-          </button>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ background: selectedNode.color }} />
-            <span className="text-[10px] text-slate-500 uppercase tracking-wide">{selectedNode.type}</span>
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: selectedNode.color }} />
+                <span className="text-[10px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>{selectedNode.type}</span>
+              </div>
+              <button
+                onClick={() => setSelectedNode(null)}
+                className="text-xs hover:opacity-70"
+                style={{ color: "var(--text-muted)" }}
+              >
+                ✕
+              </button>
+            </div>
+            <h3 className="text-sm font-semibold mb-1 leading-snug" style={{ color: "var(--text)" }}>
+              {selectedNode.title}
+            </h3>
+            <p className="text-xs leading-relaxed mb-3 line-clamp-2" style={{ color: "var(--text-muted)" }}>{selectedNode.excerpt}</p>
+            <button
+              onClick={() => router.push(typeRoute(selectedNode))}
+              className="w-full text-xs py-2 rounded border hover:opacity-80 transition-opacity"
+              style={{ borderColor: "var(--border)", color: "var(--text)" }}
+            >
+              Open full page →
+            </button>
           </div>
-          <h3 className="text-sm font-semibold text-white mb-2 leading-snug">
-            {selectedNode.title}
-          </h3>
-          <p className="text-xs text-slate-400 leading-relaxed mb-4">{selectedNode.excerpt}</p>
-          <div className="space-y-1 text-[10px] text-slate-600 mb-4">
-            <div>Domain: {DOMAIN_LABELS[selectedNode.domain] || selectedNode.domain}</div>
-            <div>Status: {selectedNode.status}</div>
-            <div>Sources: {selectedNode.sources}</div>
-            <div>Links in: {selectedNode.backlinks.length}</div>
-            <div>Age: {selectedNode.age_days}d</div>
-          </div>
-          <button
-            onClick={() => router.push(typeRoute(selectedNode))}
-            className="w-full text-xs py-2 rounded border text-white hover:bg-white/5 transition-colors"
-            style={{ borderColor: "var(--border)" }}
+
+          {/* Desktop: right sidebar */}
+          <div
+            className="hidden md:block w-60 flex-shrink-0 border-l px-4 py-4 overflow-y-auto"
+            style={{ background: "var(--surface)", borderColor: "var(--border)" }}
           >
-            Open full page →
-          </button>
-        </div>
+            <button
+              onClick={() => setSelectedNode(null)}
+              className="text-xs mb-3 block hover:opacity-70 transition-opacity"
+              style={{ color: "var(--text-muted)" }}
+            >
+              ✕ close
+            </button>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: selectedNode.color }} />
+              <span className="text-[10px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>{selectedNode.type}</span>
+            </div>
+            <h3 className="text-sm font-semibold mb-2 leading-snug" style={{ color: "var(--text)" }}>
+              {selectedNode.title}
+            </h3>
+            <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--text-muted)" }}>{selectedNode.excerpt}</p>
+            <div className="space-y-1 text-[10px] mb-4" style={{ color: "var(--text-dim)" }}>
+              <div>Domain: {DOMAIN_LABELS[selectedNode.domain] || selectedNode.domain}</div>
+              <div>Status: {selectedNode.status}</div>
+              <div>Sources: {selectedNode.sources}</div>
+              <div>Links in: {selectedNode.backlinks.length}</div>
+              <div>Age: {selectedNode.age_days}d</div>
+            </div>
+            <button
+              onClick={() => router.push(typeRoute(selectedNode))}
+              className="w-full text-xs py-2 rounded border hover:opacity-80 transition-opacity"
+              style={{ borderColor: "var(--border)", color: "var(--text)" }}
+            >
+              Open full page →
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

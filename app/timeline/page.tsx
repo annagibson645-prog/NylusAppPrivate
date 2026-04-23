@@ -34,7 +34,7 @@ export default function TimelinePage() {
   const grouped = groupByMonth(entries);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
+    <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6">
       <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--text)" }}>Ingest Timeline</h1>
       <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>{entries.length} log entries</p>
 
@@ -56,7 +56,7 @@ export default function TimelinePage() {
               {monthEntries.map((e, i) => {
                 const color = ACTION_COLORS[e.action] || "#475569";
                 return (
-                  <div key={i} className="flex items-start gap-4 pl-8 relative">
+                  <div key={i} className="flex items-start gap-3 sm:gap-4 pl-6 sm:pl-8 relative">
                     <div
                       className="absolute left-0 top-1.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                       style={{ background: color + "22", border: `1px solid ${color}44` }}

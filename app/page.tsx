@@ -21,7 +21,7 @@ export default function Dashboard() {
   const topSparks = sparks.slice(0, 10);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
       {/* Header */}
       <div className="mb-10">
@@ -35,10 +35,10 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
 
         {/* Left: Collisions + Sparks */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-8 lg:space-y-12">
 
           <section>
             <div className="flex items-baseline justify-between mb-1">

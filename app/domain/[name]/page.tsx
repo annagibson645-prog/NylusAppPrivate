@@ -58,7 +58,7 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-8 py-10">
+    <div className="max-w-3xl mx-auto px-4 sm:px-8 py-6 sm:py-10">
       {/* Header */}
       <div className="mb-10">
         <div className="flex items-center gap-2 mb-3">
