@@ -74,7 +74,6 @@ export default function Nav() {
           <div className="hidden sm:flex items-center gap-5">
             {[
               { href: "/", label: "Dashboard" },
-              { href: "/graph", label: "Graph" },
               { href: "/workshop", label: "Workshop" },
             ].map(({ href, label }) => (
               <Link
@@ -151,7 +150,6 @@ export default function Nav() {
           >
             {[
               { href: "/", label: "Dashboard" },
-              { href: "/graph", label: "Graph" },
               { href: "/workshop", label: "Workshop" },
             ].map(({ href, label }) => (
               <Link
