@@ -34,29 +34,29 @@
   --edge-color: #252535;
 }
 
-/* ── Light mode — warm parchment ── */
+/* ── Light mode — sepia ── */
 :root.light {
-  --bg: #fdf8f1;
-  --surface: #f8f1e4;
-  --surface-2: #f0e8d6;
-  --border: #e2d3bc;
-  --border-subtle: #ecdfc9;
-  --text: #221408;
-  --text-muted: #7a5c42;
-  --text-dim: #b89a7e;
-  --accent: #9b6940;
-  --prose-h1: #1a0e05;
-  --prose-h2: #2e1e0f;
-  --prose-h3: #4a3420;
-  --prose-strong: #1a0e05;
-  --prose-em: #5a4028;
-  --prose-code-bg: #ede3d2;
-  --prose-code: #8b4513;
-  --prose-blockquote: #7a5c42;
-  --prose-link: #9b6940;
-  --wiki-link: #9b6940;
-  --wiki-link-broken: #b89a7e;
-  --edge-color: #d8c8b0;
+  --bg: #fef9ec;
+  --surface: #f9f2de;
+  --surface-2: #f2e8cc;
+  --border: #dfd0b0;
+  --border-subtle: #e8dcc4;
+  --text: #3d2b18;
+  --text-muted: #8c6b4e;
+  --text-dim: #c4a882;
+  --accent: #a07040;
+  --prose-h1: #2e1f0e;
+  --prose-h2: #3d2b18;
+  --prose-h3: #5a4030;
+  --prose-strong: #2e1f0e;
+  --prose-em: #6a5038;
+  --prose-code-bg: #eddfc8;
+  --prose-code: #7a4010;
+  --prose-blockquote: #8c6b4e;
+  --prose-link: #a07040;
+  --wiki-link: #a07040;
+  --wiki-link-broken: #c4a882;
+  --edge-color: #ddd0b8;
 }
 
 * { box-sizing: border-box; }
@@ -159,20 +159,20 @@ body {
   cursor: default;
 }
 
-/* ── Light mode: remap Tailwind text colors to dark equivalents ── */
-:root.light .text-white        { color: #130e06 !important; }
-:root.light .text-slate-200    { color: #2a1e10 !important; }
-:root.light .text-slate-300    { color: #3d2d1a !important; }
-:root.light .text-slate-400    { color: #4a3520 !important; }
-:root.light .text-slate-500    { color: #5a4430 !important; }
-:root.light .text-slate-600    { color: #6b5040 !important; }
-:root.light .text-slate-700    { color: #7a6050 !important; }
+/* ── Light mode: remap Tailwind text colors to warm sepia equivalents ── */
+:root.light .text-white        { color: #3d2b18 !important; }
+:root.light .text-slate-200    { color: #4a3828 !important; }
+:root.light .text-slate-300    { color: #5a4838 !important; }
+:root.light .text-slate-400    { color: #6a5848 !important; }
+:root.light .text-slate-500    { color: #8c6b4e !important; }
+:root.light .text-slate-600    { color: #a08060 !important; }
+:root.light .text-slate-700    { color: #b89878 !important; }
 
 /* Prose body */
 :root.light .prose,
 :root.light .prose p,
 :root.light .prose li,
-:root.light .prose td { color: #1e130a; }
-:root.light .prose h1 { color: #130e06; }
-:root.light .prose h2 { color: #2a1e10; }
-:root.light .prose h3 { color: #3d2d1a; }
+:root.light .prose td { color: #3d2b18; }
+:root.light .prose h1 { color: #2e1f0e; }
+:root.light .prose h2 { color: #3d2b18; }
+:root.light .prose h3 { color: #5a4030; }
