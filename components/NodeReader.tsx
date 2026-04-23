@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { marked } from "marked";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { VaultNode } from "@/lib/types";
 import { DOMAIN_LABELS, STATUS_COLORS } from "@/lib/types";
 
