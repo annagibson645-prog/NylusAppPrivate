@@ -76,7 +76,7 @@ export default function GraphView() {
 
         setNodeCount(visibleNodes.length);
 
-        const graph = new ForceGraph(el);
+        const graph = new ForceGraph({ element: el });
         graph
           .graphData({ nodes: visibleNodes.map((n) => ({ ...n })), links })
           .nodeId("id")
