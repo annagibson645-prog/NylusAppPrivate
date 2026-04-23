@@ -41,6 +41,13 @@ function renderContent(raw: string, allIds: Set<string>): string {
   return marked.parse(body) as string;
 }
 
+function formatDate(raw: string): string {
+  if (!raw) return "";
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return raw;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
 export default function NodeReader({ node, backlinkedNodes, allIds }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -52,19 +59,18 @@ export default function NodeReader({ node, backlinkedNodes, allIds }: Props) {
   };
 
   const html = renderContent(node.content, allIds);
-
   const hasSidebar = node.hub || backlinkedNodes.length > 0 || node.links.length > 0;
 
   return (
     <div className="flex min-h-screen justify-center relative">
       {/* Main reading area */}
-      <div className="flex-1 min-w-0 px-4 sm:px-8 md:px-10 py-8 sm:py-10" style={{ maxWidth: "52rem" }}>
+      <div className="flex-1 min-w-0 px-5 sm:px-10 md:px-14 py-10 sm:py-14" style={{ maxWidth: "56rem" }}>
 
-        {/* Breadcrumb + meta */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-6 sm:mb-8 text-xs">
+        {/* Breadcrumb */}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8 text-sm">
           <Link
             href={`/domain/${node.domain}`}
-            className="hover:opacity-70 transition-opacity"
+            className="font-medium hover:opacity-70 transition-opacity"
             style={{ color: node.color }}
           >
             {DOMAIN_LABELS[node.domain] || node.domain}
@@ -76,24 +82,16 @@ export default function NodeReader({ node, backlinkedNodes, allIds }: Props) {
           >
             {node.status}
           </span>
-          <span style={{ color: "var(--text-dim)" }}>/</span>
-          <span style={{ color: "var(--text-muted)" }}>{node.type}</span>
-          {node.sources > 0 && (
-            <>
-              <span style={{ color: "var(--text-dim)" }}>/</span>
-              <span style={{ color: "var(--text-muted)" }}>{node.sources} {node.sources === 1 ? "source" : "sources"}</span>
-            </>
-          )}
           {node.created && (
             <>
               <span style={{ color: "var(--text-dim)" }}>/</span>
-              <span style={{ color: "var(--text-muted)" }}>{node.created}</span>
+              <span style={{ color: "var(--text-muted)" }}>{formatDate(node.created)}</span>
             </>
           )}
-          <span className="ml-auto flex items-center gap-3">
+          <span className="ml-auto flex items-center gap-4">
             {hasSidebar && (
               <button
-                className="md:hidden text-xs transition-opacity hover:opacity-70"
+                className="md:hidden text-sm transition-opacity hover:opacity-70"
                 style={{ color: "var(--text-muted)" }}
                 onClick={() => setSidebarOpen((o) => !o)}
               >
@@ -102,12 +100,39 @@ export default function NodeReader({ node, backlinkedNodes, allIds }: Props) {
             )}
             <a
               href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(node.path)}`}
-              className="hover:opacity-70 transition-opacity"
+              className="text-sm hover:opacity-70 transition-opacity"
               style={{ color: "var(--text-muted)" }}
             >
               Open in Obsidian ↗
             </a>
           </span>
+        </div>
+
+        {/* Meta pills */}
+        <div className="flex flex-wrap items-center gap-2 mb-10">
+          <span
+            className="text-xs font-medium px-2.5 py-1 rounded-full capitalize"
+            style={{
+              color: STATUS_COLORS[node.status] || "#6b7280",
+              background: (STATUS_COLORS[node.status] || "#6b7280") + "18",
+            }}
+          >
+            {node.status}
+          </span>
+          <span
+            className="text-xs px-2.5 py-1 rounded-full capitalize"
+            style={{ color: "var(--text-muted)", background: "var(--surface)" }}
+          >
+            {node.type}
+          </span>
+          {node.sources > 0 && (
+            <span
+              className="text-xs px-2.5 py-1 rounded-full"
+              style={{ color: "var(--text-muted)", background: "var(--surface)" }}
+            >
+              {node.sources} {node.sources === 1 ? "source" : "sources"}
+            </span>
+          )}
         </div>
 
         {/* Rendered markdown */}
@@ -116,10 +141,10 @@ export default function NodeReader({ node, backlinkedNodes, allIds }: Props) {
           dangerouslySetInnerHTML={{ __html: html }}
         />
 
-        {/* Mobile sidebar — shown inline below content */}
+        {/* Mobile sidebar */}
         {hasSidebar && sidebarOpen && (
           <div
-            className="md:hidden mt-10 pt-8 border-t space-y-8"
+            className="md:hidden mt-12 pt-10 border-t space-y-8"
             style={{ borderColor: "var(--border)" }}
           >
             <SidebarContent node={node} backlinkedNodes={backlinkedNodes} typeRoute={typeRoute} />
@@ -130,7 +155,7 @@ export default function NodeReader({ node, backlinkedNodes, allIds }: Props) {
       {/* Desktop relationship sidebar */}
       {hasSidebar && (
         <aside
-          className="hidden md:block w-56 flex-shrink-0 border-l px-5 py-10 space-y-8 sticky top-12 self-start max-h-[calc(100vh-3rem)] overflow-y-auto"
+          className="hidden md:block w-60 flex-shrink-0 border-l px-6 py-12 space-y-8 sticky top-12 self-start max-h-[calc(100vh-3rem)] overflow-y-auto"
           style={{ borderColor: "var(--border)" }}
         >
           <SidebarContent node={node} backlinkedNodes={backlinkedNodes} typeRoute={typeRoute} />
@@ -154,10 +179,10 @@ function SidebarContent({
       {/* Hub membership */}
       {node.hub && (
         <section>
-          <h3 className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Hub</h3>
+          <h3 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-dim)" }}>Hub</h3>
           <Link
             href={`/concept/${node.hub}`}
-            className="text-xs hover:opacity-70 transition-opacity"
+            className="text-sm hover:opacity-70 transition-opacity leading-snug"
             style={{ color: "var(--text-muted)" }}
           >
             ↑ {node.hub.replace(/-hub$/, "").replace(/-/g, " ")}
@@ -168,30 +193,25 @@ function SidebarContent({
       {/* Backlinks */}
       {backlinkedNodes.length > 0 && (
         <section>
-          <h3 className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>
-            Backlinks ({backlinkedNodes.length})
+          <h3 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-dim)" }}>
+            Backlinks <span style={{ color: "var(--text-dim)" }}>({backlinkedNodes.length})</span>
           </h3>
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {backlinkedNodes.slice(0, 15).map((n) => (
               <Link key={n.id} href={typeRoute(n)} className="block group">
-                <div className="flex items-start gap-1.5">
+                <div className="flex items-start gap-2">
                   <span
-                    className="mt-1 w-1 h-1 rounded-full flex-shrink-0"
+                    className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
                     style={{ background: n.color }}
                   />
-                  <div>
-                    <div className="text-xs group-hover:opacity-70 transition-opacity leading-snug" style={{ color: "var(--text-muted)" }}>
-                      {n.title}
-                    </div>
-                    <div className="text-[10px] mt-0.5" style={{ color: "var(--text-dim)" }}>
-                      {DOMAIN_LABELS[n.domain] || n.domain}
-                    </div>
+                  <div className="text-sm group-hover:opacity-70 transition-opacity leading-snug" style={{ color: "var(--text-muted)" }}>
+                    {n.title}
                   </div>
                 </div>
               </Link>
             ))}
             {backlinkedNodes.length > 15 && (
-              <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>+{backlinkedNodes.length - 15} more</p>
+              <p className="text-xs" style={{ color: "var(--text-dim)" }}>+{backlinkedNodes.length - 15} more</p>
             )}
           </div>
         </section>
@@ -200,32 +220,32 @@ function SidebarContent({
       {/* Outbound links */}
       {node.links.length > 0 && (
         <section>
-          <h3 className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>
-            Links out ({node.links.length})
+          <h3 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-dim)" }}>
+            Links out <span style={{ color: "var(--text-dim)" }}>({node.links.length})</span>
           </h3>
-          <div className="space-y-1.5">
+          <div className="space-y-2.5">
             {node.links.slice(0, 12).map((id) => (
               <Link
                 key={id}
                 href={`/concept/${id}`}
-                className="block text-xs hover:opacity-70 transition-opacity truncate"
+                className="block text-sm hover:opacity-70 transition-opacity leading-snug capitalize"
                 style={{ color: "var(--text-muted)" }}
               >
                 {id.replace(/-/g, " ")}
               </Link>
             ))}
             {node.links.length > 12 && (
-              <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>+{node.links.length - 12} more</p>
+              <p className="text-xs" style={{ color: "var(--text-dim)" }}>+{node.links.length - 12} more</p>
             )}
           </div>
         </section>
       )}
 
-      {/* Domain breadcrumb */}
-      <section className="pt-4 border-t" style={{ borderColor: "var(--border)" }}>
+      {/* Domain link */}
+      <section className="pt-5 border-t" style={{ borderColor: "var(--border)" }}>
         <Link
           href={`/domain/${node.domain}`}
-          className="text-xs hover:opacity-70 transition-opacity"
+          className="text-sm hover:opacity-70 transition-opacity"
           style={{ color: "var(--text-muted)" }}
         >
           ← All {DOMAIN_LABELS[node.domain] || node.domain}
