@@ -52,9 +52,7 @@ export default function GraphView() {
       import("force-graph").then((mod: any) => {
         if (cancelled || !containerRef.current) return;
 
-        const ForceGraph = mod.default ?? mod;
-        console.log("[graph] ForceGraph type:", typeof ForceGraph, ForceGraph);
-        console.log("[graph] container dims:", el.clientWidth, "x", el.clientHeight);
+        const FG = mod.default ?? mod;
 
         // Tear down previous instance
         el.innerHTML = "";
@@ -78,8 +76,7 @@ export default function GraphView() {
 
         setNodeCount(visibleNodes.length);
 
-        const FG = ForceGraph as any;
-        const graph = FG(el);
+        const graph = new FG(el);
         graph
           .graphData({ nodes: visibleNodes.map((n) => ({ ...n })), links })
           .nodeId("id")
