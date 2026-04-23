@@ -20,8 +20,8 @@ export default async function SourcePage({ params }: { params: Promise<{ slug: s
   if (!node) notFound();
 
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-  const allIds = new Set(nodes.map((n) => n.id));
+  const nodeTypes = new Map(nodes.map((n) => [n.id, n.type]));
   const backlinkedNodes = node.backlinks.flatMap((id) => nodeMap.has(id) ? [nodeMap.get(id)!] : []);
 
-  return <NodeReader node={node} backlinkedNodes={backlinkedNodes} allIds={allIds} />;
+  return <NodeReader node={node} backlinkedNodes={backlinkedNodes} nodeTypes={nodeTypes} />;
 }
