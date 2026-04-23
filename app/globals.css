@@ -34,29 +34,29 @@
   --edge-color: #252535;
 }
 
-/* ── Light mode — warm sepia ── */
+/* ── Light mode — warm parchment ── */
 :root.light {
-  --bg: #f9f3e8;
-  --surface: #f0e8d5;
-  --surface-2: #e6dcc8;
-  --border: #d4c5a9;
-  --border-subtle: #ddd0b8;
-  --text: #1e130a;
-  --text-muted: #5a4430;
-  --text-dim: #9c8268;
-  --accent: #8b5e3c;
-  --prose-h1: #130e06;
-  --prose-h2: #2a1e10;
-  --prose-h3: #3d2d1a;
-  --prose-strong: #130e06;
-  --prose-em: #4a3520;
-  --prose-code-bg: #e6dcc8;
-  --prose-code: #7b3f1c;
-  --prose-blockquote: #6b5040;
-  --prose-link: #8a5a2c;
-  --wiki-link: #8a5a2c;
-  --wiki-link-broken: #9c8268;
-  --edge-color: #c8b898;
+  --bg: #fdf8f1;
+  --surface: #f8f1e4;
+  --surface-2: #f0e8d6;
+  --border: #e2d3bc;
+  --border-subtle: #ecdfc9;
+  --text: #221408;
+  --text-muted: #7a5c42;
+  --text-dim: #b89a7e;
+  --accent: #9b6940;
+  --prose-h1: #1a0e05;
+  --prose-h2: #2e1e0f;
+  --prose-h3: #4a3420;
+  --prose-strong: #1a0e05;
+  --prose-em: #5a4028;
+  --prose-code-bg: #ede3d2;
+  --prose-code: #8b4513;
+  --prose-blockquote: #7a5c42;
+  --prose-link: #9b6940;
+  --wiki-link: #9b6940;
+  --wiki-link-broken: #b89a7e;
+  --edge-color: #d8c8b0;
 }
 
 * { box-sizing: border-box; }
