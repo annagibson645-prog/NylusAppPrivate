@@ -84,6 +84,7 @@ export default function GraphView() {
           .nodeColor((n: any) => n.color || "#6b7280")
           .nodeVal((n: any) => nodeRadius(n) ** 2)
           .nodeCanvasObject((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+            if (!isFinite(node.x) || !isFinite(node.y)) return;
             const r = nodeRadius(node);
             const isHub = node.type === "hub";
             const matched = searchLower && node.title.toLowerCase().includes(searchLower);
