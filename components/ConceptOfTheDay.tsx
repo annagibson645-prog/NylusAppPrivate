@@ -5,7 +5,6 @@ import type { SearchItem } from "@/lib/types";
 import { DOMAIN_LABELS } from "@/lib/types";
 
 function seededIndex(seed: number, max: number): number {
-  // Simple deterministic hash — same date always picks same concept
   let h = seed;
   h = ((h >> 16) ^ h) * 0x45d9f3b;
   h = ((h >> 16) ^ h) * 0x45d9f3b;
@@ -36,75 +35,77 @@ export default function ConceptOfTheDay() {
     fetch("/data/search-index.json")
       .then((r) => r.json())
       .then((items: SearchItem[]) => {
-        // Only pick from concepts and hubs — not sparks/collisions for "concept of the day"
         const pool = items.filter((i) => i.type === "concept" || i.type === "hub");
         if (!pool.length) return;
-        const idx = seededIndex(todaySeed(), pool.length);
-        setConcept(pool[idx]);
+        setConcept(pool[seededIndex(todaySeed(), pool.length)]);
       });
   }, []);
 
   if (!concept) return (
-    <div
-      className="rounded-xl border p-6 sm:p-8 mb-12 animate-pulse"
-      style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-    >
-      <div className="h-3 w-24 rounded mb-4" style={{ background: "var(--border)" }} />
-      <div className="h-6 w-2/3 rounded mb-3" style={{ background: "var(--border)" }} />
-      <div className="h-4 w-full rounded" style={{ background: "var(--border)" }} />
+    <div className="mb-12 rounded-xl border-l-4 p-7 animate-pulse" style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
+      <div className="h-3 w-32 rounded mb-5" style={{ background: "var(--border)" }} />
+      <div className="h-8 w-3/4 rounded mb-3" style={{ background: "var(--border)" }} />
+      <div className="h-4 w-1/4 rounded" style={{ background: "var(--border)" }} />
     </div>
   );
 
   return (
     <Link
       href={routeForItem(concept)}
-      className="block rounded-xl border p-6 sm:p-8 mb-12 hover:opacity-80 transition-opacity group"
-      style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+      className="group block mb-12 rounded-xl border p-7 sm:p-9 hover:opacity-90 transition-opacity relative overflow-hidden"
+      style={{
+        background: "var(--surface)",
+        borderColor: "var(--border)",
+        borderLeftColor: concept.color,
+        borderLeftWidth: "4px",
+      }}
     >
-      {/* Label row */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
+      {/* Subtle color wash */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: concept.color, opacity: 0.03 }}
+      />
+
+      <div className="relative">
+        {/* Top row */}
+        <div className="flex items-center justify-between mb-5">
           <span
-            className="text-[10px] font-medium uppercase tracking-widest"
+            className="text-[10px] font-semibold uppercase tracking-[0.15em]"
             style={{ color: "var(--text-dim)" }}
           >
             Concept of the Day
           </span>
+          <span className="text-xs" style={{ color: "var(--text-dim)" }}>
+            {formatDate()}
+          </span>
         </div>
-        <span className="text-[11px]" style={{ color: "var(--text-dim)" }}>
-          {formatDate()}
-        </span>
+
+        {/* Domain label */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="w-2 h-2 rounded-full" style={{ background: concept.color }} />
+          <span className="text-xs font-medium" style={{ color: concept.color }}>
+            {DOMAIN_LABELS[concept.domain] || concept.domain}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h2
+          className="text-2xl sm:text-3xl font-semibold leading-tight tracking-tight mb-6"
+          style={{ color: "var(--text)" }}
+        >
+          {concept.title}
+        </h2>
+
+        {/* CTA */}
+        <div className="flex items-center gap-2">
+          <span
+            className="text-sm font-medium group-hover:opacity-70 transition-opacity"
+            style={{ color: concept.color }}
+          >
+            Read →
+          </span>
+        </div>
       </div>
-
-      {/* Domain */}
-      <div className="flex items-center gap-2 mb-3">
-        <span
-          className="w-2 h-2 rounded-full flex-shrink-0"
-          style={{ background: concept.color }}
-        />
-        <span className="text-xs" style={{ color: concept.color }}>
-          {DOMAIN_LABELS[concept.domain] || concept.domain}
-        </span>
-      </div>
-
-      {/* Title */}
-      <h2
-        className="text-xl sm:text-2xl font-semibold leading-snug mb-3 group-hover:opacity-80 transition-opacity"
-        style={{ color: "var(--text)" }}
-      >
-        {concept.title}
-      </h2>
-
-      {/* Excerpt */}
-      {concept.excerpt && (
-        <p className="text-sm leading-relaxed line-clamp-3" style={{ color: "var(--text-muted)" }}>
-          {concept.excerpt}
-        </p>
-      )}
-
-      <span className="inline-block mt-4 text-sm" style={{ color: concept.color }}>
-        Read →
-      </span>
     </Link>
   );
 }
