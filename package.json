@@ -6,7 +6,8 @@
     "parse": "npx ts-node --esm build-vault.ts",
     "dev": "npm run parse && next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "watch": "node watch-vault.mjs"
   },
   "dependencies": {
     "force-graph": "^1.51.4",
@@ -22,6 +23,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "chokidar": "^5.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
