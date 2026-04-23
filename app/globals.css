@@ -34,29 +34,29 @@
   --edge-color: #252535;
 }
 
-/* ── Light mode ── */
+/* ── Light mode — warm sepia ── */
 :root.light {
-  --bg: #f7f5f2;
-  --surface: #edeae5;
-  --surface-2: #e3e0da;
-  --border: #d4d0c8;
-  --border-subtle: #dedad3;
-  --text: #0f0e1a;
-  --text-muted: #52556a;
-  --text-dim: #9093a8;
-  --accent: #5b4cf0;
-  --prose-h1: #0a0914;
-  --prose-h2: #1a1c28;
-  --prose-h3: #252838;
-  --prose-strong: #0a0914;
-  --prose-em: #2a2d40;
-  --prose-code-bg: #e3e0da;
-  --prose-code: #4f46e5;
-  --prose-blockquote: #3a3d52;
-  --prose-link: #5b4cf0;
-  --wiki-link: #5b4cf0;
-  --wiki-link-broken: #9093a8;
-  --edge-color: #ccc9c2;
+  --bg: #f9f3e8;
+  --surface: #f0e8d5;
+  --surface-2: #e6dcc8;
+  --border: #d4c5a9;
+  --border-subtle: #ddd0b8;
+  --text: #1e130a;
+  --text-muted: #5a4430;
+  --text-dim: #9c8268;
+  --accent: #8b5e3c;
+  --prose-h1: #130e06;
+  --prose-h2: #2a1e10;
+  --prose-h3: #3d2d1a;
+  --prose-strong: #130e06;
+  --prose-em: #4a3520;
+  --prose-code-bg: #e6dcc8;
+  --prose-code: #7b3f1c;
+  --prose-blockquote: #6b5040;
+  --prose-link: #8a5a2c;
+  --wiki-link: #8a5a2c;
+  --wiki-link-broken: #9c8268;
+  --edge-color: #c8b898;
 }
 
 * { box-sizing: border-box; }
@@ -160,19 +160,19 @@ body {
 }
 
 /* ── Light mode: remap Tailwind text colors to dark equivalents ── */
-:root.light .text-white        { color: #0a0a14 !important; }
-:root.light .text-slate-200    { color: #1a1c28 !important; }
-:root.light .text-slate-300    { color: #252838 !important; }
-:root.light .text-slate-400    { color: #383b52 !important; }
-:root.light .text-slate-500    { color: #52556a !important; }
-:root.light .text-slate-600    { color: #42455a !important; }
-:root.light .text-slate-700    { color: #32354a !important; }
+:root.light .text-white        { color: #130e06 !important; }
+:root.light .text-slate-200    { color: #2a1e10 !important; }
+:root.light .text-slate-300    { color: #3d2d1a !important; }
+:root.light .text-slate-400    { color: #4a3520 !important; }
+:root.light .text-slate-500    { color: #5a4430 !important; }
+:root.light .text-slate-600    { color: #6b5040 !important; }
+:root.light .text-slate-700    { color: #7a6050 !important; }
 
 /* Prose body */
 :root.light .prose,
 :root.light .prose p,
 :root.light .prose li,
-:root.light .prose td { color: #0a0a0a; }
-:root.light .prose h1 { color: #000; }
-:root.light .prose h2 { color: #111; }
-:root.light .prose h3 { color: #1a1a1a; }
+:root.light .prose td { color: #1e130a; }
+:root.light .prose h1 { color: #130e06; }
+:root.light .prose h2 { color: #2a1e10; }
+:root.light .prose h3 { color: #3d2d1a; }
