@@ -76,7 +76,8 @@ export default function GraphView() {
 
         setNodeCount(visibleNodes.length);
 
-        const graph = new ForceGraph({ element: el });
+        const FG = ForceGraph as any;
+        const graph = FG(el);
         graph
           .graphData({ nodes: visibleNodes.map((n) => ({ ...n })), links })
           .nodeId("id")
@@ -137,36 +138,21 @@ export default function GraphView() {
           .backgroundColor("transparent")
           .width(w)
           .height(h)
-          .warmupTicks(80)
-          .cooldownTicks(200)
-          .d3AlphaDecay(0.01)
-          .d3VelocityDecay(0.2)
+          .cooldownTicks(150)
+          .d3AlphaDecay(0.02)
+          .d3VelocityDecay(0.3)
           .onEngineStop(() => {
-            graph.zoomToFit(600, 60);
+            graph.zoomToFit(500, 60);
           })
           .onNodeClick((node: any) => {
             setSelected((prev) => prev?.id === node.id ? null : node as VaultNode);
           });
 
-        // Stronger repulsion so nodes spread out
-        graph.d3Force("charge").strength(-180);
-
-        // Weak domain clustering — each domain drifts toward its own arc position
-        const domainList = [...new Set(visibleNodes.map((n) => n.domain).filter(Boolean))];
-        const domainCount = domainList.length;
-        graph.d3Force("cluster", (alpha: number) => {
-          const nodes = (graph.graphData() as any).nodes;
-          const r = Math.min(w, h) * 0.3;
-          for (const node of nodes) {
-            const dIdx = domainList.indexOf(node.domain);
-            if (dIdx === -1 || !isFinite(node.x) || !isFinite(node.y)) continue;
-            const angle = (dIdx / domainCount) * 2 * Math.PI - Math.PI / 2;
-            const cx = Math.cos(angle) * r;
-            const cy = Math.sin(angle) * r;
-            node.vx -= (node.x - cx) * alpha * 0.06;
-            node.vy -= (node.y - cy) * alpha * 0.06;
-          }
-        });
+        // Stronger repulsion to spread nodes out
+        const charge = graph.d3Force("charge");
+        if (charge && typeof charge.strength === "function") {
+          charge.strength(-120);
+        }
 
         graphRef.current = graph;
       });
