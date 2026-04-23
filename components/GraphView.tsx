@@ -132,17 +132,41 @@ export default function GraphView() {
             ctx.fillStyle = color;
             ctx.fill();
           })
-          .linkColor(() => "#ffffff12")
+          .linkColor(() => "#ffffff10")
           .linkWidth(0.5)
           .backgroundColor("transparent")
           .width(w)
           .height(h)
+          .warmupTicks(80)
           .cooldownTicks(200)
-          .d3AlphaDecay(0.015)
-          .d3VelocityDecay(0.25)
+          .d3AlphaDecay(0.01)
+          .d3VelocityDecay(0.2)
+          .onEngineStop(() => {
+            graph.zoomToFit(600, 60);
+          })
           .onNodeClick((node: any) => {
             setSelected((prev) => prev?.id === node.id ? null : node as VaultNode);
           });
+
+        // Stronger repulsion so nodes spread out
+        graph.d3Force("charge").strength(-180);
+
+        // Weak domain clustering — each domain drifts toward its own arc position
+        const domainList = [...new Set(visibleNodes.map((n) => n.domain).filter(Boolean))];
+        const domainCount = domainList.length;
+        graph.d3Force("cluster", (alpha: number) => {
+          const nodes = (graph.graphData() as any).nodes;
+          const r = Math.min(w, h) * 0.3;
+          for (const node of nodes) {
+            const dIdx = domainList.indexOf(node.domain);
+            if (dIdx === -1 || !isFinite(node.x) || !isFinite(node.y)) continue;
+            const angle = (dIdx / domainCount) * 2 * Math.PI - Math.PI / 2;
+            const cx = Math.cos(angle) * r;
+            const cy = Math.sin(angle) * r;
+            node.vx -= (node.x - cx) * alpha * 0.06;
+            node.vy -= (node.y - cy) * alpha * 0.06;
+          }
+        });
 
         graphRef.current = graph;
       });
