@@ -1,5 +1,7 @@
 import CollisionCard from "@/components/CollisionCard";
 import SparkCard from "@/components/SparkCard";
+import ConceptOfTheDay from "@/components/ConceptOfTheDay";
+import VaultDiscovery from "@/components/VaultDiscovery";
 import type { VaultNode, VaultStats } from "@/lib/types";
 import { DOMAIN_LABELS } from "@/lib/types";
 import Link from "next/link";
@@ -52,6 +54,12 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+
+      {/* Concept of the Day */}
+      <ConceptOfTheDay />
+
+      {/* From the Vault */}
+      <VaultDiscovery />
 
       {/* Collision Queue */}
       <section id="collisions" className="mb-16 sm:mb-24">
