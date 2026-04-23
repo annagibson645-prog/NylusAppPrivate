@@ -3,9 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import SearchModal from "./SearchModal";
-import { DOMAIN_LABELS } from "@/lib/types";
 
-const DOMAINS = Object.keys(DOMAIN_LABELS).filter((d) => d !== "unknown");
 
 function SunIcon() {
   return (
@@ -36,7 +34,6 @@ function SearchIcon() {
 export default function Nav() {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [domainsOpen, setDomainsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [light, setLight] = useState(false);
 
@@ -47,7 +44,6 @@ export default function Nav() {
   // Close mobile menu on route change
   useEffect(() => {
     setMenuOpen(false);
-    setDomainsOpen(false);
   }, [pathname]);
 
   function toggleTheme() {
@@ -91,37 +87,13 @@ export default function Nav() {
               </Link>
             ))}
 
-            {/* Domains dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setDomainsOpen((o) => !o)}
-                className="text-sm transition-colors"
-                style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}
-              >
-                Domains
-              </button>
-              {domainsOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setDomainsOpen(false)} />
-                  <div
-                    className="absolute top-full left-0 mt-2 py-1 rounded-lg border z-50 min-w-[180px]"
-                    style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-                  >
-                    {DOMAINS.map((d) => (
-                      <Link
-                        key={d}
-                        href={`/domain/${d}`}
-                        onClick={() => setDomainsOpen(false)}
-                        className="block px-4 py-2 text-sm transition-colors hover:opacity-80"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        {DOMAIN_LABELS[d]}
-                      </Link>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            <Link
+              href="/domains"
+              className="text-sm transition-colors"
+              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}
+            >
+              Domains
+            </Link>
           </div>
 
           <div className="flex-1" />
@@ -192,31 +164,13 @@ export default function Nav() {
               </Link>
             ))}
 
-            {/* Domains section in mobile menu */}
-            <div>
-              <button
-                onClick={() => setDomainsOpen((o) => !o)}
-                className="py-2 text-sm w-full text-left transition-colors flex items-center justify-between"
-                style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}
-              >
-                <span>Domains</span>
-                <span style={{ color: "var(--text-dim)" }}>{domainsOpen ? "▲" : "▼"}</span>
-              </button>
-              {domainsOpen && (
-                <div className="pl-3 space-y-1 pb-1">
-                  {DOMAINS.map((d) => (
-                    <Link
-                      key={d}
-                      href={`/domain/${d}`}
-                      className="block py-1.5 text-sm transition-colors hover:opacity-80"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {DOMAIN_LABELS[d]}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <Link
+              href="/domains"
+              className="block py-2 text-sm transition-colors"
+              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}
+            >
+              Domains
+            </Link>
           </div>
         )}
       </nav>
