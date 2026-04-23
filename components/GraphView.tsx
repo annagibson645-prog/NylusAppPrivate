@@ -69,7 +69,7 @@ export default function GraphView() {
         links: visibleLinks,
       };
 
-      const graph = ForceGraph(el)
+      const graph = new ForceGraph(el)
         .graphData(gd)
         .nodeId("id")
         .nodeLabel(() => "")
