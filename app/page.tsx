@@ -32,12 +32,30 @@ export default function Dashboard() {
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-4" style={{ color: "var(--text)" }}>
           Writing Intelligence
         </h1>
-        <p className="text-base leading-relaxed" style={{ color: "var(--text-muted)" }}>
+        <p className="text-base leading-relaxed mb-4" style={{ color: "var(--text-muted)" }}>
           {stats.total_concepts} concepts across {domains.length} domains —{" "}
           {stats.total_collisions} active tensions, {stats.total_sparks} sparks in motion.
-          {staleCount > 0 && <span className="text-red-500 ml-2">{staleCount} stale.</span>}
-          {essaySeeds.length > 0 && <span className="text-indigo-400 ml-2">{essaySeeds.length} essay seeds ready.</span>}
         </p>
+        {(staleCount > 0 || essaySeeds.length > 0) && (
+          <div className="flex flex-wrap gap-2">
+            {staleCount > 0 && (
+              <span
+                className="text-xs font-medium px-2.5 py-1 rounded-full"
+                style={{ background: "#ef444420", color: "#ef4444" }}
+              >
+                {staleCount} stale sparks
+              </span>
+            )}
+            {essaySeeds.length > 0 && (
+              <span
+                className="text-xs font-medium px-2.5 py-1 rounded-full"
+                style={{ background: "#818cf820", color: "#818cf8" }}
+              >
+                {essaySeeds.length} essay seeds ready
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Mobile domain pills */}
         <div className="lg:hidden flex flex-wrap gap-2 mt-6">

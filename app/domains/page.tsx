@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import path from "path";
 import Link from "next/link";
-import type { VaultStats } from "@/lib/types";
+import type { VaultStats, GraphData } from "@/lib/types";
 import { DOMAIN_LABELS } from "@/lib/types";
 
 function loadJSON<T>(file: string): T {
@@ -21,6 +21,21 @@ const DOMAIN_DESCRIPTIONS: Record<string, string> = {
 
 export default function DomainsPage() {
   const stats = loadJSON<VaultStats>("stats.json");
+  const graph = loadJSON<GraphData>("graph.json");
+
+  // Build a map of top concept title per domain (by backlink count)
+  const topConceptByDomain = new Map<string, string>();
+  const conceptsByDomain = new Map<string, typeof graph.nodes>();
+  for (const node of graph.nodes) {
+    if (node.type !== "concept" && node.type !== "hub") continue;
+    if (!node.domain || node.domain === "unknown") continue;
+    if (!conceptsByDomain.has(node.domain)) conceptsByDomain.set(node.domain, []);
+    conceptsByDomain.get(node.domain)!.push(node);
+  }
+  for (const [domain, nodes] of conceptsByDomain) {
+    const top = nodes.sort((a, b) => (b.backlinks?.length || 0) - (a.backlinks?.length || 0))[0];
+    if (top) topConceptByDomain.set(domain, top.title);
+  }
 
   const domains = Object.entries(stats.domains)
     .filter(([d]) => d !== "unknown")
@@ -75,6 +90,13 @@ export default function DomainsPage() {
               {description && (
                 <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--text-muted)" }}>
                   {description}
+                </p>
+              )}
+
+              {/* Top concept preview */}
+              {topConceptByDomain.get(domain) && (
+                <p className="text-xs mb-4 truncate" style={{ color: "var(--text-dim)" }}>
+                  ↑ {topConceptByDomain.get(domain)}
                 </p>
               )}
 

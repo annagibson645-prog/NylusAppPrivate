@@ -58,6 +58,18 @@ function formatDate(raw: string): string {
 
 export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    function onScroll() {
+      const el = document.documentElement;
+      const scrolled = el.scrollTop;
+      const total = el.scrollHeight - el.clientHeight;
+      setProgress(total > 0 ? (scrolled / total) * 100 : 0);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const typeRoute = (n: VaultNode) => routeForType(n.type, n.id);
 
@@ -66,6 +78,17 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) 
 
   return (
     <div className="flex min-h-screen">
+      {/* Reading progress bar */}
+      <div className="fixed top-12 left-0 right-0 z-30 h-0.5" style={{ background: "var(--border)" }}>
+        <div
+          className="h-full"
+          style={{
+            width: `${progress}%`,
+            background: node.color,
+            transition: "width 80ms linear",
+          }}
+        />
+      </div>
       {/* Main reading area — centered within its flex space */}
       <div className="flex-1 min-w-0 flex justify-center">
         <div className="w-full px-6 sm:px-12 md:px-16 py-12 sm:py-16" style={{ maxWidth: "52rem" }}>
