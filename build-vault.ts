@@ -119,6 +119,37 @@ function stripMarkdown(text: string): string {
     .trim();
 }
 
+function generateExcerpt(content: string, title: string): string {
+  const lines = content.split("\n");
+  const paragraphs: string[] = [];
+  let current = "";
+
+  for (const line of lines) {
+    const t = line.trim();
+
+    // Skip headings, rules, empty lines, tags
+    if (!t || /^#{1,6}\s/.test(t) || /^[-=*]{3,}$/.test(t) || /^#\w/.test(t)) {
+      if (current.length > 60) paragraphs.push(current.trim());
+      current = "";
+      continue;
+    }
+    // Skip metadata-style lines: "Key: value" or "**Key**:" patterns
+    if (/^(\*{0,2})[A-Z][a-zA-Z\s]{2,20}\1:\s/.test(t)) continue;
+    // Skip lines that are mostly uppercase (section labels, not prose)
+    if (t.length < 80 && t.replace(/[^A-Z]/g, "").length / t.length > 0.6) continue;
+    // Skip footnote definitions
+    if (/^\[\^.+\]:/.test(t)) continue;
+    // Skip lines that just repeat the title
+    if (t.toLowerCase().includes(title.toLowerCase().slice(0, 20))) continue;
+
+    current += (current ? " " : "") + t;
+  }
+  if (current.length > 60) paragraphs.push(current.trim());
+
+  const best = paragraphs[0] || lines.find((l) => l.trim().length > 60) || "";
+  return stripMarkdown(best).replace(/\s+/g, " ").trim().slice(0, 200);
+}
+
 function getTitle(content: string, filePath: string): string {
   const h1 = content.match(/^#\s+(.+)$/m);
   if (h1) return h1[1].trim();
@@ -236,7 +267,7 @@ async function buildVault() {
       sources: Number(fm.sources) || 0,
       path: relPath,
       content: raw,
-      excerpt: stripMarkdown(content).slice(0, 220),
+      excerpt: generateExcerpt(content, title),
       links: extractWikilinks(content),
       backlinks: [],
       hub: null,
