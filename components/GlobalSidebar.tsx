@@ -36,7 +36,6 @@ export default function GlobalSidebar() {
             {[
               { href: "/", label: "Dashboard" },
               { href: "/domains", label: "Domains" },
-              { href: "/graph", label: "Graph" },
               { href: "/workshop", label: "Workshop" },
               { href: "/collisions", label: "Collisions" },
               { href: "/sparks", label: "Sparks" },
