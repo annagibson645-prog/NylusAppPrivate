@@ -39,7 +39,8 @@ export default function GraphView() {
     if (!data || !containerRef.current) return;
     const el = containerRef.current;
 
-    import("force-graph").then(({ default: ForceGraph }) => {
+    import("force-graph").then((mod: any) => {
+      const ForceGraph = mod.default ?? mod;
       // tear down previous instance
       if (graphRef.current) {
         try { el.innerHTML = ""; } catch {}
@@ -69,7 +70,7 @@ export default function GraphView() {
         links: visibleLinks,
       };
 
-      const graph = new ForceGraph(el)
+      const graph = new (ForceGraph as any)(el)
         .graphData(gd)
         .nodeId("id")
         .nodeLabel(() => "")
