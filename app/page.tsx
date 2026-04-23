@@ -25,7 +25,7 @@ export default function Dashboard() {
   const domains = Object.entries(stats.domains).filter(([d]) => d !== "unknown");
 
   return (
-    <div className="px-5 sm:px-10 lg:px-16 py-10 sm:py-14 max-w-3xl">
+    <div className="px-5 sm:px-10 lg:px-16 py-10 sm:py-14 max-w-3xl mx-auto w-full">
 
       {/* Header */}
       <div className="mb-14 sm:mb-20">
