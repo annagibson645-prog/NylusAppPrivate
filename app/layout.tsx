@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import GlobalSidebar from "@/components/GlobalSidebar";
+import PageTransition from "@/components/PageTransition";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", weight: ["400", "500", "600", "700"] });
 
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Nav />
         <div className="flex flex-1 min-h-0">
           <GlobalSidebar />
-          <main className="flex-1 min-w-0">{children}</main>
+          <main className="flex-1 min-w-0">
+            <PageTransition>{children}</PageTransition>
+          </main>
         </div>
       </body>
     </html>

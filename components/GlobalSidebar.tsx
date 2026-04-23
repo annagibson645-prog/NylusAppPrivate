@@ -40,6 +40,7 @@ export default function GlobalSidebar() {
               { href: "/workshop", label: "Workshop" },
               { href: "/collisions", label: "Collisions" },
               { href: "/sparks", label: "Sparks" },
+              { href: "/sources", label: "Sources" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
