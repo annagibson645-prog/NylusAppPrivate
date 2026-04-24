@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 
 const VAULT_PATH = "C:/Users/apgib/Desktop/NylusS";
 const APP_PATH = path.dirname(fileURLToPath(import.meta.url));
-const DEBOUNCE_MS = 5000;
+const DEBOUNCE_MS = 60000;
 
 let debounceTimer = null;
 let running = false;
@@ -70,5 +70,5 @@ watcher
   .on("unlink", (p) => { log(`Deleted: ${path.relative(VAULT_PATH, p)}`); schedule(); });
 
 log(`Watching vault at ${VAULT_PATH}`);
-log(`Changes will sync after ${DEBOUNCE_MS / 1000}s of inactivity.`);
+log(`Changes will sync after ${DEBOUNCE_MS / 1000}s of inactivity (then ~2min Vercel build).`);
 log("Press Ctrl+C to stop.\n");
