@@ -250,7 +250,13 @@ async function buildVault() {
     const slug = slugify(filePath);
     const relPath = path.relative(VAULT_PATH, filePath).replace(/\\/g, "/");
     const title = getTitle(content, filePath);
-    const domain = fm.domain || inferDomain(relPath);
+    const ALLOWED_DOMAINS = new Set([
+      "history", "eastern-spirituality", "african-spirituality",
+      "psychology", "behavioral-mechanics", "cross-domain",
+      "creative-practice", "ai-collaboration", "unknown",
+    ]);
+    const rawDomain = fm.domain || inferDomain(relPath);
+    const domain = ALLOWED_DOMAINS.has(rawDomain) ? rawDomain : "unknown";
     const type = fm.type || inferType(relPath);
     const created = fm.created ? String(fm.created) : "";
     const age = daysSince(created);
