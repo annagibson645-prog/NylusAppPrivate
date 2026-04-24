@@ -22,6 +22,7 @@ export interface VaultNode {
   tension_a?: string;
   tension_b?: string;
   pressure_score?: number;
+  word_count?: number;
 }
 
 export interface VaultEdge {

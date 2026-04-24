@@ -16,6 +16,7 @@ export default function GlobalSidebar() {
   const navLinks = [
     { href: "/", label: "Dashboard" },
     { href: "/domains", label: "Domains" },
+    { href: "/essays", label: "Essays" },
     { href: "/workshop", label: "Workshop" },
     { href: "/collisions", label: "Collisions" },
     { href: "/sparks", label: "Sparks" },

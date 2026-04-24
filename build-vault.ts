@@ -17,6 +17,7 @@ const INCLUDED_DIRS = [
   "LAB/Sparks",
   "LAB/Threads",
   "ARCHIVES/logs",
+  "The Platform/Essays",
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -56,6 +57,7 @@ interface VaultNode {
   tension_a?: string;
   tension_b?: string;
   pressure_score?: number;
+  word_count?: number;
 }
 
 interface VaultEdge {
@@ -300,6 +302,10 @@ async function buildVault() {
     if (type === "spark") {
       node.live_wire = extractSection(content, "The Live Wire");
     }
+    if (type === "essay") {
+      const bodyText = content.replace(/^---[\s\S]*?---\n?/, "").replace(/[#*`\[\]]/g, "");
+      node.word_count = bodyText.trim().split(/\s+/).filter(Boolean).length;
+    }
 
     nodes.set(slug, node);
     slugToPath.set(slug, relPath);
@@ -412,6 +418,15 @@ async function buildVault() {
     );
   }
 
+  // essays.json
+  const essays = nodeArray
+    .filter((n) => n.type === "essay")
+    .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+  fs.writeFileSync(
+    path.join(OUT_DIR, "essays.json"),
+    JSON.stringify(essays, null, 0)
+  );
+
   // stats.json — dashboard counters
   const stats = {
     total_concepts: nodeArray.filter((n) => n.type === "concept").length,
@@ -465,6 +480,7 @@ function inferType(relPath: string): string {
   if (relPath.includes("ARCHIVES/sources")) return "source";
   if (relPath.includes("concepts/hubs")) return "hub";
   if (relPath.includes("ARCHIVES/concepts")) return "concept";
+  if (relPath.includes("The Platform/Essays")) return "essay";
   return "concept";
 }
 

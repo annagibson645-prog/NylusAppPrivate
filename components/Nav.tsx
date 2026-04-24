@@ -93,6 +93,13 @@ export default function Nav() {
             >
               Domains
             </Link>
+            <Link
+              href="/essays"
+              className="text-sm transition-colors"
+              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}
+            >
+              Essays
+            </Link>
           </div>
 
           <div className="flex-1" />
