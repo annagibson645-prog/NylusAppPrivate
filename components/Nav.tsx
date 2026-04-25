@@ -100,6 +100,13 @@ export default function Nav() {
             >
               Essays
             </Link>
+            <Link
+              href="/research"
+              className="text-sm transition-colors"
+              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}
+            >
+              Research
+            </Link>
           </div>
 
           <div className="flex-1" />
@@ -175,6 +182,20 @@ export default function Nav() {
               style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}
             >
               Domains
+            </Link>
+            <Link
+              href="/essays"
+              className="block py-2 text-sm transition-colors"
+              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}
+            >
+              Essays
+            </Link>
+            <Link
+              href="/research"
+              className="block py-2 text-sm transition-colors"
+              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}
+            >
+              Research
             </Link>
           </div>
         )}

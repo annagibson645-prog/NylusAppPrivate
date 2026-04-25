@@ -18,6 +18,7 @@ const INCLUDED_DIRS = [
   "LAB/Threads",
   "ARCHIVES/logs",
   "The Platform/Essays",
+  "The Platform/Research",
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -302,7 +303,7 @@ async function buildVault() {
     if (type === "spark") {
       node.live_wire = extractSection(content, "The Live Wire");
     }
-    if (type === "essay") {
+    if (type === "essay" || type === "research") {
       const bodyText = content.replace(/^---[\s\S]*?---\n?/, "").replace(/[#*`\[\]]/g, "");
       node.word_count = bodyText.trim().split(/\s+/).filter(Boolean).length;
     }
@@ -476,6 +477,15 @@ async function buildVault() {
     JSON.stringify(essays, null, 0)
   );
 
+  // research.json
+  const research = nodeArray
+    .filter((n) => n.type === "research")
+    .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+  fs.writeFileSync(
+    path.join(OUT_DIR, "research.json"),
+    JSON.stringify(research, null, 0)
+  );
+
   // stats.json — dashboard counters
   const stats = {
     total_concepts: nodeArray.filter((n) => n.type === "concept").length,
@@ -526,6 +536,7 @@ function inferType(relPath: string): string {
   if (relPath.includes("LAB/Collisions")) return "collision";
   if (relPath.includes("LAB/Sparks")) return "spark";
   if (relPath.includes("LAB/Threads")) return "thread";
+  if (relPath.includes("The Platform/Research")) return "research";
   if (relPath.includes("ARCHIVES/sources")) return "source";
   if (relPath.includes("concepts/hubs")) return "hub";
   if (relPath.includes("ARCHIVES/concepts")) return "concept";
