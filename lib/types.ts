@@ -80,6 +80,22 @@ export const DOMAIN_LABELS: Record<string, string> = {
   unknown: "Other",
 };
 
+export interface IndexConcept {
+  slug: string;
+  title: string;
+  description: string;
+  status?: string;
+  sources?: number;
+  isHub?: boolean;
+}
+
+export interface IndexSection {
+  title: string;
+  level: 2 | 3;
+  concepts: IndexConcept[];
+  isMeta?: boolean;
+}
+
 export const STATUS_COLORS: Record<string, string> = {
   stable: "#22c55e",
   developing: "#f59e0b",

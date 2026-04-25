@@ -2,12 +2,20 @@ import { readFileSync } from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import type { VaultNode } from "@/lib/types";
+import type { VaultNode, IndexSection } from "@/lib/types";
 import { DOMAIN_LABELS } from "@/lib/types";
 import DomainBrowser from "@/components/DomainBrowser";
 
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
+}
+
+function loadJSONSafe<T>(file: string, fallback: T): T {
+  try {
+    return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
+  } catch {
+    return fallback;
+  }
 }
 
 const KNOWN_DOMAINS = [
@@ -29,6 +37,8 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
   } catch {
     notFound();
   }
+
+  const indexSections = loadJSONSafe<IndexSection[]>(`domain-index-${safeName}.json`, []);
 
   const label = DOMAIN_LABELS[name] || name;
   const domainColor = nodes[0]?.color || "#6b7280";
@@ -58,7 +68,7 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
         </div>
       </div>
 
-      <DomainBrowser nodes={nodes} hubPages={hubPages} domainColor={domainColor} />
+      <DomainBrowser nodes={nodes} hubPages={hubPages} domainColor={domainColor} indexSections={indexSections} />
     </div>
   );
 }

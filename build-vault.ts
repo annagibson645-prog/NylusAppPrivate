@@ -418,6 +418,55 @@ async function buildVault() {
     );
   }
 
+  // domain-index-[name].json — parsed domain index md files for Full Index tab
+  const DOMAIN_INDEX_DIR = path.join(VAULT_PATH, "ARCHIVES/domain-indexes");
+  if (fs.existsSync(DOMAIN_INDEX_DIR)) {
+    const META_TITLES = ["Hub Pages", "Known Gaps", "Structural Notes", "Cross-Domain Triage", "Almost-Ready", "Clusters approaching"];
+    for (const file of fs.readdirSync(DOMAIN_INDEX_DIR).filter(f => f.endsWith(".md"))) {
+      const domainName = file.replace(".md", "");
+      const raw = fs.readFileSync(path.join(DOMAIN_INDEX_DIR, file), "utf-8");
+      const lines = raw.split("\n");
+      const sections: object[] = [];
+      let current: { title: string; level: number; concepts: object[]; isMeta: boolean } | null = null;
+
+      for (const line of lines) {
+        const h2 = line.match(/^## (.+)/);
+        const h3 = line.match(/^### (.+)/);
+        const conceptLink = line.match(/^- \[\[ARCHIVES\/concepts\/([\w-]+)\/([\w-]+)\|(.*?)\]\](.*)/);
+
+        if (h2) {
+          if (current && current.concepts.length > 0) sections.push(current);
+          const title = h2[1].trim();
+          current = { title, level: 2, concepts: [], isMeta: META_TITLES.some(m => title.includes(m)) };
+        } else if (h3) {
+          if (current && current.concepts.length > 0) sections.push(current);
+          const title = h3[1].trim();
+          current = { title, level: 3, concepts: [], isMeta: META_TITLES.some(m => title.includes(m)) };
+        } else if (conceptLink && current && !current.isMeta) {
+          const [, domain, slug, title, rest] = conceptLink;
+          const descParts = (rest || "").split("|");
+          const description = descParts[0].replace(/^[\s\u2014\-]+/, "").trim();
+          const statusMatch = rest.match(/status:\s*([\w-]+)/);
+          const sourcesMatch = rest.match(/sources:\s*(\d+)/);
+          current.concepts.push({
+            slug,
+            title,
+            description,
+            status: statusMatch?.[1] || undefined,
+            sources: sourcesMatch ? parseInt(sourcesMatch[1]) : undefined,
+            isHub: domain === "hubs",
+          });
+        }
+      }
+      if (current && current.concepts.length > 0) sections.push(current);
+      fs.writeFileSync(
+        path.join(OUT_DIR, `domain-index-${domainName}.json`),
+        JSON.stringify(sections.filter((s: any) => !s.isMeta && s.concepts.length > 0), null, 0)
+      );
+    }
+    console.log(`   Domain index files written`);
+  }
+
   // essays.json
   const essays = nodeArray
     .filter((n) => n.type === "essay")
