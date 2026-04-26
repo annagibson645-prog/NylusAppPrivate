@@ -26,12 +26,14 @@ function run() {
     log("Parse done. Committing...");
 
     const timestamp = new Date().toISOString().slice(0, 16).replace("T", " ");
-    execSync(`git add public/data/`, { cwd: APP_PATH });
+
+    // Stage everything except generated/local dirs
+    execSync(`git add -A -- . ':!node_modules' ':!.next' ':!.env*'`, { cwd: APP_PATH });
 
     // Check if there's actually anything to commit
-    const status = execSync("git status --porcelain public/data/", { cwd: APP_PATH }).toString().trim();
+    const status = execSync("git status --porcelain", { cwd: APP_PATH }).toString().trim();
     if (!status) {
-      log("No data changes detected — skipping commit.");
+      log("No changes detected — skipping commit.");
       running = false;
       return;
     }
