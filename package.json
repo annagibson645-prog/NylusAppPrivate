@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "watch": "node watch-vault.mjs",
+    "agent-start": "node -e \"require('fs').writeFileSync('.agent-lock','')\" && echo Agent lock set — watcher paused.",
     "sync": "npm run parse && node sync-once.mjs"
   },
   "dependencies": {

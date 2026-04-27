@@ -1,8 +1,16 @@
 import { execSync } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
+import { existsSync, unlinkSync } from "fs";
 
 const APP_PATH = path.dirname(fileURLToPath(import.meta.url));
+const LOCK_FILE = path.join(APP_PATH, ".agent-lock");
+
+// Clear agent lock if present
+if (existsSync(LOCK_FILE)) {
+  unlinkSync(LOCK_FILE);
+  console.log("Agent lock cleared.");
+}
 
 const status = execSync("git status --porcelain", { cwd: APP_PATH }).toString().trim();
 if (!status) {

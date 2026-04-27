@@ -1,10 +1,12 @@
 import chokidar from "chokidar";
-import { execSync, exec } from "child_process";
+import { execSync } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
+import { existsSync, writeFileSync, unlinkSync } from "fs";
 
 const VAULT_PATH = "C:/Users/apgib/Desktop/NylusS";
 const APP_PATH = path.dirname(fileURLToPath(import.meta.url));
+const LOCK_FILE = path.join(APP_PATH, ".agent-lock");
 const DEBOUNCE_MS = 60000;
 
 let debounceTimer = null;
@@ -15,10 +17,20 @@ function log(msg) {
   console.log(`[${time}] ${msg}`);
 }
 
+function isLocked() {
+  return existsSync(LOCK_FILE);
+}
+
 function run() {
   if (running) return;
-  running = true;
 
+  // Check for agent lock — log loudly so it's never silent
+  if (isLocked()) {
+    log("⚠️  Agent lock active — skipping sync. Run `npm run sync` when the agent finishes to clear it.");
+    return;
+  }
+
+  running = true;
   log("Vault changed — parsing...");
 
   try {
@@ -27,10 +39,8 @@ function run() {
 
     const timestamp = new Date().toISOString().slice(0, 16).replace("T", " ");
 
-    // Stage everything — node_modules, .next, .env* already excluded via .gitignore
-    execSync(`git add -A`, { cwd: APP_PATH });
+    execSync("git add -A", { cwd: APP_PATH });
 
-    // Check if there's actually anything to commit
     const status = execSync("git status --porcelain", { cwd: APP_PATH }).toString().trim();
     if (!status) {
       log("No changes detected — skipping commit.");
@@ -56,9 +66,9 @@ function schedule() {
 
 const watcher = chokidar.watch(VAULT_PATH, {
   ignored: [
-    /(^|[\/\\])\../, // dotfiles
-    /\.obsidian/,    // Obsidian config
-    /\.trash/,       // Obsidian trash
+    /(^|[\/\\])\../,  // dotfiles
+    /\.obsidian/,     // Obsidian config
+    /\.trash/,        // Obsidian trash
     /\.git/,
   ],
   persistent: true,
@@ -67,10 +77,11 @@ const watcher = chokidar.watch(VAULT_PATH, {
 });
 
 watcher
-  .on("add", (p) => { log(`New file: ${path.relative(VAULT_PATH, p)}`); schedule(); })
+  .on("add",    (p) => { log(`New file: ${path.relative(VAULT_PATH, p)}`); schedule(); })
   .on("change", (p) => { log(`Changed: ${path.relative(VAULT_PATH, p)}`); schedule(); })
   .on("unlink", (p) => { log(`Deleted: ${path.relative(VAULT_PATH, p)}`); schedule(); });
 
 log(`Watching vault at ${VAULT_PATH}`);
+if (isLocked()) log("⚠️  Agent lock is currently active — auto-sync paused. Run `npm run sync` to clear.");
 log(`Changes will sync after ${DEBOUNCE_MS / 1000}s of inactivity (then ~2min Vercel build).`);
 log("Press Ctrl+C to stop.\n");
