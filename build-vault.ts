@@ -261,7 +261,12 @@ async function buildVault() {
     const rawDomain = fm.domain || inferDomain(relPath);
     const domain = ALLOWED_DOMAINS.has(rawDomain) ? rawDomain : "unknown";
     const type = fm.type || inferType(relPath);
-    const created = fm.created ? String(fm.created) : "";
+    // gray-matter parses YYYY-MM-DD as a Date object (UTC midnight) — keep as string to avoid timezone shift
+    const created = fm.created
+      ? fm.created instanceof Date
+        ? fm.created.toISOString().slice(0, 10)
+        : String(fm.created)
+      : "";
     const age = daysSince(created);
 
     const node: VaultNode = {
@@ -272,7 +277,11 @@ async function buildVault() {
       domain,
       status: fm.status || "stub",
       created,
-      updated: fm.updated ? String(fm.updated) : created,
+      updated: fm.updated
+        ? fm.updated instanceof Date
+          ? fm.updated.toISOString().slice(0, 10)
+          : String(fm.updated)
+        : created,
       sources: Number(fm.sources) || 0,
       path: relPath,
       content: raw,
@@ -406,9 +415,18 @@ async function buildVault() {
     JSON.stringify(timeline, null, 0)
   );
 
-  // domain-[name].json — one per domain
-  const domains = [...new Set(nodeArray.map((n) => n.domain))];
-  for (const domain of domains) {
+  // domain-[name].json — one per known domain (skip unknown)
+  const KNOWN_DOMAINS = [
+    "history", "eastern-spirituality", "african-spirituality",
+    "psychology", "behavioral-mechanics", "cross-domain",
+    "creative-practice", "ai-collaboration",
+  ];
+  const domains = KNOWN_DOMAINS.filter((d) =>
+    nodeArray.some((n) => n.domain === d)
+  );
+  // Also write unknown for any orphaned pages (used internally, not shown on site)
+  const allDomains = [...new Set(nodeArray.map((n) => n.domain))];
+  for (const domain of allDomains) {
     const safeDomain = domain.replace(/[^a-z0-9-]/gi, "-").toLowerCase();
     const domainNodes = nodeArray
       .filter((n) => n.domain === domain)
@@ -512,10 +530,11 @@ async function buildVault() {
     JSON.stringify(stats, null, 0)
   );
 
+  const unknownCount = nodeArray.filter((n) => n.domain === "unknown").length;
   console.log(`✅ Built:`);
   console.log(`   ${nodeArray.length} nodes (${collisions.length} collisions, ${sparks.length} sparks)`);
   console.log(`   ${edges.length} edges`);
-  console.log(`   ${domains.length} domain files`);
+  console.log(`   ${domains.length} domains${unknownCount > 0 ? ` (+ ${unknownCount} uncategorized)` : ""}`);
   console.log(`   ${timeline.length} timeline entries`);
   console.log(`   Output: ${OUT_DIR}`);
 }
