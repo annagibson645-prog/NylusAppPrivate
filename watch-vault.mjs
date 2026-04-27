@@ -27,8 +27,8 @@ function run() {
 
     const timestamp = new Date().toISOString().slice(0, 16).replace("T", " ");
 
-    // Stage everything except generated/local dirs
-    execSync(`git add -A -- . ':!node_modules' ':!.next' ':!.env*'`, { cwd: APP_PATH });
+    // Stage everything — node_modules, .next, .env* already excluded via .gitignore
+    execSync(`git add -A`, { cwd: APP_PATH });
 
     // Check if there's actually anything to commit
     const status = execSync("git status --porcelain", { cwd: APP_PATH }).toString().trim();
