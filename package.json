@@ -7,7 +7,8 @@
     "dev": "npm run parse && next dev",
     "build": "next build",
     "start": "next start",
-    "watch": "node watch-vault.mjs"
+    "watch": "node watch-vault.mjs",
+    "sync": "npm run parse && node sync-once.mjs"
   },
   "dependencies": {
     "force-graph": "^1.51.4",
