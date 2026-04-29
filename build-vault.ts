@@ -16,7 +16,6 @@ const INCLUDED_DIRS = [
   "LAB/Collisions",
   "LAB/Sparks",
   "LAB/Threads",
-  "ARCHIVES/logs",
   "The Platform/Essays",
   "The Platform/Research",
 ];
