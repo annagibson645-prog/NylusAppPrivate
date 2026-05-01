@@ -8,11 +8,6 @@ import Link from "next/link";
 import { readFileSync } from "fs";
 import path from "path";
 
-// Force dynamic rendering so stats.json is read on every request,
-// not baked in at build time. This keeps the concept count current
-// without needing a Vercel rebuild for every vault sync.
-export const dynamic = "force-dynamic";
-
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
 }
