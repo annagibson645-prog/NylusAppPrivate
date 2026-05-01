@@ -21,18 +21,12 @@ function readTime(wordCount?: number) {
 }
 
 export default function EssaysPage() {
-  // Merge essays + research so the route is never empty.
-  // essays.json = type:essay files from The Platform/Essays/
-  // research.json = type:research files from The Platform/Research/
-  // Both are long-form published writing; show them together.
   let essays: VaultNode[] = [];
-  let research: VaultNode[] = [];
-  try { essays = loadJSON<VaultNode[]>("essays.json"); } catch { essays = []; }
-  try { research = loadJSON<VaultNode[]>("research.json"); } catch { research = []; }
-
-  const all = [...essays, ...research].sort(
-    (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
-  );
+  try {
+    essays = loadJSON<VaultNode[]>("essays.json");
+  } catch {
+    essays = [];
+  }
 
   return (
     <div className="px-5 sm:px-10 lg:px-16 py-10 sm:py-14 max-w-3xl mx-auto w-full">
@@ -49,14 +43,14 @@ export default function EssaysPage() {
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-3" style={{ color: "var(--text)" }}>
           Essays
         </h1>
-        {all.length > 0 && (
+        {essays.length > 0 && (
           <p className="text-base" style={{ color: "var(--text-muted)" }}>
-            {all.length} {all.length === 1 ? "piece" : "pieces"}
+            {essays.length} {essays.length === 1 ? "essay" : "essays"}
           </p>
         )}
       </div>
 
-      {all.length === 0 ? (
+      {essays.length === 0 ? (
         <div
           className="rounded-xl border border-dashed px-8 py-16 text-center"
           style={{ borderColor: "var(--border)" }}
@@ -70,10 +64,10 @@ export default function EssaysPage() {
         </div>
       ) : (
         <div className="border-t" style={{ borderColor: "var(--border)" }}>
-          {all.map((essay) => (
+          {essays.map((essay) => (
             <Link
               key={essay.id}
-              href={essay.type === "research" ? `/research/${essay.id}` : `/essay/${essay.id}`}
+              href={`/essay/${essay.id}`}
               className="group block py-8 border-b hover:opacity-80 transition-opacity"
               style={{ borderColor: "var(--border)" }}
             >
