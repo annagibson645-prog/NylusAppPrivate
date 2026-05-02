@@ -595,16 +595,4 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           }
           .hub-title { font-size: clamp(40px, 10vw, 64px) !important; }
           .hub-lede { font-size: 17px !important; }
-          .hub-section-body { grid-template-columns: 1fr; }
-          .hub-concept-row { padding: 18px 20px; }
-          .hcr-title { font-size: 18px !important; }
-          .hub-summary { padding: 20px 0; }
-          .void-nav { padding: 16px 20px; margin-bottom: 28px; }
-        }
-        @media (max-width: 400px) {
-          .hub-sidebar { grid-template-columns: 1fr; }
-        }
-      `}</style>
-    </div>
-  );
-}
+          .hub-section-body { grid-template-columns: 1f

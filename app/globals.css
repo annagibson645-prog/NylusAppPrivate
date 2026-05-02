@@ -848,6 +848,4 @@ html, body {
 @media (max-width: 640px) {
   .void-content { padding: 0 20px 80px; }
   .void-nav { padding: 20px 20px 16px; margin-bottom: 40px; }
-  .void-hub-grid { grid-template-columns: 1fr; }
-  .void-title { font-size: clamp(40px, 11vw, 60px); }
-}
+  .void-hub-grid { grid-temp
