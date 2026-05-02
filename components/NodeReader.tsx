@@ -3,7 +3,7 @@ import Link from "next/link";
 import { marked } from "marked";
 import { useState, useEffect } from "react";
 import type { VaultNode } from "@/lib/types";
-import { DOMAIN_LABELS, STATUS_COLORS } from "@/lib/types";
+import { DOMAIN_LABELS } from "@/lib/types";
 
 interface Props {
   node: VaultNode;
@@ -29,7 +29,6 @@ function routeForType(type: string, slug: string): string {
 
 function renderContent(raw: string, nodeTypes: Map<string, string>): string {
   let body = raw.replace(/^---[\s\S]*?---\n?/, "");
-
   body = body.replace(
     /\[\[([^\]|#\n]+?)(?:\|([^\]\n]+))?\]\]/g,
     (_match, target: string, alias?: string) => {
@@ -37,15 +36,13 @@ function renderContent(raw: string, nodeTypes: Map<string, string>): string {
       const slug = slugFromWikilink(target);
       if (nodeTypes.has(slug)) {
         const href = routeForType(nodeTypes.get(slug)!, slug);
-        return `<a href="${href}" class="wiki-link">${display}</a>`;
+        return `<a href="${href}" class="void-link">${display}</a>`;
       }
-      return `<span class="wiki-link-broken" title="Not in vault: ${target}">${display}</span>`;
+      return `<span class="void-link-broken" title="Not in vault: ${target}">${display}</span>`;
     }
   );
-
   body = body.replace(/^\[\^[^\]]+\]:.+$/gm, "");
   body = body.replace(/\[\^([^\]]+)\]/g, "<sup>$1</sup>");
-
   return marked.parse(body) as string;
 }
 
@@ -56,8 +53,31 @@ function formatDate(raw: string): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+const DOMAIN_FULL: Record<string, string> = {
+  history: "History",
+  "eastern-spirituality": "Eastern Spirituality",
+  psychology: "Psychology",
+  "behavioral-mechanics": "Behavioral Mechanics",
+  "cross-domain": "Cross-Domain",
+  "creative-practice": "Creative Practice",
+  "african-spirituality": "African Spirituality",
+  "ai-collaboration": "AI Collaboration",
+  unknown: "Other",
+};
+
+const DOMAIN_BACK: Record<string, string> = {
+  history: "History",
+  "eastern-spirituality": "Eastern",
+  psychology: "Psychology",
+  "behavioral-mechanics": "Behavioral",
+  "cross-domain": "Cross-Domain",
+  "creative-practice": "Creative",
+  "african-spirituality": "African",
+  "ai-collaboration": "AI",
+  unknown: "Other",
+};
+
 export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -71,216 +91,170 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const html = renderContent(node.content, nodeTypes);
+  const hasConnections = backlinkedNodes.length > 0 || node.links.length > 0;
+
   const typeRoute = (n: VaultNode) => routeForType(n.type, n.id);
 
-  const html = renderContent(node.content, nodeTypes);
-  const hasSidebar = node.hub || backlinkedNodes.length > 0 || node.links.length > 0;
-
   return (
-    <div className="flex min-h-screen">
-      {/* Reading progress bar */}
-      <div className="fixed top-12 left-0 right-0 z-30 h-0.5" style={{ background: "var(--border)" }}>
-        <div
-          className="h-full"
-          style={{
-            width: `${progress}%`,
-            background: node.color,
-            transition: "width 80ms linear",
-          }}
-        />
+    <div className="void-page" style={{ '--domain-color': node.color } as React.CSSProperties}>
+
+      {/* Reading progress */}
+      <div className="void-progress-track">
+        <div className="void-progress-bar" style={{ width: `${progress}%` }} />
       </div>
-      {/* Main reading area — centered within its flex space */}
-      <div className="flex-1 min-w-0 flex justify-center">
-        <div className="w-full px-6 sm:px-12 md:px-16 py-12 sm:py-16" style={{ maxWidth: "52rem" }}>
 
-          {/* Breadcrumb */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8 text-sm">
-            <Link
-              href={`/domain/${node.domain}`}
-              className="font-medium hover:opacity-70 transition-opacity"
-              style={{ color: node.color }}
-            >
-              {DOMAIN_LABELS[node.domain] || node.domain}
+      {/* Ambient glow */}
+      <div className="void-ambient" />
+
+      {/* Nav */}
+      <nav className="void-nav">
+        <Link href="/" className="void-nav-brand">lotusmind</Link>
+        <div className="void-nav-right">
+          <Link href="/" className="void-nav-back">← galaxy</Link>
+          <a
+            href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(node.path)}`}
+            className="void-nav-obsidian"
+          >
+            obsidian ↗
+          </a>
+        </div>
+      </nav>
+
+      {/* Content */}
+      <div className="void-content">
+
+        {/* Domain chip */}
+        <div className="void-domain-chip">
+          {DOMAIN_FULL[node.domain] || node.domain}
+        </div>
+
+        {/* Title */}
+        <h1 className="void-title">{node.title}</h1>
+
+        {/* Lede — excerpt as styled intro */}
+        {node.excerpt && (
+          <div className="void-lede">{node.excerpt}</div>
+        )}
+
+        {/* Status + meta */}
+        <div className="void-meta-inline">
+          <span className="void-meta-status" style={{ color: node.color }}>
+            {node.status}
+          </span>
+          <span className="void-meta-dot">·</span>
+          <span className="void-meta-type">{node.type}</span>
+          {node.sources > 0 && (
+            <>
+              <span className="void-meta-dot">·</span>
+              <span className="void-meta-type">{node.sources} {node.sources === 1 ? "source" : "sources"}</span>
+            </>
+          )}
+          {node.updated && (
+            <>
+              <span className="void-meta-dot">·</span>
+              <span className="void-meta-type">{formatDate(node.updated)}</span>
+            </>
+          )}
+        </div>
+
+        {/* Ornament */}
+        <div className="void-ornament">
+          <div className="void-ornament-line" />
+          <span className="void-ornament-glyph">✦</span>
+          <div className="void-ornament-line" />
+        </div>
+
+        {/* Body content */}
+        <div
+          className="void-prose"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+
+        {/* Tensions — if structured data exists */}
+        {node.tension_a && node.tension_b && (
+          <>
+            <div className="void-section-label">tensions</div>
+            <div className="void-tension-pair">
+              <div className="void-tension-side">{node.tension_a}</div>
+              <div className="void-tension-vs">VS</div>
+              <div className="void-tension-side">{node.tension_b}</div>
+            </div>
+          </>
+        )}
+
+        {/* Live wire */}
+        {node.live_wire && (
+          <>
+            <div className="void-section-label">live edge</div>
+            <div className="void-live-wire">{node.live_wire}</div>
+          </>
+        )}
+
+        {/* Connections */}
+        {hasConnections && (
+          <>
+            <div className="void-section-label">connected concepts</div>
+            <div className="void-connections-grid">
+              {backlinkedNodes.slice(0, 8).map((n) => (
+                <Link key={n.id} href={typeRoute(n)} className="void-conn-cell">
+                  <div className="void-conn-domain" style={{ color: n.color }}>
+                    {DOMAIN_BACK[n.domain] || n.domain}
+                  </div>
+                  <div className="void-conn-title">{n.title}</div>
+                </Link>
+              ))}
+              {node.links.slice(0, 8).map((id) => (
+                <Link key={id} href={`/concept/${id}`} className="void-conn-cell">
+                  <div className="void-conn-domain">→ link</div>
+                  <div className="void-conn-title">{id.replace(/-/g, " ")}</div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Hub membership */}
+        {node.hub && (
+          <div className="void-hub-row">
+            <span className="void-hub-label">hub</span>
+            <Link href={`/concept/${node.hub}`} className="void-hub-link">
+              ↑ {node.hub.replace(/-hub$/, "").replace(/-/g, " ")}
             </Link>
-            <span style={{ color: "var(--text-dim)" }}>/</span>
-            <span
-              className="capitalize"
-              style={{ color: STATUS_COLORS[node.status] || "#6b7280" }}
-            >
-              {node.status}
-            </span>
-            {node.created && (
-              <>
-                <span style={{ color: "var(--text-dim)" }}>/</span>
-                <span style={{ color: "var(--text-muted)" }}>{formatDate(node.created)}</span>
-              </>
-            )}
-            <span className="ml-auto flex items-center gap-4">
-              {hasSidebar && (
-                <button
-                  className="md:hidden text-sm transition-opacity hover:opacity-70"
-                  style={{ color: "var(--text-muted)" }}
-                  onClick={() => setSidebarOpen((o) => !o)}
-                >
-                  {sidebarOpen ? "Hide links" : "Show links"}
-                </button>
-              )}
-              <a
-                href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(node.path)}`}
-                className="text-sm hover:opacity-70 transition-opacity"
-                style={{ color: "var(--text-dim)" }}
-              >
-                Open in Obsidian ↗
-              </a>
-            </span>
           </div>
+        )}
 
-          {/* Meta pills */}
-          <div className="flex flex-wrap items-center gap-2 mb-12">
-            <span
-              className="text-xs font-medium px-2.5 py-1 rounded-full capitalize"
-              style={{
-                color: STATUS_COLORS[node.status] || "#6b7280",
-                background: (STATUS_COLORS[node.status] || "#6b7280") + "18",
-              }}
-            >
-              {node.status}
-            </span>
-            <span
-              className="text-xs px-2.5 py-1 rounded-full capitalize"
-              style={{ color: "var(--text-muted)", background: "var(--surface)" }}
-            >
-              {node.type}
-            </span>
-            {node.sources > 0 && (
-              <span
-                className="text-xs px-2.5 py-1 rounded-full"
-                style={{ color: "var(--text-muted)", background: "var(--surface)" }}
-              >
-                {node.sources} {node.sources === 1 ? "source" : "sources"}
-              </span>
-            )}
+        {/* Metadata strip */}
+        <div className="void-meta-strip">
+          <div className="void-meta-item">
+            <span className="void-meta-k">domain</span>
+            <span className="void-meta-v">{DOMAIN_FULL[node.domain] || node.domain}</span>
           </div>
-
-          {/* Rendered markdown */}
-          <div
-            className="prose"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-
-          {/* Mobile sidebar */}
-          {hasSidebar && sidebarOpen && (
-            <div
-              className="md:hidden mt-12 pt-10 border-t"
-              style={{ borderColor: "var(--border)" }}
-            >
-              <SidebarContent node={node} backlinkedNodes={backlinkedNodes} typeRoute={typeRoute} />
+          <div className="void-meta-item">
+            <span className="void-meta-k">status</span>
+            <span className="void-meta-v" style={{ color: node.color }}>{node.status}</span>
+          </div>
+          {node.sources > 0 && (
+            <div className="void-meta-item">
+              <span className="void-meta-k">sources</span>
+              <span className="void-meta-v">{node.sources}</span>
+            </div>
+          )}
+          {node.created && (
+            <div className="void-meta-item">
+              <span className="void-meta-k">created</span>
+              <span className="void-meta-v">{formatDate(node.created)}</span>
+            </div>
+          )}
+          {backlinkedNodes.length > 0 && (
+            <div className="void-meta-item">
+              <span className="void-meta-k">inbound links</span>
+              <span className="void-meta-v">{backlinkedNodes.length}</span>
             </div>
           )}
         </div>
+
       </div>
-
-      {/* Desktop relationship sidebar */}
-      {hasSidebar && (
-        <aside
-          className="hidden md:flex flex-col w-64 flex-shrink-0 border-l sticky top-12 self-start max-h-[calc(100vh-3rem)] overflow-y-auto"
-          style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-        >
-          <div className="px-6 py-10 space-y-8">
-            <SidebarContent node={node} backlinkedNodes={backlinkedNodes} typeRoute={typeRoute} />
-          </div>
-        </aside>
-      )}
     </div>
-  );
-}
-
-function SidebarContent({
-  node,
-  backlinkedNodes,
-  typeRoute,
-}: {
-  node: VaultNode;
-  backlinkedNodes: VaultNode[];
-  typeRoute: (n: VaultNode) => string;
-}) {
-  return (
-    <>
-      {/* Hub membership */}
-      {node.hub && (
-        <section>
-          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-dim)" }}>Hub</p>
-          <Link
-            href={`/concept/${node.hub}`}
-            className="text-sm hover:opacity-70 transition-opacity leading-snug block"
-            style={{ color: "var(--text-muted)" }}
-          >
-            ↑ {node.hub.replace(/-hub$/, "").replace(/-/g, " ")}
-          </Link>
-        </section>
-      )}
-
-      {/* Backlinks */}
-      {backlinkedNodes.length > 0 && (
-        <section>
-          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-dim)" }}>
-            Backlinks · {backlinkedNodes.length}
-          </p>
-          <div className="space-y-3">
-            {backlinkedNodes.slice(0, 15).map((n) => (
-              <Link key={n.id} href={typeRoute(n)} className="block group">
-                <div className="flex items-start gap-2">
-                  <span
-                    className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
-                    style={{ background: n.color }}
-                  />
-                  <span className="text-sm leading-snug group-hover:opacity-70 transition-opacity" style={{ color: "var(--text-muted)" }}>
-                    {n.title}
-                  </span>
-                </div>
-              </Link>
-            ))}
-            {backlinkedNodes.length > 15 && (
-              <p className="text-xs" style={{ color: "var(--text-dim)" }}>+{backlinkedNodes.length - 15} more</p>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* Outbound links */}
-      {node.links.length > 0 && (
-        <section>
-          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-dim)" }}>
-            Links out · {node.links.length}
-          </p>
-          <div className="space-y-2.5">
-            {node.links.slice(0, 12).map((id) => (
-              <Link
-                key={id}
-                href={`/concept/${id}`}
-                className="block text-sm hover:opacity-70 transition-opacity leading-snug capitalize"
-                style={{ color: "var(--text-muted)" }}
-              >
-                {id.replace(/-/g, " ")}
-              </Link>
-            ))}
-            {node.links.length > 12 && (
-              <p className="text-xs" style={{ color: "var(--text-dim)" }}>+{node.links.length - 12} more</p>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* Domain link */}
-      <section className="pt-5 border-t" style={{ borderColor: "var(--border)" }}>
-        <Link
-          href={`/domain/${node.domain}`}
-          className="text-sm hover:opacity-70 transition-opacity"
-          style={{ color: "var(--text-dim)" }}
-        >
-          ← All {DOMAIN_LABELS[node.domain] || node.domain}
-        </Link>
-      </section>
-    </>
   );
 }

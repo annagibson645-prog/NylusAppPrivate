@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { NylusData, NylusDomain, NylusConcept, NylusEssay } from '@/lib/adapt-vault';
+import ShootingStars from './ShootingStars';
 
 // ─── Aliases (match original JSX style) ────────────────────────────────────
 const uS = useState;
@@ -117,7 +118,7 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   tweaks: Tweaks; onCyclePalette: () => void;
 }) {
   const C2_DATA = useNylusData();
-  const items = ['dashboard','galaxy','domains','essays','workshop','collisions','sparks','tensions','research'];
+  const items = ['dashboard','domains','essays','workshop','collisions','sparks','tensions','research'];
   return (
     <div style={{ display: 'flex', alignItems: 'center', height: 56, padding: '0 28px',
       borderBottom: `1px solid ${P.border}`, gap: 24, position: 'relative', zIndex: 2,
@@ -873,6 +874,7 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
         fontFamily: c2Style.font, display: 'flex', flexDirection: 'column',
         position: 'relative', overflow: 'hidden' }}>
         <C2Starfield P={P} density={tweaks.starDensity} motion={tweaks.motion} />
+        <ShootingStars density={tweaks.starDensity} paused={!tweaks.motion} />
         <C2Header P={P} page={page} setPage={setPage} tweaks={tweaks} onCyclePalette={onCyclePalette} />
         <div style={{ flex: 1, display: 'flex', minHeight: 0, position: 'relative', zIndex: 1 }}>
           {page === 'dashboard'  && <C2Dashboard P={P} tweaks={tweaks} setPage={setPage} setOpenEssay={setOpenEssay} setOpenConcept={setOpenConcept} zoomedDomain={zoomedDomain} setZoomedDomain={setZoomedDomain} />}
@@ -885,7 +887,6 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
           {page === 'workshop'   && <C2Workshop P={P} />}
           {page === 'research'   && <C2Research P={P} setOpenEssay={setOpenEssay} />}
         </div>
-        {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
         {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}
       </div>
     </NylusDataCtx.Provider>
