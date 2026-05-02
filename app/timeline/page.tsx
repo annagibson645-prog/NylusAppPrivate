@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { readFileSync } from "fs";
 import path from "path";
 import type { TimelineEntry } from "@/lib/types";
