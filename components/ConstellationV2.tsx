@@ -468,13 +468,14 @@ function C2Orbit({ color, size, dots }: { color: string; size: number; dots: num
 // ─── DOMAINS ─────────────────────────────────────────────────────────────────
 function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: NylusDomain) => void }) {
   const C2_DATA = useNylusData();
+  const router = useRouter();
   return (
     <div style={{ flex: 1, padding: '40px 56px 60px', overflow: 'auto' }}>
       <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>⊹ Domains</div>
       <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 28px', letterSpacing: '-0.02em' }}>The eight <em>orbits</em>.</h1>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
         {C2_DATA.DOMAINS.map((d, i) => (
-          <div key={d.id} onClick={() => setZoomedDomain(d)} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 12, padding: 22, position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
+          <div key={d.id} onClick={() => router.push(`/domain/${d.key}`)} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 12, padding: 22, position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
             <div style={{ position: 'absolute', top: -40, right: -40, width: 140, height: 140, background: `radial-gradient(${d.color}, transparent 65%)`, opacity: 0.18 }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, position: 'relative' }}>
               <C2Orbit color={d.color} size={44} dots={Math.min(8, Math.ceil((d.concepts / 800) * 8) || 2)} />

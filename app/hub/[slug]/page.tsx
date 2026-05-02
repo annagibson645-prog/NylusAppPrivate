@@ -21,11 +21,12 @@ const DOMAIN_FULL: Record<string, string> = {
   'african-spirituality': 'African Spirituality',
 };
 
-export default async function HubPage({ params }: { params: { slug: string } }) {
+export default async function HubPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const hubs = loadJSON<any[]>('hubs.json');
   const graph = loadJSON<{ nodes: any[] }>('graph.json');
 
-  const hub = hubs.find((h: any) => h.id === params.slug);
+  const hub = hubs.find((h: any) => h.id === slug);
   if (!hub) notFound();
 
   const color = domainColor(hub.domain);
