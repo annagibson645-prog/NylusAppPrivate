@@ -122,7 +122,22 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) 
       </nav>
 
       {/* Content */}
-      <div className="void-content">
+      <div className="concept-outer">
+
+        {/* Sidebar — backlinks */}
+        {backlinkedNodes.length > 0 && (
+          <aside className="concept-sidebar">
+            <div className="csb-label">Backlinks</div>
+            {backlinkedNodes.map((n) => (
+              <Link key={n.id} href={typeRoute(n)} className="csb-item">
+                <span className="csb-domain">{DOMAIN_BACK[n.domain] || n.domain}</span>
+                {n.title}
+              </Link>
+            ))}
+          </aside>
+        )}
+
+        <div className="void-content">
 
         {/* Domain chip */}
         <div className="void-domain-chip">
@@ -254,6 +269,7 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) 
           )}
         </div>
 
+        </div>
       </div>
     </div>
   );

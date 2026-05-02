@@ -491,7 +491,7 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
       </p>
 
       {/* 3-column display grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
         {C2_DATA.DOMAINS.map((d, i) => {
           const isHovered = hovered === d.id;
           const num = String(i + 1).padStart(2, '0');
