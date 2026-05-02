@@ -1109,4 +1109,3 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
     </NylusDataCtx.Provider>
   );
 }
-          
