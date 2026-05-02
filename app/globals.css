@@ -75,7 +75,8 @@ html, body {
   color: #8b7355;
   border-bottom-color: #d0c4a8;
 }
-[data-theme="sepia"] .sb-item { color: #7a6545; border-bottom-color: #e4dcc8; }
+[data-theme="sepia"] .sb-label { color: #8b7355; border-bottom-color: #d0c4a8; }
+[data-theme="sepia"] .sb-item { color: #5c4a2a; border-bottom-color: #e4dcc8; }
 [data-theme="sepia"] .sb-level-n { color: #a09070; }
 
 /* Hub main */
