@@ -265,13 +265,13 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
           {[0.6, 0.85, 1.1].map((m, i) => (
             <circle key={i} cx={cx} cy={cy} r={R * m} fill="none" stroke={P.border} strokeDasharray="2 5" />
           ))}
-          {!zoomed && positioned.map(d => (
+          {positioned.map(d => (
             <line key={'l'+d.id} x1={cx} y1={cy} x2={d.x} y2={d.y}
               stroke={hover === d.id ? d.color : 'rgba(255,255,255,0.06)'}
               strokeWidth={hover === d.id ? 1.5 : 0.5}
               style={{ transition: 'stroke 0.2s' }} />
           ))}
-          {!zoomed && C2_DATA.COLLISIONS.map((c, i) => {
+          {C2_DATA.COLLISIONS.map((c, i) => {
             const a = positioned.find(d => d.id === c.domains[0]);
             const b = positioned.find(d => d.id === c.domains[1]);
             if (!a || !b) return null;
@@ -318,7 +318,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
           fontSize: 10, color: P.dim, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
           ⊹ live · {tweaks.motion ? 'orbiting' : 'paused'} · click a star to enter
         </div>
-        {hover && !zoomed && (() => {
+        {hover && (() => {
           const d = C2_DATA.DOMAINS.find(x => x.id === hover);
           if (!d) return null;
           return (
