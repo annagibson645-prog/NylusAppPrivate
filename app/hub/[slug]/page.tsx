@@ -22,7 +22,6 @@ const DOMAIN_FULL: Record<string, string> = {
   'african-spirituality': 'African Spirituality',
 };
 
-// Meta-sections — not concept groupings, skip them
 const SKIP_SECTIONS = new Set([
   'what this hub covers',
   'how to navigate this hub',
@@ -52,12 +51,11 @@ const LEVEL_BADGE: Record<string, string> = {
   thematic:      '',
 };
 
-// Colors match the void palette — muted so they feel native
 const LEVEL_COLOR: Record<string, string> = {
-  foundational: '#6bab8a',   // sage green
-  intermediate:  '#c8a460',  // warm amber
-  advanced:      '#9f7ec0',  // muted violet
-  thematic:      '#4a4468',  // dim slate
+  foundational: '#6bab8a',
+  intermediate:  '#c8a460',
+  advanced:      '#9f7ec0',
+  thematic:      '#4a4468',
 };
 
 interface HubSection {
@@ -182,8 +180,8 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
       <nav className="void-nav">
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link href="/" className="void-nav-back">{'← constellation'}</Link>
-          <span style={{ color: '#2a2535' }}>{'·'}</span>
+          <Link href="/" className="void-nav-back">{'<- constellation'}</Link>
+          <span style={{ color: '#2a2535' }}>.</span>
           <Link href={`/domain/${hub.domain}`} className="void-nav-back">{label}</Link>
         </div>
         <ThemeToggle />
@@ -191,9 +189,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
       <div className="hub-outer">
 
-        {/* SIDEBAR */}
         <aside className="hub-sidebar">
-
           {hasLevels && (
             <div className="sb-section">
               <div className="sb-label">Levels</div>
@@ -218,7 +214,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
               {sources.map((s: any) => (
                 <Link key={s.id} href={`/source/${s.id}`} className="sb-item">
                   {(s.title ?? s.id).replace(/^SOURCE:\s*/i, '').slice(0, 46)}
-                  {(s.title ?? '').replace(/^SOURCE:\s*/i, '').length > 46 ? '…' : ''}
+                  {(s.title ?? '').replace(/^SOURCE:\s*/i, '').length > 46 ? '...' : ''}
                 </Link>
               ))}
             </div>
@@ -229,7 +225,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
               <div className="sb-label">Internal links</div>
               {internalLinks.map((n: any) => (
                 <Link key={n.id} href={routeForType(n.type, n.id)} className="sb-item">
-                  {(n.title ?? n.id).slice(0, 46)}{(n.title?.length ?? 0) > 46 ? '…' : ''}
+                  {(n.title ?? n.id).slice(0, 46)}{(n.title?.length ?? 0) > 46 ? '...' : ''}
                 </Link>
               ))}
             </div>
@@ -240,23 +236,21 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
               <div className="sb-label">Backlinks</div>
               {backlinks.map((n: any) => (
                 <Link key={n.id} href={routeForType(n.type, n.id)} className="sb-item">
-                  {(n.title ?? n.id).slice(0, 46)}{(n.title?.length ?? 0) > 46 ? '…' : ''}
+                  {(n.title ?? n.id).slice(0, 46)}{(n.title?.length ?? 0) > 46 ? '...' : ''}
                 </Link>
               ))}
             </div>
           )}
         </aside>
 
-        {/* MAIN */}
         <main className="hub-main">
-
           <div className="hub-domain-chip">{label}</div>
           <h1 className="hub-title">{hubTitle}</h1>
           {hub.excerpt && <div className="hub-lede">{hub.excerpt}</div>}
 
           <div className="void-ornament" style={{ margin: '48px 0 56px' }}>
             <div className="void-ornament-line" />
-            <span className="void-ornament-glyph">{'✦'}</span>
+            <span className="void-ornament-glyph">*</span>
             <div className="void-ornament-line" />
           </div>
 
@@ -289,7 +283,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                       <span className="hub-section-title">{sec.label}</span>
                       <span className="hub-section-count" style={{ color: lc }}>{nodes.length}</span>
                     </span>
-                    <span className="hub-chevron">{'▼'}</span>
+                    <span className="hub-chevron">v</span>
                   </summary>
 
                   <div className="hub-section-body">
@@ -299,7 +293,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                           <div className="hcr-title">{n.title}</div>
                           {n.excerpt && (
                             <div className="hcr-excerpt">
-                              {n.excerpt.slice(0, 160)}{n.excerpt.length > 160 ? '…' : ''}
+                              {n.excerpt.slice(0, 160)}{n.excerpt.length > 160 ? '...' : ''}
                             </div>
                           )}
                         </div>
@@ -308,7 +302,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                             <span className="hcr-meta">{n.sources} src</span>
                           )}
                           {(n.backlinks?.length ?? 0) > 0 && (
-                            <span className="hcr-meta">{n.backlinks.length} {'↩'}</span>
+                            <span className="hcr-meta">{n.backlinks.length} bl</span>
                           )}
                         </div>
                       </Link>
@@ -328,7 +322,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                     <span className="hub-section-title" style={{ color: '#3a3450' }}>Other</span>
                     <span className="hub-section-count" style={{ color: '#3a3450' }}>{unplaced.length}</span>
                   </span>
-                  <span className="hub-chevron">{'▼'}</span>
+                  <span className="hub-chevron">v</span>
                 </summary>
                 <div className="hub-section-body">
                   {unplaced.map((n: any) => (
@@ -337,7 +331,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                         <div className="hcr-title">{n.title}</div>
                         {n.excerpt && (
                           <div className="hcr-excerpt">
-                            {n.excerpt.slice(0, 160)}{n.excerpt.length > 160 ? '…' : ''}
+                            {n.excerpt.slice(0, 160)}{n.excerpt.length > 160 ? '...' : ''}
                           </div>
                         )}
                       </div>
@@ -353,10 +347,9 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
           <div style={{ marginTop: 72 }}>
             <Link href={`/domain/${hub.domain}`} className="void-nav-back">
-              {'← All'} {label} hubs
+              All {label} hubs
             </Link>
           </div>
-
         </main>
       </div>
 
@@ -371,7 +364,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           position: relative;
           z-index: 2;
         }
-
         .hub-sidebar {
           width: 200px;
           flex-shrink: 0;
@@ -426,7 +418,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           color: #4a4468;
           font-size: 11px;
         }
-
         .hub-main { flex: 1; min-width: 0; }
         .hub-domain-chip {
           font-family: var(--font-jetbrains), monospace;
@@ -461,7 +452,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           max-width: 580px;
           font-optical-sizing: auto;
         }
-
         .void-ornament { display: flex; align-items: center; gap: 16px; }
         .void-ornament-line { flex: 1; height: 1px; background: #1c1828; }
         .void-ornament-glyph {
@@ -471,11 +461,9 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           opacity: 0.25;
           font-style: italic;
         }
-
         .hub-sections { display: flex; flex-direction: column; gap: 0; }
         .hub-details { border-bottom: 1px solid #16141f; }
         .hub-details:first-child { border-top: 1px solid #1c1828; }
-
         .hub-summary {
           list-style: none;
           cursor: pointer;
@@ -489,7 +477,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         }
         .hub-summary::-webkit-details-marker { display: none; }
         .hub-summary:hover { opacity: 0.8; }
-
         .hub-summary-inner {
           display: flex;
           align-items: center;
@@ -497,7 +484,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           flex: 1;
           min-width: 0;
         }
-
         .hub-level-badge {
           font-family: var(--font-jetbrains), monospace;
           font-size: 9px;
@@ -509,7 +495,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           flex-shrink: 0;
           opacity: 0.75;
         }
-
         .hub-section-title {
           font-family: var(--font-jetbrains), monospace;
           font-size: 11px;
@@ -522,26 +507,20 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-
         .hub-section-count {
           font-family: var(--font-jetbrains), monospace;
           font-size: 11px;
           opacity: 0.5;
           flex-shrink: 0;
         }
-
         .hub-chevron {
           font-size: 9px;
           color: #2e2a3e;
           transition: transform 0.2s;
           flex-shrink: 0;
         }
-        details[open] > .hub-summary .hub-chevron {
-          transform: rotate(180deg);
-        }
-
+        details[open] > .hub-summary .hub-chevron { transform: rotate(180deg); }
         .hub-section-body { padding-bottom: 24px; }
-
         .hub-concept-row {
           display: flex;
           align-items: flex-start;
@@ -554,7 +533,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         }
         .hub-concept-row:last-child { border-bottom: none; }
         .hub-concept-row:hover { background: rgba(255,255,255,0.02); }
-
         .hcr-left { flex: 1; min-width: 0; }
         .hcr-title {
           font-family: var(--font-fraunces), serif;
@@ -567,7 +545,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-optical-sizing: auto;
         }
         .hub-concept-row:hover .hcr-title { color: #d8d0e8; }
-
         .hcr-excerpt {
           font-family: var(--font-newsreader), serif;
           font-size: 14px;
@@ -576,7 +553,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-weight: 300;
           font-optical-sizing: auto;
         }
-
         .hcr-right {
           display: flex;
           flex-direction: column;
@@ -593,28 +569,17 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           white-space: nowrap;
         }
         .hub-concept-row:hover .hcr-meta { color: #5a5080; }
-
         @media (max-width: 900px) {
           .hub-outer { gap: 48px; padding: 0 32px 120px; }
           .hub-sidebar { width: 160px; }
         }
-
         @media (max-width: 680px) {
-          .hub-outer {
-            flex-direction: column-reverse;
-            padding: 0 20px 100px;
-            gap: 0;
-          }
+          .hub-outer { flex-direction: column-reverse; padding: 0 20px 100px; gap: 0; }
           .hub-sidebar {
-            position: static;
-            width: 100%;
-            max-height: none;
-            margin-top: 56px;
-            padding-top: 32px;
+            position: static; width: 100%; max-height: none;
+            margin-top: 56px; padding-top: 32px;
             border-top: 1px solid #1c1828;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0 32px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 32px;
           }
           .hub-title { font-size: clamp(36px, 10vw, 58px) !important; }
           .hub-lede { font-size: 17px !important; }
@@ -624,7 +589,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           .hub-summary { padding: 20px 0; }
           .void-nav { padding: 16px 20px; margin-bottom: 28px; }
         }
-
         @media (max-width: 400px) {
           .hub-sidebar { grid-template-columns: 1fr; }
         }
