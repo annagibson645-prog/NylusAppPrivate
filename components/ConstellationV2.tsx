@@ -1102,79 +1102,7 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
           {page === 'workshop'   && <C2Workshop P={P} />}
           {page === 'research'   && <C2Research P={P} setOpenEssay={setOpenEssay} />}
         </div>
-        {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}
-        {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
-      </div>
-    </NylusDataCtx.Provider>
-  );
-}
-                <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{k as string}</div>
-              </div>
-            ))}
-          </div>
-          {concept.excerpt && <div style={{ color: P.dim, fontSize: 13, lineHeight: 1.6, marginBottom: 20, fontFamily: c2Style.serif, fontStyle: 'italic' }}>{concept.excerpt.slice(0, 300)}</div>}
-          <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>collisions in orbit</div>
-          {C2_DATA.COLLISIONS.filter(c => c.domains.includes(concept.domain)).slice(0, 3).map(c => (
-            <div key={c.id} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderLeft: '2px solid #a78bfa', padding: '10px 12px', marginBottom: 8, borderRadius: 4 }}>
-              <div style={{ fontSize: 12, fontFamily: c2Style.serif, marginBottom: 4 }}>
-                <span>{c.a}</span><span style={{ color: '#a78bfa', margin: '0 6px' }}>x</span><span>{c.b}</span>
-              </div>
-              <div style={{ fontSize: 10, color: P.dim, lineHeight: 1.4 }}>{c.note}</div>
-            </div>
-          ))}
-          <button onClick={() => { close(); if (C2_DATA.ESSAYS[0]) setOpenEssay(C2_DATA.ESSAYS[0]); }}
-            style={{ marginTop: 18, width: '100%', background: dom.color, border: 'none', color: '#000', padding: '10px 14px', borderRadius: 8, cursor: 'pointer', fontFamily: c2Style.font, fontSize: 13, fontWeight: 600 }}>
-            open in reader
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-// MAIN CONSTELLATION V2
-interface ConstellationV2Props {
-  data: NylusData;
-  initialPage?: string;
-}
-
-export default function ConstellationV2({ data, initialPage }: ConstellationV2Props) {
-  const [page, setPage] = uS(initialPage ?? 'dashboard');
-  const [openEssay, setOpenEssay] = uS<NylusEssay | null>(null);
-  const [zoomedDomain, setZoomedDomain] = uS<NylusDomain | null>(null);
-  const [openConcept, setOpenConcept] = uS<NylusConcept | null>(null);
-  const [tweaks, setTweaks] = uS<Tweaks>(C2_DEFAULTS);
-  const P = C2_PALETTES[tweaks.palette] ?? C2_PALETTES.ember;
-
-  function setTweak(k: keyof Tweaks, v: unknown) {
-    setTweaks(t => ({ ...t, [k]: v }));
-  }
-
-  function onCyclePalette() {
-    const order = ['ember', 'aurora', 'monochrome'];
-    const next = order[(order.indexOf(tweaks.palette) + 1) % order.length];
-    setTweak('palette', next);
-  }
-
-  return (
-    <NylusDataCtx.Provider value={data}>
-      <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
-        fontFamily: c2Style.font, display: 'flex', flexDirection: 'column',
-        position: 'relative', overflow: 'hidden' }}>
-        <C2Starfield P={P} density={tweaks.starDensity} motion={tweaks.motion} />
-        <ShootingStars density={tweaks.starDensity} paused={!tweaks.motion} />
-        <C2Header P={P} page={page} setPage={setPage} tweaks={tweaks} onCyclePalette={onCyclePalette} />
-        <div style={{ flex: 1, display: 'flex', minHeight: 0, position: 'relative', zIndex: 1 }}>
-          {page === 'dashboard'  && <C2Dashboard P={P} tweaks={tweaks} setPage={setPage} setOpenEssay={setOpenEssay} setOpenConcept={setOpenConcept} zoomedDomain={zoomedDomain} setZoomedDomain={setZoomedDomain} />}
-          {page === 'galaxy'     && <C2Galaxy P={P} tweaks={tweaks} setOpenConcept={setOpenConcept} />}
-          {page === 'domains'    && <C2Domains P={P} setZoomedDomain={(d) => { setPage('dashboard'); setZoomedDomain(d); }} />}
-          {page === 'essays'     && <C2Essays P={P} setOpenEssay={setOpenEssay} />}
-          {page === 'collisions' && <C2Collisions P={P} tweaks={tweaks} />}
-          {page === 'sparks'     && <C2Sparks P={P} />}
-          {page === 'tensions'   && <C2Tensions P={P} />}
-          {page === 'workshop'   && <C2Workshop P={P} />}
-          {page === 'research'   && <C2Research P={P} setOpenEssay={setOpenEssay} />}
-        </div>
         {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}
         {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
       </div>
