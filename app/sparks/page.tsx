@@ -1,13 +1,9 @@
-import { readFileSync } from "fs";
-import path from "path";
-import SparksView from "@/components/SparksView";
-import type { VaultNode } from "@/lib/types";
+import { buildNylusData } from '@/lib/adapt-vault';
+import ConstellationApp from '@/components/ConstellationApp';
 
-function loadJSON<T>(file: string): T {
-  return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
-}
+export const dynamic = 'force-static';
 
-export default function SparksPage() {
-  const sparks = loadJSON<VaultNode[]>("sparks.json");
-  return <SparksView sparks={sparks} />;
+export default function Page() {
+  const data = buildNylusData();
+  return <ConstellationApp data={data} initialPage="sparks" />;
 }

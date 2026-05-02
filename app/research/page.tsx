@@ -1,19 +1,9 @@
-import { readFileSync } from "fs";
-import path from "path";
-import type { VaultNode } from "@/lib/types";
-import ResearchList from "@/components/ResearchList";
+import { buildNylusData } from '@/lib/adapt-vault';
+import ConstellationApp from '@/components/ConstellationApp';
 
-function loadJSON<T>(file: string): T {
-  return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
-}
+export const dynamic = 'force-static';
 
-export default function ResearchPage() {
-  let reports: VaultNode[] = [];
-  try {
-    reports = loadJSON<VaultNode[]>("research.json");
-  } catch {
-    reports = [];
-  }
-
-  return <ResearchList reports={reports} />;
+export default function Page() {
+  const data = buildNylusData();
+  return <ConstellationApp data={data} initialPage="research" />;
 }

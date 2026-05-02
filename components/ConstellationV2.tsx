@@ -846,10 +846,11 @@ function C2ConceptPage({ P, tweaks, concept, close, setOpenEssay }: {
 // ─── MAIN CONSTELLATION V2 ────────────────────────────────────────────────────
 interface ConstellationV2Props {
   data: NylusData;
+  initialPage?: string;
 }
 
-export default function ConstellationV2({ data }: ConstellationV2Props) {
-  const [page, setPage] = uS('dashboard');
+export default function ConstellationV2({ data, initialPage }: ConstellationV2Props) {
+  const [page, setPage] = uS(initialPage ?? 'dashboard');
   const [openEssay, setOpenEssay] = uS<NylusEssay | null>(null);
   const [zoomedDomain, setZoomedDomain] = uS<NylusDomain | null>(null);
   const [openConcept, setOpenConcept] = uS<NylusConcept | null>(null);

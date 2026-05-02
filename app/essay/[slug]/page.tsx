@@ -5,6 +5,8 @@ import Link from "next/link";
 import { marked } from "marked";
 import type { VaultNode } from "@/lib/types";
 
+export const dynamic = 'force-dynamic';
+
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
 }
@@ -26,14 +28,6 @@ function renderEssay(raw: string): string {
   return marked.parse(body) as string;
 }
 
-export async function generateStaticParams() {
-  try {
-    const essays = loadJSON<VaultNode[]>("essays.json");
-    return essays.map((e) => ({ slug: e.id }));
-  } catch {
-    return [];
-  }
-}
 
 export default async function EssayPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

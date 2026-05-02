@@ -6,6 +6,8 @@ import type { VaultNode, IndexSection } from "@/lib/types";
 import { DOMAIN_LABELS } from "@/lib/types";
 import DomainBrowser from "@/components/DomainBrowser";
 
+export const dynamic = 'force-dynamic';
+
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
 }
@@ -23,9 +25,6 @@ const KNOWN_DOMAINS = [
   "cross-domain", "creative-practice", "african-spirituality", "ai-collaboration",
 ];
 
-export async function generateStaticParams() {
-  return KNOWN_DOMAINS.map((name) => ({ name }));
-}
 
 export default async function DomainPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;

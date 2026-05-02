@@ -5,5 +5,5 @@ export const dynamic = 'force-static';
 
 export default function Page() {
   const data = buildNylusData();
-  return <ConstellationApp data={data} initialPage="collisions" />;
+  return <ConstellationApp data={data} initialPage="tensions" />;
 }
