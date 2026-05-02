@@ -604,6 +604,17 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         @media (max-width: 400px) {
           .hub-sidebar { grid-template-columns: 1fr; }
         }
+
+        /* Sepia concept grid */
+        :global([data-theme="sepia"]) .hub-section-body { background: #e8dfc8; gap: 1px; }
+        :global([data-theme="sepia"]) .hub-concept-row { background: #f0ead8; }
+        :global([data-theme="sepia"]) .hub-concept-row:hover { background: #e6dcc8; }
+        :global([data-theme="sepia"]) .hcr-title { color: #1e1408 !important; }
+        :global([data-theme="sepia"]) .hub-concept-row:hover .hcr-title { color: #3c1808 !important; }
+        :global([data-theme="sepia"]) .hcr-excerpt { color: #7a6545; }
+        :global([data-theme="sepia"]) .hcr-meta { color: #9a8a6a; }
+        :global([data-theme="sepia"]) .hub-summary { background: #e0d5bf; }
+        :global([data-theme="sepia"]) .hub-details[open] .hub-summary { background: #d8ccb8; }
       `}</style>
     </div>
   );

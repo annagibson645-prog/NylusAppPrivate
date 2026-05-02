@@ -121,13 +121,13 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   const C2_DATA = useNylusData();
   const items = ['dashboard','domains','essays','workshop','collisions','sparks','tensions','research'];
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 72, padding: '0 36px',
-      gap: 28, position: 'relative', zIndex: 2,
-      background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(10px)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', height: 52, padding: '0 24px',
+      gap: 20, position: 'relative', zIndex: 2,
+      background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <C2Logo P={P} />
-        <div style={{ fontSize: 19, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</div>
-        <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2, letterSpacing: '0.18em', textTransform: 'uppercase', marginLeft: 6 }}>constellation</div>
+        <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</div>
+        <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.15em', textTransform: 'uppercase', marginLeft: 4 }}>constellation</div>
       </div>
       <div style={{ display: 'flex', gap: 4, marginLeft: 16, flexWrap: 'nowrap', overflow: 'auto' }}>
         {items.map(n => {
@@ -135,8 +135,8 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
           return (
             <button key={n} onClick={() => setPage(n)}
               style={{ background: active ? P.bg3 : 'transparent', border: 'none', cursor: 'pointer',
-                padding: '8px 16px', borderRadius: 999, color: active ? P.text : P.dim,
-                fontFamily: c2Style.font, fontSize: 14, fontWeight: active ? 600 : 400, whiteSpace: 'nowrap',
+                padding: '6px 12px', borderRadius: 999, color: active ? P.text : P.dim,
+                fontFamily: c2Style.font, fontSize: 12, fontWeight: active ? 600 : 400, whiteSpace: 'nowrap',
                 letterSpacing: '-0.01em', transition: 'color 0.2s, background 0.2s' }}>
               {n}
             </button>
@@ -1065,13 +1065,94 @@ interface ConstellationV2Props {
   initialPage?: string;
 }
 
+// ─── MOBILE VIEW ─────────────────────────────────────────────────────────────
+function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
+  const router = useRouter();
+  const [tab, setTab] = uS<'domains' | 'hubs' | 'sparks'>('domains');
+  const tabs: Array<'domains' | 'hubs' | 'sparks'> = ['domains', 'hubs', 'sparks'];
+
+  return (
+    <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
+      fontFamily: c2Style.font, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+      {/* Mobile header */}
+      <div style={{ padding: '20px 20px 0', borderBottom: `1px solid ${P.border}`,
+        background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+          <C2Logo P={P} />
+          <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</span>
+          <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.15em', textTransform: 'uppercase', marginLeft: 4 }}>vault</span>
+        </div>
+        <div style={{ display: 'flex', gap: 0, marginBottom: -1 }}>
+          {tabs.map(t => (
+            <button key={t} onClick={() => setTab(t)}
+              style={{ flex: 1, padding: '10px 0', background: 'transparent', border: 'none',
+                borderBottom: tab === t ? `2px solid ${P.hub}` : '2px solid transparent',
+                color: tab === t ? P.text : P.dim, fontFamily: c2Style.font,
+                fontSize: 12, cursor: 'pointer', letterSpacing: '0.02em',
+                textTransform: 'capitalize', transition: 'color 0.2s' }}>
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Domains tab */}
+      {tab === 'domains' && (
+        <div style={{ padding: '16px 16px 60px' }}>
+          {data.DOMAINS.map(d => (
+            <div key={d.id} onClick={() => router.push(`/domain/${d.key}`)}
+              style={{ display: 'flex', alignItems: 'center', gap: 14,
+                padding: '16px 0', borderBottom: `1px solid ${P.border}`, cursor: 'pointer' }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 3 }}>{d.name}</div>
+                <div style={{ fontSize: 12, color: P.dim, lineHeight: 1.4 }}>{d.desc.slice(0, 80)}…</div>
+              </div>
+              <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2, flexShrink: 0 }}>{d.concepts} ★</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Hubs tab */}
+      {tab === 'hubs' && (
+        <div style={{ padding: '16px 16px 60px' }}>
+          {data.HUBS.slice(0, 30).map(h => (
+            <div key={h.id} onClick={() => router.push(`/hub/${h.id}`)}
+              style={{ display: 'flex', alignItems: 'flex-start', gap: 14,
+                padding: '16px 0', borderBottom: `1px solid ${P.border}`, cursor: 'pointer' }}>
+              <div style={{ width: 3, height: 44, background: h.color, flexShrink: 0, marginTop: 2 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: c2Style.serif, fontSize: 16, fontStyle: 'italic', marginBottom: 4, lineHeight: 1.2 }}>{h.title.replace(/ Hub$/, '').replace(/ — Map of Content$/, '')}</div>
+                <div style={{ fontSize: 12, color: P.dim }}>{h.covers} concepts · {h.excerpt?.slice(0, 60)}…</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Sparks tab */}
+      {tab === 'sparks' && (
+        <div style={{ padding: '16px 16px 60px' }}>
+          {data.SPARKS.slice(0, 40).map(s => (
+            <div key={s.id} style={{ padding: '14px 0', borderBottom: `1px solid ${P.border}` }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.color, display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }} />
+              <span style={{ fontSize: 13, lineHeight: 1.5 }}>{s.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ConstellationV2({ data, initialPage }: ConstellationV2Props) {
+  const [isMobile, setIsMobile] = uS(false);
   const [page, setPage] = uS(initialPage ?? 'dashboard');
   const [openEssay, setOpenEssay] = uS<NylusEssay | null>(null);
   const [zoomedDomain, setZoomedDomain] = uS<NylusDomain | null>(null);
   const [openConcept, setOpenConcept] = uS<NylusConcept | null>(null);
   const [tweaks, setTweaks] = uS<Tweaks>(C2_DEFAULTS);
-  const P = C2_PALETTES[tweaks.palette] ?? C2_PALETTES.ember;
 
   function setTweak(k: keyof Tweaks, v: unknown) {
     setTweaks(t => ({ ...t, [k]: v }));
@@ -1082,6 +1163,18 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
     const next = order[(order.indexOf(tweaks.palette) + 1) % order.length];
     setTweak('palette', next);
   }
+
+  const P = C2_PALETTES[tweaks.palette] ?? C2_PALETTES.ember;
+
+  // Mobile detection
+  uE(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  if (isMobile) return <C2Mobile data={data} P={P} />;
 
   return (
     <NylusDataCtx.Provider value={data}>
