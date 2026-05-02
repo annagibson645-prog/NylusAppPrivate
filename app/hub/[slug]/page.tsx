@@ -538,18 +538,18 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-family: var(--font-fraunces), serif;
           font-size: 24px;
           font-style: italic;
-          color: #b0a8c8;
+          color: #e0dcea;
           line-height: 1.25;
           margin-bottom: 10px;
           transition: color 0.15s;
           font-optical-sizing: auto;
         }
-        .hub-concept-row:hover .hcr-title { color: #d8d0e8; }
+        .hub-concept-row:hover .hcr-title { color: #ffffff; }
         .hcr-excerpt {
           font-family: var(--font-newsreader), serif;
           font-size: 14px;
           line-height: 1.7;
-          color: #3a3050;
+          color: #7a7490;
           font-weight: 300;
           font-optical-sizing: auto;
         }
@@ -564,11 +564,11 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         .hcr-meta {
           font-family: var(--font-jetbrains), monospace;
           font-size: 10px;
-          color: #2e2a3e;
+          color: #5a5278;
           letter-spacing: 0.06em;
           white-space: nowrap;
         }
-        .hub-concept-row:hover .hcr-meta { color: #5a5080; }
+        .hub-concept-row:hover .hcr-meta { color: #8880a8; }
         @media (max-width: 900px) {
           .hub-outer { gap: 48px; padding: 0 32px 120px; }
           .hub-sidebar { width: 160px; }
