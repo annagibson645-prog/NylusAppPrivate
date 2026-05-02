@@ -1,178 +1,27 @@
-@import "tailwindcss";
+/* globals.css — minimal reset for the Constellation interface */
 
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-.page-transition {
-  animation: fadeSlideIn 0.22s ease-out both;
-}
-
-/* ── Dark mode (default) ── */
-:root {
-  --bg: #08080d;
-  --surface: #0f0f16;
-  --surface-2: #16161f;
-  --border: #1e1e2e;
-  --border-subtle: #161622;
-  --text: #dde1e9;
-  --text-muted: #5a6175;
-  --text-dim: #363d4f;
-  --accent: #7c6af7;
-  --prose-h1: #f0f2f6;
-  --prose-h2: #bdc4d4;
-  --prose-h3: #9aa3b8;
-  --prose-strong: #f0f2f6;
-  --prose-em: #8892a8;
-  --prose-code-bg: var(--surface-2);
-  --prose-code: #7dd3fc;
-  --prose-blockquote: var(--text-muted);
-  --prose-link: #a5b4fc;
-  --wiki-link: #a5b4fc;
-  --wiki-link-broken: var(--text-dim);
-  --edge-color: #252535;
-}
-
-/* ── Light mode — sepia ── */
-:root.light {
-  --bg: #fef9ec;
-  --surface: #f9f2de;
-  --surface-2: #f2e8cc;
-  --border: #dfd0b0;
-  --border-subtle: #e8dcc4;
-  --text: #3d2b18;
-  --text-muted: #8c6b4e;
-  --text-dim: #c4a882;
-  --accent: #a07040;
-  --prose-h1: #2e1f0e;
-  --prose-h2: #3d2b18;
-  --prose-h3: #5a4030;
-  --prose-strong: #2e1f0e;
-  --prose-em: #6a5038;
-  --prose-code-bg: #eddfc8;
-  --prose-code: #7a4010;
-  --prose-blockquote: #8c6b4e;
-  --prose-link: #a07040;
-  --wiki-link: #a07040;
-  --wiki-link-broken: #c4a882;
-  --edge-color: #ddd0b8;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 15px;
+html, body {
   margin: 0;
-  -webkit-font-smoothing: antialiased;
-  transition: background 0.2s, color 0.2s;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0e0d14;
 }
 
+/* Expose font CSS variables for constellation components */
+:root {
+  --font-space-grotesk: var(--font-space-grotesk, "Space Grotesk", sans-serif);
+  --font-jetbrains: var(--font-jetbrains, "JetBrains Mono", monospace);
+  --font-fraunces: var(--font-fraunces, "Fraunces", serif);
+  --font-newsreader: var(--font-newsreader, "Newsreader", serif);
+}
+
+/* Thin scrollbars inside constellation panels */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-/* ── Prose ── */
-.prose {
-  color: var(--text);
-  line-height: 1.9;
-  max-width: none;
-  font-size: 1rem;
-}
-.prose h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 1.5rem;
-  color: var(--prose-h1);
-  letter-spacing: -0.02em;
-  line-height: 1.3;
-}
-.prose h2 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 2.5rem 0 0.75rem;
-  color: var(--prose-h2);
-  letter-spacing: -0.01em;
-}
-.prose h3 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  margin: 1.75rem 0 0.4rem;
-  color: var(--prose-h3);
-}
-.prose p { margin: 0 0 1rem; }
-.prose strong { color: var(--prose-strong); font-weight: 600; }
-.prose em { color: var(--prose-em); font-style: italic; }
-.prose code {
-  background: var(--prose-code-bg);
-  padding: 0.15em 0.4em;
-  border-radius: 4px;
-  font-size: 0.83em;
-  color: var(--prose-code);
-  font-family: "SF Mono", "Fira Code", monospace;
-}
-.prose pre {
-  background: var(--surface-2);
-  padding: 1.25rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  border: 1px solid var(--border);
-}
-.prose blockquote {
-  border-left: 2px solid var(--border);
-  margin: 1.5rem 0;
-  padding: 0.25rem 1.25rem;
-  color: var(--prose-blockquote);
-  font-style: italic;
-}
-.prose ul, .prose ol { padding-left: 1.25rem; margin: 0 0 1rem; }
-.prose li { margin: 0.35rem 0; }
-.prose a { color: var(--prose-link); text-decoration: none; }
-.prose a:hover { text-decoration: underline; }
-.prose hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-.prose table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-.prose th {
-  text-align: left;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-muted);
-  font-weight: 500;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.prose td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-subtle); }
-
-.wiki-link {
-  color: var(--wiki-link);
-  text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--wiki-link) 30%, transparent);
-  transition: border-color 0.12s;
-}
-.wiki-link:hover { border-color: var(--wiki-link); }
-.wiki-link-broken {
-  color: var(--wiki-link-broken);
-  border-bottom: 1px dashed var(--border);
-  cursor: default;
-}
-
-/* ── Light mode: remap Tailwind text colors to warm sepia equivalents ── */
-:root.light .text-white        { color: #3d2b18 !important; }
-:root.light .text-slate-200    { color: #4a3828 !important; }
-:root.light .text-slate-300    { color: #5a4838 !important; }
-:root.light .text-slate-400    { color: #6a5848 !important; }
-:root.light .text-slate-500    { color: #8c6b4e !important; }
-:root.light .text-slate-600    { color: #a08060 !important; }
-:root.light .text-slate-700    { color: #b89878 !important; }
-
-/* Prose body */
-:root.light .prose,
-:root.light .prose p,
-:root.light .prose li,
-:root.light .prose td { color: #3d2b18; }
-:root.light .prose h1 { color: #2e1f0e; }
-:root.light .prose h2 { color: #3d2b18; }
-:root.light .prose h3 { color: #5a4030; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
