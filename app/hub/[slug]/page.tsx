@@ -430,12 +430,12 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         }
         .hub-title {
           font-family: var(--font-fraunces), serif;
-          font-size: clamp(42px, 5.5vw, 80px);
+          font-size: clamp(52px, 6.5vw, 96px);
           font-weight: 900;
           font-style: italic;
           line-height: 1.0;
-          letter-spacing: -0.02em;
-          color: #ddd8ea;
+          letter-spacing: -0.025em;
+          color: #ffffff;
           margin-bottom: 28px;
           font-optical-sizing: auto;
         }
@@ -443,7 +443,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-family: var(--font-newsreader), serif;
           font-size: 20px;
           line-height: 1.75;
-          color: #7a7090;
+          color: #a09ab8;
           font-weight: 300;
           font-style: italic;
           border-left: 2px solid var(--domain-color, #a78bfa);
@@ -500,7 +500,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-size: 11px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: #4a4468;
+          color: #c0bcd8;
           flex: 1;
           min-width: 0;
           overflow: hidden;
@@ -515,7 +515,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         }
         .hub-chevron {
           font-size: 9px;
-          color: #2e2a3e;
+          color: #6a6488;
           transition: transform 0.2s;
           flex-shrink: 0;
         }
