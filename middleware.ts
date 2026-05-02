@@ -1,2 +1,6 @@
-// Middleware disabled — constellation routes are handled by individual page files.
-export {};
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(_request: NextRequest) {
+  return NextResponse.next();
+}
