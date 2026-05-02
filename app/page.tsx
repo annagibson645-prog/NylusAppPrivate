@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 // app/page.tsx — server component entry point.
 // Reads vault JSON at build time, passes data to the client constellation.
 import { buildNylusData } from '@/lib/adapt-vault';

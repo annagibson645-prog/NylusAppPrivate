@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 import { buildNylusData } from '@/lib/adapt-vault';
 import ConstellationApp from '@/components/ConstellationApp';
 
