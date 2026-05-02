@@ -91,14 +91,12 @@ html, body {
 [data-theme="sepia"] .hub-chevron { color: #c0b090; }
 
 /* Concept rows */
-[data-theme="sepia"] .hub-concept-row {
-  border-bottom-color: #e8dfcc;
-}
-[data-theme="sepia"] .hub-concept-row:hover { background: rgba(139,105,20,0.04); }
-[data-theme="sepia"] .hcr-title   { color: #3c2e18; }
-[data-theme="sepia"] .hub-concept-row:hover .hcr-title { color: #1e1408; }
+[data-theme="sepia"] .hub-concept-row { background: #ede6d4; }
+[data-theme="sepia"] .hub-concept-row:hover { background: #e6dcc8; }
+[data-theme="sepia"] .hcr-title   { color: #1e1408; }
+[data-theme="sepia"] .hub-concept-row:hover .hcr-title { color: var(--domain-color, #8b6914); }
 [data-theme="sepia"] .hcr-excerpt { color: #8b7355; }
-[data-theme="sepia"] .hcr-meta    { color: #c0aa80; }
+[data-theme="sepia"] .hcr-meta    { color: #b0986a; }
 
 /* Section label */
 [data-theme="sepia"] .void-section-label { color: #8b7355; }
