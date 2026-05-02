@@ -8,6 +8,7 @@ import {
   createContext, useContext,
   type ReactNode,
 } from 'react';
+import { useRouter } from 'next/navigation';
 import type { NylusData, NylusDomain, NylusConcept, NylusEssay } from '@/lib/adapt-vault';
 import ShootingStars from './ShootingStars';
 
@@ -120,74 +121,97 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   const C2_DATA = useNylusData();
   const items = ['dashboard','domains','essays','workshop','collisions','sparks','tensions','research'];
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 56, padding: '0 28px',
-      borderBottom: `1px solid ${P.border}`, gap: 24, position: 'relative', zIndex: 2,
+    <div style={{ display: 'flex', alignItems: 'center', height: 72, padding: '0 36px',
+      gap: 28, position: 'relative', zIndex: 2,
       background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(10px)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <C2Logo P={P} />
-        <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</div>
-        <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.18em', textTransform: 'uppercase', marginLeft: 4 }}>constellation · v2</div>
+        <div style={{ fontSize: 19, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</div>
+        <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2, letterSpacing: '0.18em', textTransform: 'uppercase', marginLeft: 6 }}>constellation</div>
       </div>
-      <div style={{ display: 'flex', gap: 2, marginLeft: 12, flexWrap: 'nowrap', overflow: 'auto' }}>
+      <div style={{ display: 'flex', gap: 4, marginLeft: 16, flexWrap: 'nowrap', overflow: 'auto' }}>
         {items.map(n => {
           const active = n === page;
           return (
             <button key={n} onClick={() => setPage(n)}
               style={{ background: active ? P.bg3 : 'transparent', border: 'none', cursor: 'pointer',
-                padding: '6px 11px', borderRadius: 999, color: active ? P.text : P.dim,
-                fontFamily: c2Style.font, fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }}>
+                padding: '8px 16px', borderRadius: 999, color: active ? P.text : P.dim,
+                fontFamily: c2Style.font, fontSize: 14, fontWeight: active ? 600 : 400, whiteSpace: 'nowrap',
+                letterSpacing: '-0.01em', transition: 'color 0.2s, background 0.2s' }}>
               {n}
             </button>
           );
         })}
       </div>
       <div style={{ flex: 1 }} />
-      <button onClick={onCyclePalette} style={{ background: P.bg3, border: `1px solid ${P.border}`, color: P.dim, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: 8 }}>
+      <button onClick={onCyclePalette} style={{ background: 'transparent', border: 'none', color: P.dim, padding: '4px 8px', borderRadius: 6, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: 8, opacity: 0.6 }}>
         {tweaks.palette}
       </button>
-      <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.1em' }}>
-        ⊹ {C2_DATA.STATS.concepts.toLocaleString()} stars · <span style={{ color: P.hub }}>{C2_DATA.STATS.seeds} ripe</span>
+      <div style={{ fontFamily: c2Style.mono, fontSize: 11, color: P.dim, letterSpacing: '0.08em' }}>
+        ⊹ {C2_DATA.STATS.concepts.toLocaleString()} <span style={{ color: P.hub }}>{C2_DATA.STATS.seeds} ripe</span>
       </div>
     </div>
   );
 }
 
 // ─── LIVE TICKER ──────────────────────────────────────────────────────────────
+type TickerItem = { t: string; c: string; txt: string; sub: string; link: string; uid: number };
 function C2LiveTicker({ P, setPage, setOpenConcept }: {
   P: Palette; setPage: (p: string) => void; setOpenConcept: (c: NylusConcept) => void;
 }) {
   const C2_DATA = useNylusData();
-  const [items, setItems] = uS<Array<{t:string;c:string;txt:string;sub:string}>>([]);
+  const router = useRouter();
+  const [items, setItems] = uS<TickerItem[]>([]);
+  const [newestUid, setNewestUid] = uS(-1);
 
   uE(() => {
-    const pool = [
-      ...C2_DATA.SPARKS.slice(0, 8).map(s => {
+    const pool: TickerItem[] = [
+      ...C2_DATA.SPARKS.slice(0, 12).map((s, i) => {
         const d = C2_DATA.DOMAINS.find(x => x.id === s.domain);
-        return { t: 'spark', c: d?.color ?? '#e8b86a', txt: s.text };
+        return { t: 'spark', c: d?.color ?? '#e8b86a', txt: s.text, sub: '', link: `/spark/${s.id}`, uid: i };
       }),
-      ...C2_DATA.COLLISIONS.slice(0, 8).map(c => ({ t: 'collision', c: '#a78bfa', txt: `${c.a} × ${c.b}` })),
+      ...C2_DATA.COLLISIONS.slice(0, 12).map((c, i) => ({
+        t: 'collision', c: '#a78bfa', txt: `${c.a} × ${c.b}`, sub: '', link: `/collision/${c.id}`, uid: 100 + i,
+      })),
     ];
-    setItems(pool.slice(0, 4).map((x, i) => ({ ...x, sub: i === 0 ? 'just now' : `${i * 12}m ago` })));
+    const initial = pool.slice(0, 4).map((x, i) => ({ ...x, sub: i === 0 ? 'just now' : `${i * 8}m ago` }));
+    setItems(initial);
+    let uid = 200;
     const iv = setInterval(() => {
       const pick = pool[Math.floor(Math.random() * pool.length)];
-      setItems(prev => [{ ...pick, sub: 'just now' }, ...prev.slice(0, 3).map(x => ({ ...x, sub: x.sub === 'just now' ? '2m ago' : x.sub }))]);
-    }, 5500);
+      uid++;
+      const fresh: TickerItem = { ...pick, sub: 'just now', uid };
+      setNewestUid(uid);
+      setItems(prev => [fresh, ...prev.slice(0, 3).map(x => ({ ...x, sub: x.sub === 'just now' ? '5m ago' : x.sub }))]);
+    }, 10000);
     return () => clearInterval(iv);
   }, []);
 
   return (
     <div>
       {items.map((row, i) => (
-        <div key={`${row.txt}-${i}`} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: `1px solid ${P.border}` }}>
-          <span style={{ width: 6, height: 6, background: row.c, borderRadius: '50%', marginTop: 5, flexShrink: 0,
-            boxShadow: i === 0 ? `0 0 8px ${row.c}` : 'none' }} />
+        <div key={row.uid}
+          onClick={() => router.push(row.link)}
+          style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: `1px solid ${P.border}`,
+            cursor: 'pointer', transition: 'opacity 0.2s',
+            animation: row.uid === newestUid ? 'c2fadein 0.7s ease' : 'none' }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        >
+          <span style={{ width: 7, height: 7, background: row.c, borderRadius: '50%', marginTop: 6, flexShrink: 0,
+            boxShadow: i === 0 ? `0 0 10px ${row.c}` : 'none' }} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, lineHeight: 1.35 }}>{row.txt}</div>
-            <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, marginTop: 2 }}>{row.t} · {row.sub}</div>
+            <div style={{ fontSize: 14, lineHeight: 1.5, letterSpacing: '-0.01em' }}>{row.txt}</div>
+            <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2, marginTop: 3 }}>{row.t} · {row.sub}</div>
           </div>
         </div>
       ))}
-      <style>{`@keyframes c2fadein { from { opacity: 0; transform: translateX(-8px) } to { opacity: 1; transform: none } }`}</style>
+      <style>{`
+        @keyframes c2fadein {
+          from { opacity: 0; transform: translateY(-6px) }
+          to   { opacity: 1; transform: none }
+        }
+      `}</style>
     </div>
   );
 }
@@ -199,6 +223,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
   zoomedDomain: NylusDomain | null; setZoomedDomain: (d: NylusDomain | null) => void;
 }) {
   const C2_DATA = useNylusData();
+  const router = useRouter();
   const [hover, setHover] = uS<string | null>(null);
   const t = useTime(tweaks.motion);
   const cx = 380, cy = 320, R = 220;
@@ -215,9 +240,6 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
     const angle = d.baseAngle + (tweaks.motion ? t * d.speed * 0.3 : 0);
     return { ...d, x: cx + Math.cos(angle) * d.orbitR, y: cy + Math.sin(angle) * d.orbitR, angle };
   });
-
-  const zoomed = zoomedDomain ? positioned.find(d => d.id === zoomedDomain.id) ?? null : null;
-  const subConcepts = zoomed ? C2_DATA.CONCEPTS.filter(c => c.domain === zoomed.id).slice(0, 8) : [];
 
   const cod = C2_DATA.CONCEPTS[0];
   const codDom = C2_DATA.DOMAINS.find(d => d.id === cod?.domain) ?? C2_DATA.DOMAINS[0];
@@ -273,16 +295,14 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
           <text x={cx} y={cy + 36} textAnchor="middle" fill={P.dim} fontSize="9" fontFamily={c2Style.mono} letterSpacing="0.18em">VAULT</text>
           {positioned.map(d => {
             const isHover = hover === d.id;
-            const isZoomed = zoomed && zoomed.id === d.id;
-            const dim = zoomed && !isZoomed;
             return (
               <g key={d.id}
                 onMouseEnter={() => setHover(d.id)}
                 onMouseLeave={() => setHover(null)}
-                onClick={() => setZoomedDomain(isZoomed ? null : d)}
-                style={{ cursor: 'pointer', opacity: dim ? 0.2 : 1, transition: 'opacity 0.3s' }}>
-                <circle cx={d.x} cy={d.y} r={d.radius * 3} fill={`url(#g-${d.id})`} opacity={isHover || isZoomed ? 1 : 0.7} />
-                <circle cx={d.x} cy={d.y} r={d.radius + 4} fill={d.color} opacity={isHover || isZoomed ? 0.4 : 0.2} />
+                onClick={() => router.push(`/domain/${d.key}`)}
+                style={{ cursor: 'pointer', transition: 'opacity 0.3s' }}>
+                <circle cx={d.x} cy={d.y} r={d.radius * 3} fill={`url(#g-${d.id})`} opacity={isHover ? 1 : 0.7} />
+                <circle cx={d.x} cy={d.y} r={d.radius + 4} fill={d.color} opacity={isHover ? 0.4 : 0.2} />
                 <circle cx={d.x} cy={d.y} r={d.radius} fill={d.color} />
                 {tweaks.showLabels && (
                   <>
@@ -290,21 +310,6 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
                     <text x={d.x} y={d.y - d.radius - 22} textAnchor="middle" fill={d.color} fontSize="9" fontFamily={c2Style.mono} letterSpacing="0.1em" opacity="0.7">{d.concepts} ★</text>
                   </>
                 )}
-              </g>
-            );
-          })}
-          {zoomed && subConcepts.map((c, i) => {
-            const a = (i / subConcepts.length) * Math.PI * 2 + (tweaks.motion ? t * 0.15 : 0);
-            const r = 65;
-            const cxx = zoomed.x + Math.cos(a) * r;
-            const cyy = zoomed.y + Math.sin(a) * r;
-            return (
-              <g key={c.id} onClick={(e) => { e.stopPropagation(); setOpenConcept(c); }} style={{ cursor: 'pointer' }}>
-                <line x1={zoomed.x} y1={zoomed.y} x2={cxx} y2={cyy} stroke={zoomed.color} strokeOpacity="0.3" strokeWidth="0.6" />
-                <circle cx={cxx} cy={cyy} r={3} fill={zoomed.color} />
-                <text x={cxx} y={cyy - 8} textAnchor="middle" fill={P.text} fontSize="9" fontFamily={c2Style.font}>
-                  {c.title.length > 24 ? c.title.slice(0, 22) + '…' : c.title}
-                </text>
               </g>
             );
           })}
@@ -325,17 +330,10 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
                 <span style={{ marginLeft: 'auto', fontFamily: c2Style.mono, fontSize: 10, color: P.dim }}>{d.concepts} ★ · {d.collisions} ×</span>
               </div>
               <div style={{ color: P.dim, fontSize: 11, lineHeight: 1.5 }}>{d.desc}</div>
-              <div style={{ fontSize: 10, color: P.dim2, marginTop: 8, fontFamily: c2Style.mono }}>click to zoom in →</div>
+              <div style={{ fontSize: 10, color: P.dim2, marginTop: 8, fontFamily: c2Style.mono }}>click to explore →</div>
             </div>
           );
         })()}
-        {zoomed && (
-          <div style={{ position: 'absolute', top: 18, right: 24, background: P.bg2,
-            border: `1px solid ${zoomed.color}`, borderRadius: 8, padding: '10px 14px', fontSize: 11, fontFamily: c2Style.mono, letterSpacing: '0.05em' }}>
-            <span style={{ color: zoomed.color }}>● {zoomed.name}</span>
-            <button onClick={() => setZoomedDomain(null)} style={{ marginLeft: 12, background: 'none', border: 'none', color: P.dim, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 10 }}>esc · zoom out</button>
-          </div>
-        )}
       </div>
 
       {/* SIDE PANEL */}
@@ -349,7 +347,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
           <span style={{ color: P.hub }}>{C2_DATA.STATS.seeds} seeds ripe</span>.
         </div>
         {cod && (
-          <div onClick={() => setOpenConcept(cod)} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 10, padding: '18px 20px', marginBottom: 20, position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
+          <div onClick={() => router.push(`/concept/${cod.id}`)} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 10, padding: '18px 20px', marginBottom: 20, position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
             <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(${codDom.color}, transparent 70%)`, opacity: 0.3 }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, position: 'relative' }}>
               <span style={{ width: 6, height: 6, background: codDom.color, borderRadius: '50%' }} />
@@ -527,26 +525,39 @@ function C2Essays({ P, setOpenEssay }: { P: Palette; setOpenEssay: (e: NylusEssa
   );
 }
 
-// ─── COLLISION ARC (self-drawing SVG ribbon) ─────────────────────────────────
+// ─── COLLISION ARC (self-drawing SVG ribbon — arcs around sphere, behind text) ─
 function C2CollisionArc({ dA, dB, active }: { dA: NylusDomain; dB: NylusDomain; active: boolean }) {
-  const len = 600;
+  const len = 620;
   return (
-    <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: active ? 1 : 0.12, transition: 'opacity 0.5s', pointerEvents: 'none' }}
-      preserveAspectRatio="none" viewBox="0 0 800 140">
+    <svg
+      style={{
+        position: 'absolute', inset: 0, width: '100%', height: '100%',
+        opacity: active ? 1 : 0.1, transition: 'opacity 0.6s',
+        pointerEvents: 'none', zIndex: 0,
+      }}
+      preserveAspectRatio="none" viewBox="0 0 800 110">
       <defs>
         <linearGradient id={`grad-${dA.id}-${dB.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor={dA.color} stopOpacity="0.6" />
-          <stop offset="50%" stopColor="#fff" stopOpacity="0.6" />
-          <stop offset="100%" stopColor={dB.color} stopOpacity="0.6" />
+          <stop offset="0%" stopColor={dA.color} stopOpacity="0.5" />
+          <stop offset="48%" stopColor={dA.color} stopOpacity="0.15" />
+          <stop offset="52%" stopColor={dB.color} stopOpacity="0.15" />
+          <stop offset="100%" stopColor={dB.color} stopOpacity="0.5" />
         </linearGradient>
       </defs>
-      <path d="M 60 70 Q 200 10, 400 70 T 740 70" fill="none" stroke={`url(#grad-${dA.id}-${dB.id})`} strokeWidth="2"
+      {/* arc sweeps above the sphere (cy=55 → dip to 20 at center → back to 55) */}
+      <path
+        d="M 40 55 C 180 -10, 370 90, 400 90 C 430 90, 620 -10, 760 55"
+        fill="none" stroke={`url(#grad-${dA.id}-${dB.id})`} strokeWidth="1.6"
         strokeDasharray={len} strokeDashoffset={active ? 0 : len}
-        style={{ transition: 'stroke-dashoffset 1.2s ease-out' }} />
-      {active && <circle cx="400" cy="70" r="8" fill="white" opacity="0.8">
-        <animate attributeName="r" from="3" to="20" dur="1.2s" repeatCount="indefinite" />
-        <animate attributeName="opacity" from="0.8" to="0" dur="1.2s" repeatCount="indefinite" />
-      </circle>}
+        style={{ transition: 'stroke-dashoffset 1.4s ease-out' }}
+      />
+      {/* pulsing ring around sphere origin point */}
+      {active && (
+        <circle cx="400" cy="90" r="6" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+          <animate attributeName="r" from="6" to="22" dur="1.4s" repeatCount="indefinite" />
+          <animate attributeName="opacity" from="0.5" to="0" dur="1.4s" repeatCount="indefinite" />
+        </circle>
+      )}
     </svg>
   );
 }
@@ -554,6 +565,7 @@ function C2CollisionArc({ dA, dB, active }: { dA: NylusDomain; dB: NylusDomain; 
 // ─── COLLISIONS ───────────────────────────────────────────────────────────────
 function C2Collisions({ P, tweaks }: { P: Palette; tweaks: Tweaks }) {
   const C2_DATA = useNylusData();
+  const router = useRouter();
   const [active, setActive] = uS(0);
   uE(() => {
     if (!tweaks.motion) return;
@@ -570,14 +582,32 @@ function C2Collisions({ P, tweaks }: { P: Palette; tweaks: Tweaks }) {
         const dB = C2_DATA.DOMAINS.find(x => x.id === c.domains[1]) ?? C2_DATA.DOMAINS[1];
         const isActive = active === i;
         return (
-          <div key={c.id} style={{ background: P.bg2, border: `1px solid ${isActive ? P.borderHi : P.border}`, borderRadius: 12, padding: 22, marginBottom: 14, position: 'relative', overflow: 'hidden', transition: 'border 0.4s' }}>
+          <div key={c.id} style={{ background: P.bg2, border: `1px solid ${isActive ? P.borderHi : P.border}`, borderRadius: 12, padding: '22px 22px 20px', marginBottom: 14, position: 'relative', overflow: 'hidden', transition: 'border 0.4s' }}>
+            {/* Arc renders at z:0 — behind everything */}
             <C2CollisionArc dA={dA} dB={dB} active={isActive && tweaks.motion} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 18, marginBottom: 12, position: 'relative' }}>
+            {/* Title row — z:1, always above arc */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 18, marginBottom: 14, position: 'relative', zIndex: 1 }}>
               <div style={{ fontFamily: c2Style.serif, fontSize: 19, textAlign: 'right', lineHeight: 1.2 }}>{c.a}</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', background: `linear-gradient(135deg, ${dA.color}, ${dB.color})`, fontWeight: 600, fontSize: 14, boxShadow: isActive ? `0 0 24px ${dA.color}` : 'none', transition: 'box-shadow 0.4s' }}>×</div>
+              {/* Sphere — click navigates to collision page */}
+              <div
+                onClick={() => router.push(`/collision/${c.id}`)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 40, height: 40, borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${dA.color}, ${dB.color})`,
+                  fontWeight: 700, fontSize: 15, cursor: 'pointer',
+                  boxShadow: isActive ? `0 0 28px color-mix(in srgb, ${dA.color} 60%, ${dB.color})` : 'none',
+                  transition: 'box-shadow 0.4s, transform 0.2s',
+                  flexShrink: 0,
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.12)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
+                title={`Open collision: ${c.a} × ${c.b}`}
+              >×</div>
               <div style={{ fontFamily: c2Style.serif, fontSize: 19, lineHeight: 1.2 }}>{c.b}</div>
             </div>
-            <div style={{ color: P.dim, fontSize: 13, lineHeight: 1.55, fontStyle: 'italic', textAlign: 'center', maxWidth: 600, margin: '0 auto', position: 'relative' }}>{c.note}</div>
+            {/* Note — z:1, always above arc */}
+            <div style={{ color: P.dim, fontSize: 13, lineHeight: 1.6, fontStyle: 'italic', textAlign: 'center', maxWidth: 600, margin: '0 auto', position: 'relative', zIndex: 1 }}>{c.note}</div>
           </div>
         );
       })}
@@ -588,18 +618,40 @@ function C2Collisions({ P, tweaks }: { P: Palette; tweaks: Tweaks }) {
 // ─── SPARKS ───────────────────────────────────────────────────────────────────
 function C2Sparks({ P }: { P: Palette }) {
   const C2_DATA = useNylusData();
+  const router = useRouter();
   return (
-    <div style={{ flex: 1, padding: '40px 56px 60px', overflow: 'auto', maxWidth: 1000, margin: '0 auto', width: '100%' }}>
+    <div style={{ flex: 1, padding: '48px 60px 72px', overflow: 'auto', maxWidth: 1040, margin: '0 auto', width: '100%' }}>
       <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>⚡ Sparks</div>
-      <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 24px', letterSpacing: '-0.02em' }}>Live <em>ignitions</em>.</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 32px', letterSpacing: '-0.02em' }}>Live <em>ignitions</em>.</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
         {C2_DATA.SPARKS.map(s => {
           const d = C2_DATA.DOMAINS.find(x => x.id === s.domain) ?? C2_DATA.DOMAINS[0];
           return (
-            <div key={s.id} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderLeft: `3px solid ${d.color}`, borderRadius: 10, padding: 18, position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 12, right: 16, fontSize: 14, color: d.color }}>⚡</div>
-              <div style={{ fontFamily: c2Style.serif, fontSize: 15, lineHeight: 1.45, marginBottom: 10 }}>{s.text}</div>
-              <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim, letterSpacing: '0.15em' }}>● {d.name}</div>
+            <div
+              key={s.id}
+              onClick={() => router.push(`/spark/${s.id}`)}
+              style={{
+                background: P.bg2,
+                border: `1px solid ${P.border}`,
+                borderLeft: `3px solid ${d.color}`,
+                borderRadius: 12,
+                padding: 28,
+                position: 'relative',
+                cursor: 'pointer',
+                transition: 'border-color 0.2s, background 0.2s',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = d.color;
+                (e.currentTarget as HTMLElement).style.background = `color-mix(in srgb, ${d.color} 5%, ${P.bg2})`;
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = P.border;
+                (e.currentTarget as HTMLElement).style.background = P.bg2;
+              }}
+            >
+              <div style={{ position: 'absolute', top: 16, right: 20, fontSize: 16, color: d.color, opacity: 0.7 }}>⚡</div>
+              <div style={{ fontFamily: c2Style.serif, fontSize: 17, lineHeight: 2.0, marginBottom: 14, paddingRight: 24 }}>{s.text}</div>
+              <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: d.color, letterSpacing: '0.15em', textTransform: 'uppercase' }}>● {d.name}</div>
             </div>
           );
         })}
@@ -888,6 +940,7 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
           {page === 'research'   && <C2Research P={P} setOpenEssay={setOpenEssay} />}
         </div>
         {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}
+        {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
       </div>
     </NylusDataCtx.Provider>
   );
