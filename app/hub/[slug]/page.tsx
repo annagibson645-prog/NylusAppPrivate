@@ -376,7 +376,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
         /* ── Sidebar ── */
         .hub-sidebar {
-          width: 180px;
+          width: 200px;
           flex-shrink: 0;
           position: sticky;
           top: 48px;
@@ -388,22 +388,22 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         .sb-section { margin-bottom: 40px; }
         .sb-label {
           font-family: var(--font-jetbrains), monospace;
-          font-size: 9px;
-          letter-spacing: 0.28em;
+          font-size: 10px;
+          letter-spacing: 0.24em;
           text-transform: uppercase;
-          color: #2e2a3e;
+          color: #4a4468;
           margin-bottom: 14px;
           padding-bottom: 10px;
-          border-bottom: 1px solid #16141f;
+          border-bottom: 1px solid #1c1828;
         }
         .sb-item {
           display: block;
           font-family: var(--font-jetbrains), monospace;
-          font-size: 11px;
-          color: #3a3450;
+          font-size: 12px;
+          color: #6b6480;
           text-decoration: none;
-          padding: 6px 0;
-          line-height: 1.5;
+          padding: 8px 0;
+          line-height: 1.55;
           border-bottom: 1px solid #0f0e1a;
           transition: color 0.15s;
         }
@@ -412,20 +412,22 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         .sb-level-link {
           display: flex;
           align-items: center;
-          gap: 9px;
+          gap: 10px;
           color: var(--lc, #4a4468);
+          font-size: 12px;
+          padding: 9px 0;
         }
         .sb-level-dot {
-          width: 5px; height: 5px;
+          width: 6px; height: 6px;
           border-radius: 50%;
           background: var(--lc, #4a4468);
           flex-shrink: 0;
-          opacity: 0.6;
+          opacity: 0.7;
         }
         .sb-level-n {
           margin-left: auto;
-          color: #2a2535;
-          font-size: 10px;
+          color: #4a4468;
+          font-size: 11px;
         }
 
         /* ── Header ── */
