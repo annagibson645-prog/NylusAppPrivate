@@ -517,14 +517,14 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
               {/* Ghost number watermark */}
               <div style={{
                 position: 'absolute',
-                bottom: -16,
-                right: 10,
+                bottom: -10,
+                right: 8,
                 fontFamily: c2Style.serif,
-                fontSize: 120,
+                fontSize: 96,
                 fontWeight: 700,
                 fontStyle: 'italic',
                 color: d.color,
-                opacity: isHovered ? 0.1 : 0.06,
+                opacity: isHovered ? 0.12 : 0.07,
                 lineHeight: 1,
                 userSelect: 'none',
                 pointerEvents: 'none',
@@ -557,12 +557,12 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
               {/* Domain name */}
               <div style={{
                 fontFamily: c2Style.serif,
-                fontSize: 30,
+                fontSize: 26,
                 fontWeight: 500,
                 fontStyle: 'italic',
                 lineHeight: 1.1,
                 color: isHovered ? d.color : P.text,
-                marginBottom: 14,
+                marginBottom: 12,
                 transition: 'color 0.2s',
                 letterSpacing: '-0.01em',
               }}>{d.name}</div>
@@ -570,11 +570,10 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
               {/* Description */}
               <div style={{
                 fontFamily: c2Style.font,
-                fontSize: 13,
+                fontSize: 12,
                 color: P.dim,
-                lineHeight: 1.65,
-                marginBottom: 28,
-                maxWidth: 300,
+                lineHeight: 1.6,
+                marginBottom: 22,
                 position: 'relative',
               }}>{d.desc}</div>
 
