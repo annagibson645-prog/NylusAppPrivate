@@ -380,7 +380,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-size: 10px;
           letter-spacing: 0.24em;
           text-transform: uppercase;
-          color: #4a4468;
+          color: #7a7490;
           margin-bottom: 14px;
           padding-bottom: 10px;
           border-bottom: 1px solid #1c1828;
@@ -389,7 +389,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           display: block;
           font-family: var(--font-jetbrains), monospace;
           font-size: 12px;
-          color: #6b6480;
+          color: #9890b0;
           text-decoration: none;
           padding: 8px 0;
           line-height: 1.55;
