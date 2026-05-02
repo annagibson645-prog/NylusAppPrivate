@@ -19,6 +19,115 @@ html, body {
   --font-newsreader: var(--font-newsreader, "Newsreader", serif);
 }
 
+/* ══════════════════════════════════════════════
+   SEPIA / PARCHMENT THEME
+   Applied via [data-theme="sepia"] on <html>
+   ══════════════════════════════════════════════ */
+
+[data-theme="sepia"] body {
+  background: #f5f0e8;
+}
+
+[data-theme="sepia"] .void-page {
+  background: #f0ead8;
+}
+
+[data-theme="sepia"] .void-ambient {
+  background: radial-gradient(circle, color-mix(in srgb, var(--domain-color, #8b6914) 8%, transparent) 0%, transparent 68%);
+}
+
+/* Text colors */
+[data-theme="sepia"] .void-title { color: #2c1f0e; }
+[data-theme="sepia"] .void-lede  { color: #5c4a2a; }
+
+[data-theme="sepia"] .void-prose p      { color: #3c2e18; }
+[data-theme="sepia"] .void-prose strong { color: #1e1408; }
+[data-theme="sepia"] .void-prose em     { color: #6b4f2a; }
+[data-theme="sepia"] .void-prose h2     { color: #8b6a3a; }
+[data-theme="sepia"] .void-prose h3     { color: #4a3218; }
+
+[data-theme="sepia"] .void-prose ul li,
+[data-theme="sepia"] .void-prose ol li  { color: #5c4228; border-bottom-color: #d8cdb8; }
+
+[data-theme="sepia"] .void-prose blockquote {
+  background: rgba(139, 105, 20, 0.06);
+  border-left-color: var(--domain-color, #8b6914);
+}
+[data-theme="sepia"] .void-prose blockquote p { color: #4a3618; }
+
+/* Lines / borders */
+[data-theme="sepia"] .void-ornament-line  { background: #d0c4a8; }
+[data-theme="sepia"] .void-ornament-glyph { color: var(--domain-color, #8b6914); }
+
+/* Nav */
+[data-theme="sepia"] .void-nav {
+  border-bottom-color: #d8cdb8;
+  background: #f0ead8;
+}
+[data-theme="sepia"] .void-nav-back  { color: #8b7355; }
+[data-theme="sepia"] .void-nav-back:hover { color: var(--domain-color, #8b6914); }
+[data-theme="sepia"] .void-domain-chip { color: var(--domain-color, #8b6914); }
+
+/* Hub sidebar */
+[data-theme="sepia"] .hub-outer { color: #3c2e18; }
+[data-theme="sepia"] .hub-sidebar { scrollbar-color: #c8bca0 transparent; }
+[data-theme="sepia"] .sb-label {
+  color: #8b7355;
+  border-bottom-color: #d0c4a8;
+}
+[data-theme="sepia"] .sb-item { color: #7a6545; border-bottom-color: #e4dcc8; }
+[data-theme="sepia"] .sb-level-n { color: #a09070; }
+
+/* Hub main */
+[data-theme="sepia"] .hub-domain-chip { color: var(--domain-color, #8b6914); }
+[data-theme="sepia"] .hub-title { color: #1e1408; }
+[data-theme="sepia"] .hub-lede  { color: #5c4228; border-left-color: var(--domain-color, #8b6914); }
+
+/* Hub sections */
+[data-theme="sepia"] .hub-details  { border-bottom-color: #d8cdb8; }
+[data-theme="sepia"] .hub-details:first-child { border-top-color: #d8cdb8; }
+[data-theme="sepia"] .hub-section-title { color: #8b7355; }
+[data-theme="sepia"] .hub-chevron { color: #c0b090; }
+
+/* Concept rows */
+[data-theme="sepia"] .hub-concept-row {
+  border-bottom-color: #e8dfcc;
+}
+[data-theme="sepia"] .hub-concept-row:hover { background: rgba(139,105,20,0.04); }
+[data-theme="sepia"] .hcr-title   { color: #3c2e18; }
+[data-theme="sepia"] .hub-concept-row:hover .hcr-title { color: #1e1408; }
+[data-theme="sepia"] .hcr-excerpt { color: #8b7355; }
+[data-theme="sepia"] .hcr-meta    { color: #c0aa80; }
+
+/* Section label */
+[data-theme="sepia"] .void-section-label { color: #8b7355; }
+[data-theme="sepia"] .void-section-label::after { background: #d8cdb8; }
+
+/* Connections grid */
+[data-theme="sepia"] .void-connections-grid { background: #d0c4a8; }
+[data-theme="sepia"] .void-conn-cell { background: #f0ead8; }
+[data-theme="sepia"] .void-conn-cell:hover { background: #e8dfc8; }
+[data-theme="sepia"] .void-conn-title { color: #7a6545; }
+
+/* Meta strip */
+[data-theme="sepia"] .void-meta-strip { border-top-color: #d8cdb8; }
+[data-theme="sepia"] .void-meta-k { color: #8b7355; }
+[data-theme="sepia"] .void-meta-v { color: #5c4228; }
+
+/* Live wire */
+[data-theme="sepia"] .void-live-wire {
+  color: #3c2e18;
+  border-left-color: color-mix(in srgb, var(--domain-color, #8b6914) 40%, transparent);
+}
+
+/* Void links */
+[data-theme="sepia"] .void-link { color: var(--domain-color, #8b6914); }
+[data-theme="sepia"] .void-link-broken { color: #c0aa80; }
+
+/* Grain overlay — lighter in sepia */
+[data-theme="sepia"] .void-page::before { opacity: 0.25; }
+
+
 /* Thin scrollbars inside constellation panels */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
