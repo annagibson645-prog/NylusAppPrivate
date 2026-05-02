@@ -8,7 +8,6 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
   background: #0e0d14;
 }
 
@@ -35,6 +34,7 @@ html, body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Ambient purple glow */
@@ -87,9 +87,9 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 40px 24px;
+  padding: 20px 40px 16px;
   border-bottom: 1px solid #1c1828;
-  margin-bottom: 64px;
+  margin-bottom: 36px;
 }
 
 .void-nav-brand {
@@ -134,33 +134,33 @@ html, body {
 .void-content {
   position: relative;
   z-index: 2;
-  max-width: 780px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 0 40px 140px;
+  padding: 0 56px 180px;
 }
 
 /* Domain chip */
 .void-domain-chip {
   display: inline-block;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.28em;
   color: var(--domain-color, #a78bfa);
   text-transform: uppercase;
-  margin-bottom: 22px;
+  margin-bottom: 28px;
   opacity: 0.75;
 }
 
 /* Title */
 .void-title {
   font-family: var(--font-fraunces), serif;
-  font-size: clamp(44px, 7vw, 88px);
+  font-size: clamp(56px, 8vw, 110px);
   font-weight: 900;
   font-style: italic;
   line-height: 1.0;
   letter-spacing: -0.02em;
   color: #ddd8ea;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   font-optical-sizing: auto;
   animation: void-fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both;
 }
@@ -168,16 +168,16 @@ html, body {
 /* Lede */
 .void-lede {
   font-family: var(--font-newsreader), serif;
-  font-size: 19px;
-  line-height: 1.65;
+  font-size: 23px;
+  line-height: 1.7;
   color: #a8a0c0;
   font-weight: 300;
   font-style: italic;
   font-optical-sizing: auto;
   border-left: 2px solid var(--domain-color, #a78bfa);
-  padding-left: 22px;
-  margin-bottom: 20px;
-  max-width: 600px;
+  padding-left: 28px;
+  margin-bottom: 32px;
+  max-width: 680px;
   animation: void-fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.18s both;
 }
 
@@ -185,10 +185,10 @@ html, body {
 .void-meta-inline {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 40px;
+  gap: 12px;
+  margin-bottom: 56px;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .void-meta-status { text-transform: lowercase; letter-spacing: 0.05em; }
@@ -200,7 +200,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 36px 0 44px;
+  margin: 56px 0 64px;
 }
 .void-ornament-line { flex: 1; height: 1px; background: #1c1828; }
 .void-ornament-glyph {
@@ -214,11 +214,11 @@ html, body {
 /* Section label */
 .void-section-label {
   font-family: var(--font-jetbrains), monospace;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.3em;
   color: #4a4468;
   text-transform: uppercase;
-  margin: 52px 0 20px;
+  margin: 72px 0 28px;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -545,14 +545,16 @@ html, body {
 .void-hub-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
-  background: #1c1828;
+  gap: 28px;
+  background: transparent;
   margin-bottom: 4px;
-  max-width: 840px;
+  max-width: 940px;
 }
 
 .void-hub-card {
   background: #08070e;
+  border: 1px solid #1c1828;
+  border-radius: 4px;
   text-decoration: none;
   display: block;
   position: relative;
@@ -570,37 +572,37 @@ html, body {
 }
 
 .void-hub-card-inner {
-  padding: 32px 32px 28px 36px;
+  padding: 40px 40px 36px 44px;
 }
 
 .void-hub-card-count {
   font-family: var(--font-jetbrains), monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   opacity: 0.7;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .void-hub-card-title {
   font-family: var(--font-fraunces), serif;
-  font-size: clamp(22px, 2.5vw, 30px);
+  font-size: clamp(26px, 2.8vw, 36px);
   font-weight: 700;
   font-style: italic;
   line-height: 1.15;
   color: #ddd8ea;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   font-optical-sizing: auto;
 }
 
 .void-hub-card-excerpt {
   font-family: var(--font-newsreader), serif;
-  font-size: 14px;
-  line-height: 1.75;
+  font-size: 16px;
+  line-height: 1.8;
   color: #7a7490;
   font-weight: 300;
   font-optical-sizing: auto;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
 .void-hub-card-arrow {

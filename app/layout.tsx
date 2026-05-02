@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" className={fontVars} style={{ height: "100%" }}>
-      <body style={{ margin: 0, padding: 0, height: "100%", overflow: "hidden", background: "#0e0d14" }}>
+      <body style={{ margin: 0, padding: 0, height: "100%", background: "#0e0d14" }}>
         {children}
       </body>
     </html>
