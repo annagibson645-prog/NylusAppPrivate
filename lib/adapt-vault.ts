@@ -208,6 +208,7 @@ export function buildNylusData(): NylusData {
   const rawCollisions = loadJSON<any[]>('collisions.json');
   const rawSparks   = loadJSON<any[]>('sparks.json');
   const rawResearch = loadJSON<any[]>('research.json');
+  const rawEssays   = loadJSON<any[]>('essays.json');
   const rawHubs     = loadJSON<any[]>('hubs.json');
   const rawGraph    = loadJSON<{ nodes: any[] }>('graph.json');
 
@@ -347,7 +348,7 @@ export function buildNylusData(): NylusData {
     id: `ten-${c.id}`, a: c.a, b: c.b, topic: c.note, domain: c.domains[0],
   }));
 
-  const ESSAYS: NylusEssay[] = rawResearch
+  const ESSAYS: NylusEssay[] = rawEssays
     .filter((r: any) => r.status === 'complete' || r.status === 'draft')
     .map((r: any) => {
       const raw = r.content ?? '';
