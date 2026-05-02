@@ -520,55 +520,63 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           flex-shrink: 0;
         }
         details[open] > .hub-summary .hub-chevron { transform: rotate(180deg); }
-        .hub-section-body { padding-bottom: 24px; }
+        .hub-section-body {
+          padding-bottom: 2px;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1px;
+        }
         .hub-concept-row {
           display: flex;
-          align-items: flex-start;
-          gap: 24px;
-          padding: 22px 20px;
-          margin: 0 -20px;
+          flex-direction: column;
+          gap: 0;
+          padding: 22px 24px 20px;
+          margin: 0;
           text-decoration: none;
-          border-bottom: 1px solid #0f0e1a;
+          border: none;
+          border-bottom: none;
+          background: #0d0b18;
           transition: background 0.15s;
+          min-height: 120px;
         }
         .hub-concept-row:last-child { border-bottom: none; }
-        .hub-concept-row:hover { background: rgba(255,255,255,0.02); }
+        .hub-concept-row:hover { background: #13101e; }
         .hcr-left { flex: 1; min-width: 0; }
         .hcr-title {
           font-family: var(--font-fraunces), serif;
-          font-size: 24px;
+          font-size: 20px;
           font-style: italic;
-          color: #e0dcea;
-          line-height: 1.25;
+          color: #ffffff;
+          line-height: 1.2;
           margin-bottom: 10px;
           transition: color 0.15s;
           font-optical-sizing: auto;
         }
-        .hub-concept-row:hover .hcr-title { color: #ffffff; }
+        .hub-concept-row:hover .hcr-title { color: var(--domain-color, #a78bfa); }
         .hcr-excerpt {
           font-family: var(--font-newsreader), serif;
-          font-size: 14px;
-          line-height: 1.7;
-          color: #7a7490;
+          font-size: 13px;
+          line-height: 1.65;
+          color: #6a6480;
           font-weight: 300;
           font-optical-sizing: auto;
         }
         .hcr-right {
           display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 6px;
-          padding-top: 4px;
-          flex-shrink: 0;
+          flex-direction: row;
+          align-items: center;
+          gap: 12px;
+          margin-top: 14px;
         }
         .hcr-meta {
           font-family: var(--font-jetbrains), monospace;
-          font-size: 10px;
-          color: #5a5278;
-          letter-spacing: 0.06em;
+          font-size: 9px;
+          color: #3a3458;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
           white-space: nowrap;
         }
-        .hub-concept-row:hover .hcr-meta { color: #8880a8; }
+        .hub-concept-row:hover .hcr-meta { color: #6a6090; }
         @media (max-width: 900px) {
           .hub-outer { gap: 48px; padding: 0 32px 120px; }
           .hub-sidebar { width: 160px; }
