@@ -355,7 +355,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
             </div>
             <div style={{ fontFamily: c2Style.serif, fontSize: 21, lineHeight: 1.2, marginBottom: 12 }}>{cod.title}</div>
             <div style={{ display: 'flex', gap: 14, fontFamily: c2Style.mono, fontSize: 10, color: P.dim }}>
-              <span>{cod.sources} sources</span><span>{cod.collisions} ×</span><span>{cod.sparks} ⚡</span>
+              <span>{cod.sources} sources</span>
             </div>
           </div>
         )}
