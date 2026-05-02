@@ -106,7 +106,6 @@ function parseHubSections(content: string, validIds: Set<string>): HubSection[] 
     }
   }
 
-  // Sort: foundational first, then intermediate, advanced, thematic
   return sections
     .filter(s => s.conceptIds.length > 0)
     .sort((a, b) => LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level]);
@@ -131,21 +130,18 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
   const label = DOMAIN_FULL[hub.domain] ?? hub.domain;
   const nodeMap = new Map(graph.nodes.map((n: any) => [n.id, n]));
 
-  // All concept nodes
   const conceptIds = new Set<string>(hub.concepts ?? []);
   const allConceptNodes = graph.nodes.filter(
     (n: any) => n.type === 'concept' && conceptIds.has(n.id)
   );
   const conceptNodeMap = new Map(allConceptNodes.map((n: any) => [n.id, n]));
 
-  // Parse & order sections
   const sections = parseHubSections(hub.content ?? '', conceptIds);
   const placedIds = new Set(sections.flatMap(s => s.conceptIds));
   const unplaced = allConceptNodes
     .filter((n: any) => !placedIds.has(n.id))
     .sort((a: any, b: any) => (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0));
 
-  // Sidebar data
   const sourceSet = new Map<string, any>();
   for (const c of allConceptNodes) {
     for (const lid of (c.links ?? [])) {
@@ -186,8 +182,8 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
       <nav className="void-nav">
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link href="/" className="void-nav-back">← constellation</Link>
-          <span style={{ color: '#2a2535' }}>·</span>
+          <Link href="/" className="void-nav-back">{'← constellation'}</Link>
+          <span style={{ color: '#2a2535' }}>{'·'}</span>
           <Link href={`/domain/${hub.domain}`} className="void-nav-back">{label}</Link>
         </div>
         <ThemeToggle />
@@ -195,7 +191,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
       <div className="hub-outer">
 
-        {/* ── SIDEBAR ── */}
+        {/* SIDEBAR */}
         <aside className="hub-sidebar">
 
           {hasLevels && (
@@ -251,21 +247,19 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           )}
         </aside>
 
-        {/* ── MAIN ── */}
+        {/* MAIN */}
         <main className="hub-main">
 
           <div className="hub-domain-chip">{label}</div>
           <h1 className="hub-title">{hubTitle}</h1>
           {hub.excerpt && <div className="hub-lede">{hub.excerpt}</div>}
 
-          {/* Ornament */}
           <div className="void-ornament" style={{ margin: '48px 0 56px' }}>
             <div className="void-ornament-line" />
-            <span className="void-ornament-glyph">✦</span>
+            <span className="void-ornament-glyph">{'✦'}</span>
             <div className="void-ornament-line" />
           </div>
 
-          {/* Collapsible sections */}
           <div className="hub-sections">
             {sections.map((sec, si) => {
               const nodes = sec.conceptIds
@@ -273,7 +267,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                 .filter(Boolean) as any[];
               const lc = LEVEL_COLOR[sec.level];
               const badge = LEVEL_BADGE[sec.level];
-              // First foundational section open by default, rest closed
               const defaultOpen = si === 0;
 
               return (
@@ -283,7 +276,10 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                   className="hub-details"
                   open={defaultOpen}
                 >
-                  <summary className="hub-summary" style={{ '--lc': lc } as React.CSSProperties}>
+                  <summary
+                    className="hub-summary"
+                    style={{ '--lc': lc } as React.CSSProperties}
+                  >
                     <span className="hub-summary-inner">
                       {badge && (
                         <span className="hub-level-badge" style={{ color: lc, borderColor: lc }}>
@@ -293,7 +289,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                       <span className="hub-section-title">{sec.label}</span>
                       <span className="hub-section-count" style={{ color: lc }}>{nodes.length}</span>
                     </span>
-                    <span className="hub-chevron">▼</span>
+                    <span className="hub-chevron">{'▼'}</span>
                   </summary>
 
                   <div className="hub-section-body">
@@ -312,7 +308,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                             <span className="hcr-meta">{n.sources} src</span>
                           )}
                           {(n.backlinks?.length ?? 0) > 0 && (
-                            <span className="hcr-meta">{n.backlinks.length} ↩</span>
+                            <span className="hcr-meta">{n.backlinks.length} {'↩'}</span>
                           )}
                         </div>
                       </Link>
@@ -324,12 +320,15 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
             {unplaced.length > 0 && (
               <details className="hub-details">
-                <summary className="hub-summary" style={{ '--lc': '#3a3450' } as React.CSSProperties}>
+                <summary
+                  className="hub-summary"
+                  style={{ '--lc': '#3a3450' } as React.CSSProperties}
+                >
                   <span className="hub-summary-inner">
                     <span className="hub-section-title" style={{ color: '#3a3450' }}>Other</span>
                     <span className="hub-section-count" style={{ color: '#3a3450' }}>{unplaced.length}</span>
                   </span>
-                  <span className="hub-chevron">▼</span>
+                  <span className="hub-chevron">{'▼'}</span>
                 </summary>
                 <div className="hub-section-body">
                   {unplaced.map((n: any) => (
@@ -354,7 +353,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
           <div style={{ marginTop: 72 }}>
             <Link href={`/domain/${hub.domain}`} className="void-nav-back">
-              ← All {label} hubs
+              {'← All'} {label} hubs
             </Link>
           </div>
 
@@ -362,7 +361,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
       </div>
 
       <style>{`
-        /* ── Layout ── */
         .hub-outer {
           display: flex;
           gap: 72px;
@@ -374,7 +372,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           z-index: 2;
         }
 
-        /* ── Sidebar ── */
         .hub-sidebar {
           width: 200px;
           flex-shrink: 0;
@@ -430,7 +427,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-size: 11px;
         }
 
-        /* ── Header ── */
         .hub-main { flex: 1; min-width: 0; }
         .hub-domain-chip {
           font-family: var(--font-jetbrains), monospace;
@@ -466,7 +462,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-optical-sizing: auto;
         }
 
-        /* ── Ornament (reuse global class) ── */
         .void-ornament { display: flex; align-items: center; gap: 16px; }
         .void-ornament-line { flex: 1; height: 1px; background: #1c1828; }
         .void-ornament-glyph {
@@ -477,15 +472,9 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-style: italic;
         }
 
-        /* ── Collapsible sections ── */
         .hub-sections { display: flex; flex-direction: column; gap: 0; }
-
-        .hub-details {
-          border-bottom: 1px solid #16141f;
-        }
-        .hub-details:first-child {
-          border-top: 1px solid #1c1828;
-        }
+        .hub-details { border-bottom: 1px solid #16141f; }
+        .hub-details:first-child { border-top: 1px solid #1c1828; }
 
         .hub-summary {
           list-style: none;
@@ -551,10 +540,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           transform: rotate(180deg);
         }
 
-        /* ── Concept rows ── */
-        .hub-section-body {
-          padding-bottom: 24px;
-        }
+        .hub-section-body { padding-bottom: 24px; }
 
         .hub-concept-row {
           display: flex;
@@ -570,7 +556,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         .hub-concept-row:hover { background: rgba(255,255,255,0.02); }
 
         .hcr-left { flex: 1; min-width: 0; }
-
         .hcr-title {
           font-family: var(--font-fraunces), serif;
           font-size: 24px;
@@ -609,13 +594,11 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         }
         .hub-concept-row:hover .hcr-meta { color: #5a5080; }
 
-        /* ── Responsive — tablet ── */
         @media (max-width: 900px) {
           .hub-outer { gap: 48px; padding: 0 32px 120px; }
           .hub-sidebar { width: 160px; }
         }
 
-        /* ── Responsive — mobile ── */
         @media (max-width: 680px) {
           .hub-outer {
             flex-direction: column-reverse;
@@ -635,18 +618,13 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           }
           .hub-title { font-size: clamp(36px, 10vw, 58px) !important; }
           .hub-lede { font-size: 17px !important; }
-          .hub-concept-row {
-            margin: 0 -8px;
-            padding-left: 8px;
-            padding-right: 8px;
-          }
+          .hub-concept-row { margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
           .hcr-title { font-size: 20px !important; }
           .hcr-right { display: none; }
           .hub-summary { padding: 20px 0; }
           .void-nav { padding: 16px 20px; margin-bottom: 28px; }
         }
 
-        /* ── Responsive — small phones ── */
         @media (max-width: 400px) {
           .hub-sidebar { grid-template-columns: 1fr; }
         }
