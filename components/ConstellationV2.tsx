@@ -22,19 +22,19 @@ const uR = useRef;
 const C2_PALETTES: Record<string, Record<string, string>> = {
   ember: {
     bg: '#0e0d14', bg2: '#15131c', bg3: '#1c1a26',
-    text: '#f0ecf5', dim: '#7a7588', dim2: '#494456',
+    text: '#ffffff', dim: '#8a849a', dim2: '#494456',
     border: 'rgba(255,255,255,0.08)', borderHi: 'rgba(255,255,255,0.18)',
     hub: '#e8b86a', hubGlow: 'rgba(232,184,106,0.18)',
   },
   aurora: {
     bg: '#0a0e1a', bg2: '#101626', bg3: '#161e30',
-    text: '#e8f0ff', dim: '#7888a8', dim2: '#3a4868',
+    text: '#ffffff', dim: '#8898b8', dim2: '#3a4868',
     border: 'rgba(160,200,255,0.08)', borderHi: 'rgba(160,200,255,0.2)',
     hub: '#7dd3fc', hubGlow: 'rgba(125,211,252,0.2)',
   },
   monochrome: {
     bg: '#0a0a0a', bg2: '#121212', bg3: '#1a1a1a',
-    text: '#f5f5f5', dim: '#888', dim2: '#444',
+    text: '#ffffff', dim: '#888', dim2: '#444',
     border: 'rgba(255,255,255,0.08)', borderHi: 'rgba(255,255,255,0.2)',
     hub: '#ffffff', hubGlow: 'rgba(255,255,255,0.15)',
   },
