@@ -343,26 +343,20 @@ export function buildNylusData(): NylusData {
       };
     });
 
-  // ── TENSIONS ───────────────────────────────────────────────────────────────
   const TENSIONS: NylusTension[] = COLLISIONS.slice(0, 20).map((c) => ({
-    id:     `ten-${c.id}`,
-    a:      c.a,
-    b:      c.b,
-    topic:  c.note,
-    domain: c.domains[0],
+    id: `ten-${c.id}`, a: c.a, b: c.b, topic: c.note, domain: c.domains[0],
   }));
 
-  // ── ESSAYS (from research.json — finished research pieces only) ────────────
   const ESSAYS: NylusEssay[] = rawResearch
     .filter((r: any) => r.status === 'complete' || r.status === 'draft')
     .map((r: any) => {
-      const raw      = r.content ?? '';
+      const raw = r.content ?? '';
       const stripped = stripMarkdown(raw);
-      const words    = wordCount(stripped);
-      const mins     = Math.max(1, Math.ceil(words / 200));
-      const paras    = stripped.split(/\n\n+/).filter((p: string) => p.trim().length > 40);
-      const excerpt  = paras[0]?.trim() ?? r.title;
-      const dk       = r.domain ?? 'cross-domain';
+      const words = wordCount(stripped);
+      const mins = Math.max(1, Math.ceil(words / 200));
+      const paras = stripped.split(/\n\n+/).filter((p: string) => p.trim().length > 40);
+      const excerpt = paras[0]?.trim() ?? r.title;
+      const dk = r.domain ?? 'cross-domain';
       return {
         id:      r.id,
         title:   r.title,
