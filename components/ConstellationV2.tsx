@@ -479,8 +479,9 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
         letterSpacing: '0.28em', textTransform: 'uppercase', marginBottom: 16,
       }}>⊹ Domains</div>
       <h1 style={{
-        fontFamily: c2Style.serif, fontSize: 48, fontWeight: 400,
-        margin: '0 0 8px', letterSpacing: '-0.025em', lineHeight: 1.1,
+        fontFamily: c2Style.serif, fontSize: 64, fontWeight: 400,
+        margin: '0 0 8px', letterSpacing: '-0.03em', lineHeight: 1.05,
+        color: P.text,
       }}>The eight <em>orbits</em>.</h1>
       <p style={{
         fontFamily: c2Style.font, fontSize: 14, color: P.dim,
@@ -489,8 +490,8 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
         Eight domains, one vault. Each orbit holds its own logic — click to explore.
       </p>
 
-      {/* 2-column display grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+      {/* 3-column display grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
         {C2_DATA.DOMAINS.map((d, i) => {
           const isHovered = hovered === d.id;
           const num = String(i + 1).padStart(2, '0');
@@ -508,9 +509,9 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
                 position: 'relative',
                 overflow: 'hidden',
                 cursor: 'pointer',
-                padding: '44px 40px 36px',
+                padding: '32px 28px 28px',
                 transition: 'background 0.25s, border-color 0.25s',
-                minHeight: 220,
+                minHeight: 200,
               }}
             >
               {/* Ghost number watermark */}
