@@ -577,9 +577,13 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           white-space: nowrap;
         }
         .hub-concept-row:hover .hcr-meta { color: #6a6090; }
+        @media (max-width: 1100px) {
+          .hub-section-body { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 900px) {
           .hub-outer { gap: 48px; padding: 0 32px 120px; }
           .hub-sidebar { width: 160px; }
+          .hub-section-body { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 680px) {
           .hub-outer { flex-direction: column-reverse; padding: 0 20px 100px; gap: 0; }
@@ -591,9 +595,9 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           }
           .hub-title { font-size: clamp(40px, 10vw, 64px) !important; }
           .hub-lede { font-size: 17px !important; }
-          .hub-concept-row { margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
-          .hcr-title { font-size: 20px !important; }
-          .hcr-right { display: none; }
+          .hub-section-body { grid-template-columns: 1fr; }
+          .hub-concept-row { padding: 18px 20px; }
+          .hcr-title { font-size: 18px !important; }
           .hub-summary { padding: 20px 0; }
           .void-nav { padding: 16px 20px; margin-bottom: 28px; }
         }
