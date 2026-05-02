@@ -1,6 +1,5 @@
 // lib/adapt-vault.ts
 // Server-side: reads vault JSON files → builds NylusData for the constellation.
-// Runs once at build time (static generation).
 
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -8,37 +7,56 @@ import path from 'path';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface NylusDomain {
-  id: string;      // short: psy, his, beh, eas, crd, cre, ai, afr
-  name: string;    // display: Psychology, History, …
+  id: string;       // short: psy, his, beh, eas, crd, cre, ai, afr
+  key: string;      // full: psychology, history, …
+  name: string;     // display: Psychology, History, …
   color: string;
   desc: string;
   concepts: number;
   collisions: number;
   sparks: number;
+  hubs: number;
+}
+
+export interface NylusHub {
+  id: string;
+  title: string;
+  domain: string;   // full domain key
+  domainShort: string;
+  color: string;
+  excerpt: string;
+  covers: number;   // concept count
+  concepts: string[]; // concept IDs inside this hub
 }
 
 export interface NylusConcept {
   id: string;
   title: string;
-  domain: string;  // short id
+  domain: string;      // short id (psy, his, …)
+  domainKey: string;   // full domain key (psychology, history, …)
+  color: string;
+  hub: string | null;  // hub slug if grouped
   sources: number;
-  sparks: number;
-  collisions: number;
   excerpt: string;
+  tags: string[];
 }
 
 export interface NylusCollision {
   id: string;
-  a: string;       // left side of "X vs Y"
-  b: string;       // right side
-  domains: [string, string];  // short domain IDs
-  note: string;    // excerpt / candidate idea summary
+  a: string;
+  b: string;
+  domains: [string, string];
+  color: string;
+  note: string;
 }
 
 export interface NylusSpark {
   id: string;
-  text: string;    // title
-  domain: string;  // short id
+  text: string;
+  domain: string;      // short id
+  domainKey: string;
+  color: string;
+  excerpt: string;
 }
 
 export interface NylusTension {
@@ -46,7 +64,7 @@ export interface NylusTension {
   a: string;
   b: string;
   topic: string;
-  domain: string;  // short id
+  domain: string;
 }
 
 export interface NylusEssay {
@@ -57,8 +75,9 @@ export interface NylusEssay {
   mins: number;
   words: number;
   status: string;
-  tags: string[];  // domain names matching d.name in DOMAINS
-  content: string; // trimmed markdown for the reader
+  tags: string[];
+  content: string;
+  color: string;
 }
 
 export interface NylusStats {
@@ -68,12 +87,14 @@ export interface NylusStats {
   collisions: number;
   tensions: number;
   seeds: number;
+  hubs: number;
   domains: number;
 }
 
 export interface NylusData {
   STATS: NylusStats;
   DOMAINS: NylusDomain[];
+  HUBS: NylusHub[];
   CONCEPTS: NylusConcept[];
   COLLISIONS: NylusCollision[];
   SPARKS: NylusSpark[];
@@ -118,14 +139,21 @@ const DOMAIN_CONFIG: Record<string, { id: string; name: string; color: string; d
   },
 };
 
-const DOMAIN_ORDER = ['psychology','history','behavioral-mechanics','eastern-spirituality','cross-domain','creative-practice','ai-collaboration','african-spirituality'];
+const DOMAIN_ORDER = [
+  'psychology','history','behavioral-mechanics','eastern-spirituality',
+  'cross-domain','creative-practice','ai-collaboration','african-spirituality',
+];
 
-function shortId(domain: string): string {
+export function shortId(domain: string): string {
   return DOMAIN_CONFIG[domain]?.id ?? 'crd';
 }
 
-function domainName(domain: string): string {
+export function domainName(domain: string): string {
   return DOMAIN_CONFIG[domain]?.name ?? 'Cross-Domain';
+}
+
+export function domainColor(domain: string): string {
+  return DOMAIN_CONFIG[domain]?.color ?? '#5fc9a8';
 }
 
 // ─── JSON loader ──────────────────────────────────────────────────────────────
@@ -138,27 +166,22 @@ function loadJSON<T>(file: string): T {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function parseCollisionTitle(title: string): { a: string; b: string } {
-  // "X vs. Y: subtitle" or "X vs Y" or "X: Y"
   const vsMatch = title.match(/^(.+?)\s+vs\.?\s+(.+?)(?:\s*:.*)?$/i);
-  if (vsMatch) {
-    return { a: vsMatch[1].trim(), b: vsMatch[2].trim() };
-  }
+  if (vsMatch) return { a: vsMatch[1].trim(), b: vsMatch[2].trim() };
   const colonIdx = title.indexOf(':');
-  if (colonIdx > 0) {
-    return { a: title.slice(0, colonIdx).trim(), b: title.slice(colonIdx + 1).trim() };
-  }
+  if (colonIdx > 0) return { a: title.slice(0, colonIdx).trim(), b: title.slice(colonIdx + 1).trim() };
   const half = Math.floor(title.length / 2);
   return { a: title.slice(0, half).trim(), b: title.slice(half).trim() };
 }
 
 function stripMarkdown(md: string): string {
   return md
-    .replace(/^---[\s\S]*?---\n/, '')       // frontmatter
-    .replace(/^#{1,6}\s.*$/gm, '')          // headers
-    .replace(/\[\[.*?\|?(.*?)\]\]/g, '$1')  // wiki links
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // md links
-    .replace(/[*_`~]{1,2}/g, '')            // formatting
-    .replace(/^\s*[-*+]\s/gm, '')           // bullets
+    .replace(/^---[\s\S]*?---\n/, '')
+    .replace(/^#{1,6}\s.*$/gm, '')
+    .replace(/\[\[.*?\|?(.*?)\]\]/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[*_`~]{1,2}/g, '')
+    .replace(/^\s*[-*+]\s/gm, '')
     .trim();
 }
 
@@ -166,24 +189,49 @@ function wordCount(text: string): number {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
+// derive simple tags from domain + backlinks
+function inferTags(n: any): string[] {
+  const tags: string[] = [];
+  const d = n.domain ?? '';
+  if (d) tags.push(domainName(d));
+  // add source-count tier
+  const s = n.sources ?? 0;
+  if (s >= 3) tags.push('well-sourced');
+  else if (s === 0) tags.push('stub');
+  return tags;
+}
+
 // ─── Main builder ─────────────────────────────────────────────────────────────
 
 export function buildNylusData(): NylusData {
-  // Load raw files
-  const stats = loadJSON<any>('stats.json');
+  const stats       = loadJSON<any>('stats.json');
   const rawCollisions = loadJSON<any[]>('collisions.json');
-  const rawSparks = loadJSON<any[]>('sparks.json');
+  const rawSparks   = loadJSON<any[]>('sparks.json');
   const rawResearch = loadJSON<any[]>('research.json');
+  const rawHubs     = loadJSON<any[]>('hubs.json');
+  const rawGraph    = loadJSON<{ nodes: any[] }>('graph.json');
 
-  // Build concept→domain map from graph nodes (only id + domain needed)
-  // graph.json is large; we parse it once and discard content
-  const rawGraph = loadJSON<{ nodes: any[]; edges?: any[]; links?: any[] }>('graph.json');
-  const conceptDomainMap = new Map<string, string>();
+  // Build id→node map once
   const nodeMap = new Map<string, any>();
-  for (const node of rawGraph.nodes) {
-    conceptDomainMap.set(node.id, node.domain ?? 'cross-domain');
-    nodeMap.set(node.id, node);
-  }
+  for (const n of rawGraph.nodes) nodeMap.set(n.id, n);
+
+  // ── HUBS ───────────────────────────────────────────────────────────────────
+  const HUBS: NylusHub[] = rawHubs
+    .filter((h: any) => DOMAIN_CONFIG[h.domain] || h.domain === 'cross-domain')
+    .map((h: any) => ({
+      id:          h.id,
+      title:       h.title,
+      domain:      h.domain ?? 'cross-domain',
+      domainShort: shortId(h.domain ?? 'cross-domain'),
+      color:       domainColor(h.domain ?? 'cross-domain'),
+      excerpt:     h.excerpt ?? '',
+      covers:      h.covers ?? (h.concepts?.length ?? 0),
+      concepts:    h.concepts ?? [],
+    }));
+
+  // hub id → hub for fast lookup
+  const hubMap = new Map<string, NylusHub>();
+  for (const h of HUBS) hubMap.set(h.id, h);
 
   // ── STATS ──────────────────────────────────────────────────────────────────
   const essaySeeds = rawSparks.filter((s: any) =>
@@ -197,6 +245,7 @@ export function buildNylusData(): NylusData {
     collisions: stats.total_collisions ?? 0,
     tensions:   Math.floor((stats.total_collisions ?? 0) * 0.15),
     seeds:      essaySeeds.length || Math.floor((stats.total_sparks ?? 0) * 0.08),
+    hubs:       HUBS.length,
     domains:    Object.keys(stats.domains ?? {}).length,
   };
 
@@ -207,78 +256,95 @@ export function buildNylusData(): NylusData {
     .filter(d => DOMAIN_CONFIG[d])
     .map(d => {
       const cfg = DOMAIN_CONFIG[d];
-      const sd = statsDomains[d] ?? {};
+      const sd  = statsDomains[d] ?? {};
       return {
         id:         cfg.id,
+        key:        d,
         name:       cfg.name,
         color:      cfg.color,
         desc:       cfg.desc,
         concepts:   sd.count      ?? 0,
         collisions: sd.collisions ?? 0,
         sparks:     sd.sparks     ?? 0,
+        hubs:       HUBS.filter(h => h.domain === d).length,
       };
     });
 
   // ── CONCEPTS ───────────────────────────────────────────────────────────────
-  // Top 50 concept nodes by backlink count
+  // Top 100 concept nodes by backlink count, extended with hub + color
   const conceptNodes = rawGraph.nodes
     .filter((n: any) => n.type === 'concept' && n.title && DOMAIN_CONFIG[n.domain])
     .sort((a: any, b: any) => (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0))
-    .slice(0, 50);
+    .slice(0, 100);
 
-  const CONCEPTS: NylusConcept[] = conceptNodes.map((n: any) => ({
-    id:         n.id,
-    title:      n.title,
-    domain:     shortId(n.domain ?? 'cross-domain'),
-    sources:    n.sources ?? 0,
-    sparks:     0,  // computed post-ingest; not in node metadata
-    collisions: 0,
-    excerpt:    n.excerpt ?? '',
-  }));
+  const CONCEPTS: NylusConcept[] = conceptNodes.map((n: any) => {
+    const dk = n.domain ?? 'cross-domain';
+    return {
+      id:        n.id,
+      title:     n.title,
+      domain:    shortId(dk),
+      domainKey: dk,
+      color:     domainColor(dk),
+      hub:       n.hub ?? null,
+      sources:   n.sources ?? 0,
+      excerpt:   n.excerpt ?? '',
+      tags:      inferTags(n),
+    };
+  });
 
   // ── COLLISIONS ─────────────────────────────────────────────────────────────
   function getCollisionDomains(c: any): [string, string] {
     const pair: string[] = [];
     for (const linkId of (c.links ?? []).slice(0, 2)) {
-      const dom = conceptDomainMap.get(linkId);
+      const dom = nodeMap.get(linkId)?.domain;
       if (dom) pair.push(shortId(dom));
     }
     if (pair.length === 2 && pair[0] !== pair[1]) return [pair[0], pair[1]];
-    // fallback: use collision domain + first linked domain
     const own = shortId(c.domain ?? 'cross-domain');
     return pair.length >= 1 ? [own, pair[0]] : [own, own];
   }
 
-  // Use top 30 collisions (with meaningful a/b sides)
   const COLLISIONS: NylusCollision[] = rawCollisions
     .slice(0, 60)
     .map((c: any) => {
       const { a, b } = parseCollisionTitle(c.title ?? '');
-      const note = (c.excerpt ?? c.candidate_idea ?? '').slice(0, 200).trim() || 'A productive tension in the vault.';
+      const dk = c.domain ?? 'cross-domain';
       return {
         id:      c.id,
         a:       a.slice(0, 60),
         b:       b.slice(0, 60),
         domains: getCollisionDomains(c),
-        note,
+        color:   domainColor(dk),
+        note:    (c.excerpt ?? c.candidate_idea ?? '').slice(0, 200).trim() || 'A productive tension in the vault.',
       };
     })
     .filter((c: NylusCollision) => c.a && c.b && c.a !== c.b)
-    .slice(0, 30);
+    .slice(0, 40);
 
   // ── SPARKS ─────────────────────────────────────────────────────────────────
+  // Exclude essay seeds — those are a separate type
   const SPARKS: NylusSpark[] = rawSparks
-    .filter((s: any) => s.title && DOMAIN_CONFIG[s.domain])
-    .slice(0, 80)
-    .map((s: any) => ({
-      id:     s.id,
-      text:   s.title,
-      domain: shortId(s.domain),
-    }));
+    .filter((s: any) =>
+      s.title &&
+      DOMAIN_CONFIG[s.domain] &&
+      !s.id?.includes('essay-seed') &&
+      s.subtype !== 'essay-seed'
+    )
+    .slice(0, 100)
+    .map((s: any) => {
+      const dk = s.domain ?? 'cross-domain';
+      return {
+        id:        s.id,
+        text:      s.title,
+        domain:    shortId(dk),
+        domainKey: dk,
+        color:     domainColor(dk),
+        excerpt:   s.excerpt ?? '',
+      };
+    });
 
   // ── TENSIONS ───────────────────────────────────────────────────────────────
-  // Derive from collisions: each collision IS a tension
-  const TENSIONS: NylusTension[] = COLLISIONS.slice(0, 20).map((c, i) => ({
+  const TENSIONS: NylusTension[] = COLLISIONS.slice(0, 20).map((c) => ({
     id:     `ten-${c.id}`,
     a:      c.a,
     b:      c.b,
@@ -286,19 +352,17 @@ export function buildNylusData(): NylusData {
     domain: c.domains[0],
   }));
 
-  // ── ESSAYS ─────────────────────────────────────────────────────────────────
+  // ── ESSAYS (from research.json — finished research pieces only) ────────────
   const ESSAYS: NylusEssay[] = rawResearch
     .filter((r: any) => r.status === 'complete' || r.status === 'draft')
     .map((r: any) => {
-      const rawContent: string = r.content ?? '';
-      const stripped = stripMarkdown(rawContent);
-      const words = wordCount(stripped);
-      const mins = Math.max(1, Math.ceil(words / 200));
-      // First meaningful paragraph as excerpt
-      const paragraphs = stripped.split(/\n\n+/).filter((p: string) => p.trim().length > 40);
-      const excerpt = paragraphs[0]?.trim() ?? r.title;
-      // Trim content for reader (first 3000 chars of stripped text)
-      const readerContent = paragraphs.slice(0, 6).join('\n\n').slice(0, 3000);
+      const raw      = r.content ?? '';
+      const stripped = stripMarkdown(raw);
+      const words    = wordCount(stripped);
+      const mins     = Math.max(1, Math.ceil(words / 200));
+      const paras    = stripped.split(/\n\n+/).filter((p: string) => p.trim().length > 40);
+      const excerpt  = paras[0]?.trim() ?? r.title;
+      const dk       = r.domain ?? 'cross-domain';
       return {
         id:      r.id,
         title:   r.title,
@@ -307,10 +371,11 @@ export function buildNylusData(): NylusData {
         mins,
         words,
         status:  r.status ?? 'complete',
-        tags:    [domainName(r.domain ?? 'cross-domain')],
-        content: readerContent,
+        tags:    [domainName(dk)],
+        content: paras.slice(0, 6).join('\n\n').slice(0, 3000),
+        color:   domainColor(dk),
       };
     });
 
-  return { STATS, DOMAINS, CONCEPTS, COLLISIONS, SPARKS, TENSIONS, ESSAYS };
+  return { STATS, DOMAINS, HUBS, CONCEPTS, COLLISIONS, SPARKS, TENSIONS, ESSAYS };
 }
