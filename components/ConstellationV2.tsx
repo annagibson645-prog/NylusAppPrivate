@@ -299,7 +299,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
               <g key={d.id}
                 onMouseEnter={() => setHover(d.id)}
                 onMouseLeave={() => setHover(null)}
-                onClick={() => router.push(`/domain/${d.key}`)}
+                onClick={() => { const orig = C2_DATA.DOMAINS.find(x => x.id === d.id); router.push(`/domain/${orig?.key ?? d.id}`); }}
                 style={{ cursor: 'pointer', transition: 'opacity 0.3s' }}>
                 <circle cx={d.x} cy={d.y} r={d.radius * 3} fill={`url(#g-${d.id})`} opacity={isHover ? 1 : 0.7} />
                 <circle cx={d.x} cy={d.y} r={d.radius + 4} fill={d.color} opacity={isHover ? 0.4 : 0.2} />
