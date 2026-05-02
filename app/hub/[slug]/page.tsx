@@ -5,6 +5,7 @@ import path from 'path';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { domainColor } from '@/lib/adapt-vault';
+import ThemeToggle from '@/components/ThemeToggle';
 
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), 'public/data', file), 'utf-8'));
@@ -189,6 +190,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           <span style={{ color: '#2a2535' }}>·</span>
           <Link href={`/domain/${hub.domain}`} className="void-nav-back">{label}</Link>
         </div>
+        <ThemeToggle />
       </nav>
 
       <div className="hub-outer">
