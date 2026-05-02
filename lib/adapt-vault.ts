@@ -372,5 +372,5 @@ export function buildNylusData(): NylusData {
       };
     });
 
-  return { STATS, DOMAINS, HUBS, CONCEPTS, COLLISIONS, SPARKS, TENSIONS, ESSAYS };
+    return { STATS, DOMAINS, HUBS, CONCEPTS, COLLISIONS, SPARKS, TENSIONS, ESSAYS };
 }
