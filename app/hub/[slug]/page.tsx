@@ -319,8 +319,8 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                   style={{ '--lc': '#3a3450' } as React.CSSProperties}
                 >
                   <span className="hub-summary-inner">
-                    <span className="hub-section-title" style={{ color: '#3a3450' }}>Other</span>
-                    <span className="hub-section-count" style={{ color: '#3a3450' }}>{unplaced.length}</span>
+                    <span className="hub-section-title" style={{ color: '#9890b0' }}>Other</span>
+                    <span className="hub-section-count" style={{ color: '#9890b0' }}>{unplaced.length}</span>
                   </span>
                   <span className="hub-chevron">v</span>
                 </summary>
@@ -581,7 +581,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
             border-top: 1px solid #1c1828;
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 32px;
           }
-          .hub-title { font-size: clamp(36px, 10vw, 58px) !important; }
+          .hub-title { font-size: clamp(40px, 10vw, 64px) !important; }
           .hub-lede { font-size: 17px !important; }
           .hub-concept-row { margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
           .hcr-title { font-size: 20px !important; }
