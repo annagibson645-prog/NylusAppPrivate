@@ -121,12 +121,12 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   const C2_DATA = useNylusData();
   const items = ['dashboard','domains','essays','workshop','collisions','sparks','tensions','research'];
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 52, padding: '0 24px',
-      gap: 20, position: 'relative', zIndex: 2,
+    <div style={{ display: 'flex', alignItems: 'center', height: 68, padding: '0 36px',
+      gap: 28, position: 'relative', zIndex: 2,
       background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <C2Logo P={P} />
-        <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</div>
+        <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</div>
         <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.15em', textTransform: 'uppercase', marginLeft: 4 }}>constellation</div>
       </div>
       <div style={{ display: 'flex', gap: 4, marginLeft: 16, flexWrap: 'nowrap', overflow: 'auto' }}>
@@ -135,8 +135,8 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
           return (
             <button key={n} onClick={() => setPage(n)}
               style={{ background: active ? P.bg3 : 'transparent', border: 'none', cursor: 'pointer',
-                padding: '6px 12px', borderRadius: 999, color: active ? P.text : P.dim,
-                fontFamily: c2Style.font, fontSize: 12, fontWeight: active ? 600 : 400, whiteSpace: 'nowrap',
+                padding: '8px 16px', borderRadius: 999, color: active ? P.text : P.dim,
+                fontFamily: c2Style.font, fontSize: 13, fontWeight: active ? 600 : 400, whiteSpace: 'nowrap',
                 letterSpacing: '-0.01em', transition: 'color 0.2s, background 0.2s' }}>
               {n}
             </button>

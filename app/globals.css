@@ -595,12 +595,12 @@ html, body {
   font-family: var(--font-newsreader), serif;
   font-size: 14px;
   font-style: italic;
-  color: var(--domain-color, #a78bfa);
+  color: rgba(220, 216, 248, 0.88);
   text-decoration: none;
   font-optical-sizing: auto;
   transition: color 0.2s;
 }
-.void-hub-link:hover { color: #c4b0fc; }
+.void-hub-link:hover { color: #ffffff; }
 
 /* Meta strip */
 .void-meta-strip {
