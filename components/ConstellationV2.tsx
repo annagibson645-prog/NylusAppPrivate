@@ -816,8 +816,8 @@ function C2ConceptPage({ P, tweaks, concept, close, setOpenEssay }: {
 
   const rings = [
     { label: 'sources', count: concept.sources, r: 90, color: P.dim, items: Array.from({ length: Math.min(concept.sources, 8) }).map((_, i) => `Source ${i+1}`) },
-    { label: 'sparks', count: concept.sparks, r: 160, color: '#e8b86a', items: C2_DATA.SPARKS.filter(s => s.domain === concept.domain).slice(0, Math.min(concept.sparks || 3, 6)) },
-    { label: 'collisions', count: concept.collisions, r: 230, color: '#a78bfa', items: C2_DATA.COLLISIONS.filter(c => c.domains.includes(concept.domain)).slice(0, Math.min(concept.collisions || 2, 4)) },
+    { label: 'sparks', count: C2_DATA.SPARKS.filter(s => s.domain === concept.domain).length, r: 160, color: '#e8b86a', items: C2_DATA.SPARKS.filter(s => s.domain === concept.domain).slice(0, 6) },
+    { label: 'collisions', count: C2_DATA.COLLISIONS.filter(c => c.domains.includes(concept.domain)).length, r: 230, color: '#a78bfa', items: C2_DATA.COLLISIONS.filter(c => c.domains.includes(concept.domain)).slice(0, 4) },
   ];
 
   return (
@@ -869,7 +869,7 @@ function C2ConceptPage({ P, tweaks, concept, close, setOpenEssay }: {
           </div>
           <h1 style={{ fontFamily: c2Style.serif, fontSize: 30, fontWeight: 400, lineHeight: 1.15, margin: '0 0 18px', letterSpacing: '-0.01em' }}>{concept.title}</h1>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24, padding: '16px 0', borderTop: `1px solid ${P.border}`, borderBottom: `1px solid ${P.border}` }}>
-            {[['sources', concept.sources, P.dim], ['sparks', concept.sparks, '#e8b86a'], ['×', concept.collisions, '#a78bfa']].map(([k,v,c2]) => (
+            {[['sources', concept.sources, P.dim], ['sparks', C2_DATA.SPARKS.filter(s => s.domain === concept.domain).length, '#e8b86a'], ['×', C2_DATA.COLLISIONS.filter(c => c.domains.includes(concept.domain)).length, '#a78bfa']].map(([k,v,c2]) => (
               <div key={k as string}>
                 <div style={{ fontFamily: c2Style.serif, fontSize: 24, color: c2 as string }}>{v as number}</div>
                 <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{k as string}</div>
