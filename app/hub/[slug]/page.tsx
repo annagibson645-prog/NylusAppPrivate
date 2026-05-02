@@ -609,11 +609,46 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         }
         .hub-concept-row:hover .hcr-meta { color: #5a5080; }
 
-        /* ── Responsive ── */
-        @media (max-width: 820px) {
-          .hub-outer { flex-direction: column; padding: 0 24px 100px; gap: 48px; }
-          .hub-sidebar { position: static; width: 100%; max-height: none; }
-          .hub-concept-row { margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
+        /* ── Responsive — tablet ── */
+        @media (max-width: 900px) {
+          .hub-outer { gap: 48px; padding: 0 32px 120px; }
+          .hub-sidebar { width: 160px; }
+        }
+
+        /* ── Responsive — mobile ── */
+        @media (max-width: 680px) {
+          .hub-outer {
+            flex-direction: column-reverse;
+            padding: 0 20px 100px;
+            gap: 0;
+          }
+          .hub-sidebar {
+            position: static;
+            width: 100%;
+            max-height: none;
+            margin-top: 56px;
+            padding-top: 32px;
+            border-top: 1px solid #1c1828;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0 32px;
+          }
+          .hub-title { font-size: clamp(36px, 10vw, 58px) !important; }
+          .hub-lede { font-size: 17px !important; }
+          .hub-concept-row {
+            margin: 0 -8px;
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+          .hcr-title { font-size: 20px !important; }
+          .hcr-right { display: none; }
+          .hub-summary { padding: 20px 0; }
+          .void-nav { padding: 16px 20px; margin-bottom: 28px; }
+        }
+
+        /* ── Responsive — small phones ── */
+        @media (max-width: 400px) {
+          .hub-sidebar { grid-template-columns: 1fr; }
         }
       `}</style>
     </div>
