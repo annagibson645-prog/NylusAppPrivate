@@ -469,29 +469,191 @@ function C2Orbit({ color, size, dots }: { color: string; size: number; dots: num
 function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: NylusDomain) => void }) {
   const C2_DATA = useNylusData();
   const router = useRouter();
+  const [hovered, setHovered] = uS<string | null>(null);
+
   return (
-    <div style={{ flex: 1, padding: '40px 56px 60px', overflow: 'auto' }}>
-      <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>⊹ Domains</div>
-      <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 28px', letterSpacing: '-0.02em' }}>The eight <em>orbits</em>.</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
-        {C2_DATA.DOMAINS.map((d, i) => (
-          <div key={d.id} onClick={() => router.push(`/domain/${d.key}`)} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 12, padding: 22, position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
-            <div style={{ position: 'absolute', top: -40, right: -40, width: 140, height: 140, background: `radial-gradient(${d.color}, transparent 65%)`, opacity: 0.18 }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, position: 'relative' }}>
-              <C2Orbit color={d.color} size={44} dots={Math.min(8, Math.ceil((d.concepts / 800) * 8) || 2)} />
-              <div>
-                <div style={{ fontFamily: c2Style.serif, fontSize: 21, fontWeight: 500 }}>{d.name}</div>
-                <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim, letterSpacing: '0.15em' }}>orbit № 0{i+1}</div>
+    <div style={{ flex: 1, padding: '48px 64px 80px', overflow: 'auto' }}>
+      {/* Header */}
+      <div style={{
+        fontFamily: c2Style.mono, fontSize: 9, color: P.dim,
+        letterSpacing: '0.28em', textTransform: 'uppercase', marginBottom: 16,
+      }}>⊹ Domains</div>
+      <h1 style={{
+        fontFamily: c2Style.serif, fontSize: 48, fontWeight: 400,
+        margin: '0 0 8px', letterSpacing: '-0.025em', lineHeight: 1.1,
+      }}>The eight <em>orbits</em>.</h1>
+      <p style={{
+        fontFamily: c2Style.font, fontSize: 14, color: P.dim,
+        margin: '0 0 56px', lineHeight: 1.6, maxWidth: 420,
+      }}>
+        Eight domains, one vault. Each orbit holds its own logic — click to explore.
+      </p>
+
+      {/* 2-column display grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+        {C2_DATA.DOMAINS.map((d, i) => {
+          const isHovered = hovered === d.id;
+          const num = String(i + 1).padStart(2, '0');
+          return (
+            <div
+              key={d.id}
+              onClick={() => router.push(`/domain/${d.key}`)}
+              onMouseEnter={() => setHovered(d.id)}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                background: isHovered
+                  ? `color-mix(in srgb, ${d.color} 5%, ${P.bg2})`
+                  : P.bg2,
+                border: `1px solid ${isHovered ? d.color : P.border}`,
+                position: 'relative',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                padding: '44px 40px 36px',
+                transition: 'background 0.25s, border-color 0.25s',
+                minHeight: 220,
+              }}
+            >
+              {/* Ghost number watermark */}
+              <div style={{
+                position: 'absolute',
+                bottom: -16,
+                right: 10,
+                fontFamily: c2Style.serif,
+                fontSize: 120,
+                fontWeight: 700,
+                fontStyle: 'italic',
+                color: d.color,
+                opacity: isHovered ? 0.1 : 0.06,
+                lineHeight: 1,
+                userSelect: 'none',
+                pointerEvents: 'none',
+                transition: 'opacity 0.25s',
+                letterSpacing: '-0.04em',
+              }}>{num}</div>
+
+              {/* Colored dot + orbit label */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20,
+              }}>
+                <div style={{
+                  width: 10, height: 10,
+                  borderRadius: '50%',
+                  background: d.color,
+                  boxShadow: isHovered ? `0 0 12px ${d.color}` : 'none',
+                  flexShrink: 0,
+                  transition: 'box-shadow 0.25s',
+                }} />
+                <span style={{
+                  fontFamily: c2Style.mono,
+                  fontSize: 9,
+                  color: d.color,
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  opacity: 0.75,
+                }}>orbit {num}</span>
               </div>
+
+              {/* Domain name */}
+              <div style={{
+                fontFamily: c2Style.serif,
+                fontSize: 30,
+                fontWeight: 500,
+                fontStyle: 'italic',
+                lineHeight: 1.1,
+                color: isHovered ? d.color : P.text,
+                marginBottom: 14,
+                transition: 'color 0.2s',
+                letterSpacing: '-0.01em',
+              }}>{d.name}</div>
+
+              {/* Description */}
+              <div style={{
+                fontFamily: c2Style.font,
+                fontSize: 13,
+                color: P.dim,
+                lineHeight: 1.65,
+                marginBottom: 28,
+                maxWidth: 300,
+                position: 'relative',
+              }}>{d.desc}</div>
+
+              {/* Stats row */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 24,
+                position: 'relative',
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{
+                    fontFamily: c2Style.serif,
+                    fontSize: 28,
+                    fontWeight: 400,
+                    color: d.color,
+                    lineHeight: 1,
+                  }}>{d.concepts}</span>
+                  <span style={{
+                    fontFamily: c2Style.mono,
+                    fontSize: 8,
+                    color: P.dim,
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                  }}>concepts</span>
+                </div>
+                {d.collisions > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <span style={{
+                      fontFamily: c2Style.serif,
+                      fontSize: 20,
+                      fontWeight: 400,
+                      color: P.dim,
+                      lineHeight: 1,
+                    }}>{d.collisions}</span>
+                    <span style={{
+                      fontFamily: c2Style.mono,
+                      fontSize: 8,
+                      color: P.dim,
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase',
+                    }}>collisions</span>
+                  </div>
+                )}
+                {d.sparks > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <span style={{
+                      fontFamily: c2Style.serif,
+                      fontSize: 20,
+                      fontWeight: 400,
+                      color: P.dim,
+                      lineHeight: 1,
+                    }}>{d.sparks}</span>
+                    <span style={{
+                      fontFamily: c2Style.mono,
+                      fontSize: 8,
+                      color: P.dim,
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase',
+                    }}>sparks</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Hover arrow */}
+              <div style={{
+                position: 'absolute',
+                top: 44,
+                right: 40,
+                fontFamily: c2Style.mono,
+                fontSize: 10,
+                color: d.color,
+                opacity: isHovered ? 0.7 : 0,
+                transform: isHovered ? 'translateX(0)' : 'translateX(-6px)',
+                transition: 'opacity 0.2s, transform 0.2s',
+                letterSpacing: '0.1em',
+              }}>→</div>
             </div>
-            <div style={{ color: P.dim, fontSize: 13, lineHeight: 1.5, marginBottom: 12, position: 'relative' }}>{d.desc}</div>
-            <div style={{ display: 'flex', gap: 16, fontFamily: c2Style.mono, fontSize: 11, paddingTop: 10, borderTop: `1px solid ${P.border}` }}>
-              <span><span style={{ color: d.color, fontFamily: c2Style.serif, fontSize: 16 }}>{d.concepts}</span><span style={{ color: P.dim, marginLeft: 4 }}>★</span></span>
-              <span><span style={{ color: d.color, fontFamily: c2Style.serif, fontSize: 16 }}>{d.collisions}</span><span style={{ color: P.dim, marginLeft: 4 }}>×</span></span>
-              <span><span style={{ color: d.color, fontFamily: c2Style.serif, fontSize: 16 }}>{d.sparks}</span><span style={{ color: P.dim, marginLeft: 4 }}>⚡</span></span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
