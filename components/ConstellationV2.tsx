@@ -6,7 +6,7 @@
 import {
   useState, useMemo, useEffect, useRef,
   createContext, useContext,
-  type ReactNode,
+  type ReactNode, type CSSProperties,
 } from 'react';
 import { useRouter } from 'next/navigation';
 import type { NylusData, NylusDomain, NylusConcept, NylusEssay } from '@/lib/adapt-vault';
@@ -119,7 +119,7 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   tweaks: Tweaks; onCyclePalette: () => void;
 }) {
   const C2_DATA = useNylusData();
-  const items = ['dashboard','domains','essays','workshop','collisions','sparks','tensions','research'];
+  const items = ['dashboard','domains','essays','workshop','collisions','sparks','research'];
   return (
     <div style={{ display: 'flex', alignItems: 'center', height: 68, padding: '0 36px',
       gap: 28, position: 'relative', zIndex: 2,
@@ -779,16 +779,185 @@ function C2Collisions({ P, tweaks }: { P: Palette; tweaks: Tweaks }) {
 }
 
 // ─── SPARKS ───────────────────────────────────────────────────────────────────
+const SUBTYPE_META: Record<string, { label: string; color: string; glyph: string }> = {
+  resonance:  { label: 'Resonance',  color: '#e8b86a', glyph: '⚡' },
+  'essay-seed': { label: 'Essay Seed', color: '#5fc9a8', glyph: '✦' },
+  question:   { label: 'Question',   color: '#f06292', glyph: '?' },
+  speculative:{ label: 'Speculative',color: '#b794f4', glyph: '◌' },
+  collision:  { label: 'Collision',  color: '#f97316', glyph: '×' },
+  synthesis:  { label: 'Synthesis',  color: '#60a5fa', glyph: '⊹' },
+};
+
+function useSparkTagAnimation() {
+  uE(() => {
+    const id = 'nylus-spark-tag-float';
+    if (document.getElementById(id)) return;
+    const s = document.createElement('style');
+    s.id = id;
+    s.textContent = `
+      @keyframes nylusTagFloat {
+        0%   { transform: translateY(0px) translateX(0px) rotate(0deg); }
+        25%  { transform: translateY(-7px) translateX(3px) rotate(0.4deg); }
+        50%  { transform: translateY(-3px) translateX(-4px) rotate(-0.3deg); }
+        75%  { transform: translateY(-9px) translateX(2px) rotate(0.5deg); }
+        100% { transform: translateY(-4px) translateX(-2px) rotate(-0.2deg); }
+      }
+    `;
+    document.head.appendChild(s);
+  }, []);
+}
+
 function C2Sparks({ P }: { P: Palette }) {
   const C2_DATA = useNylusData();
   const router = useRouter();
+  useSparkTagAnimation();
+
+  const [activeDomain, setActiveDomain] = uS<string | null>(null);
+  const [activeSubtype, setActiveSubtype] = uS<string | null>(null);
+  const [limit, setLimit] = uS(40);
+
+  // Unique domains + subtypes present in the data
+  const domains = uM(() => {
+    const seen = new Map<string, { key: string; name: string; color: string; count: number }>();
+    C2_DATA.SPARKS.forEach(s => {
+      if (!seen.has(s.domainKey)) seen.set(s.domainKey, { key: s.domainKey, name: s.domainName, color: s.color, count: 0 });
+      seen.get(s.domainKey)!.count++;
+    });
+    return [...seen.values()].sort((a, b) => b.count - a.count);
+  }, [C2_DATA.SPARKS]);
+
+  const subtypes = uM(() => {
+    const seen = new Map<string, number>();
+    C2_DATA.SPARKS.forEach(s => {
+      const st = s.subtype || 'resonance';
+      seen.set(st, (seen.get(st) ?? 0) + 1);
+    });
+    return [...seen.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, count]) => ({ key, count, meta: SUBTYPE_META[key] ?? { label: key, color: '#8a849a', glyph: '◦' } }));
+  }, [C2_DATA.SPARKS]);
+
+  const filtered = uM(() => {
+    return C2_DATA.SPARKS.filter(s => {
+      if (activeDomain && s.domainKey !== activeDomain) return false;
+      if (activeSubtype && (s.subtype || 'resonance') !== activeSubtype) return false;
+      return true;
+    });
+  }, [C2_DATA.SPARKS, activeDomain, activeSubtype]);
+
+  const visible = filtered.slice(0, limit);
+  const hasMore = filtered.length > limit;
+
+  // deterministic float params per index
+  const floatStyle = (i: number): CSSProperties => ({
+    animation: `nylusTagFloat ${7 + (i * 2.3) % 7}s ${-((i * 1.9) % 6)}s infinite ease-in-out`,
+    display: 'inline-block',
+  });
+
   return (
-    <div style={{ flex: 1, padding: '48px 60px 72px', overflow: 'auto', maxWidth: 1040, margin: '0 auto', width: '100%' }}>
-      <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>⚡ Sparks</div>
-      <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 32px', letterSpacing: '-0.02em' }}>Live <em>ignitions</em>.</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
-        {C2_DATA.SPARKS.map(s => {
-          const d = C2_DATA.DOMAINS.find(x => x.id === s.domain) ?? C2_DATA.DOMAINS[0];
+    <div style={{ flex: 1, overflow: 'auto', maxWidth: 1080, margin: '0 auto', width: '100%', padding: '40px 52px 72px' }}>
+      {/* Header */}
+      <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>⚡ Sparks</div>
+      <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Live <em>ignitions</em>.</h1>
+      <div style={{ fontFamily: c2Style.mono, fontSize: 11, color: P.dim, marginBottom: 36 }}>{C2_DATA.SPARKS.length} total · {filtered.length} showing</div>
+
+      {/* ── Domain tag cloud ── */}
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 14 }}>territory</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
+          {domains.map((d, i) => {
+            const isActive = activeDomain === d.key;
+            return (
+              <div key={d.key} style={floatStyle(i)}>
+                <button
+                  onClick={() => setActiveDomain(isActive ? null : d.key)}
+                  style={{
+                    fontFamily: c2Style.mono,
+                    fontSize: 11,
+                    letterSpacing: '0.08em',
+                    padding: '7px 16px',
+                    borderRadius: 999,
+                    border: `1px solid ${isActive ? d.color : `color-mix(in srgb, ${d.color} 28%, transparent)`}`,
+                    background: isActive
+                      ? `color-mix(in srgb, ${d.color} 18%, ${P.bg3})`
+                      : `color-mix(in srgb, ${d.color} 8%, ${P.bg2})`,
+                    color: isActive ? '#fff' : d.color,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: isActive ? `0 0 20px color-mix(in srgb, ${d.color} 35%, transparent)` : 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <span style={{ opacity: 0.7, marginRight: 6, fontSize: 8 }}>●</span>
+                  {d.name}
+                  <span style={{ opacity: 0.55, marginLeft: 8, fontSize: 9 }}>{d.count}</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Subtype tag cloud ── */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 14 }}>kind</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+          {subtypes.map(({ key, count, meta }, i) => {
+            const isActive = activeSubtype === key;
+            return (
+              <div key={key} style={floatStyle(i + 12)}>
+                <button
+                  onClick={() => setActiveSubtype(isActive ? null : key)}
+                  style={{
+                    fontFamily: c2Style.mono,
+                    fontSize: 11,
+                    letterSpacing: '0.08em',
+                    padding: '7px 16px',
+                    borderRadius: 999,
+                    border: `1px solid ${isActive ? meta.color : `color-mix(in srgb, ${meta.color} 25%, transparent)`}`,
+                    background: isActive
+                      ? `color-mix(in srgb, ${meta.color} 15%, ${P.bg3})`
+                      : `color-mix(in srgb, ${meta.color} 6%, ${P.bg2})`,
+                    color: isActive ? '#fff' : meta.color,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: isActive ? `0 0 18px color-mix(in srgb, ${meta.color} 30%, transparent)` : 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <span style={{ marginRight: 6 }}>{meta.glyph}</span>
+                  {meta.label}
+                  <span style={{ opacity: 0.55, marginLeft: 8, fontSize: 9 }}>{count}</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Active filter bar ── */}
+      {(activeDomain || activeSubtype) && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, padding: '10px 16px', background: P.bg2, borderRadius: 10, border: `1px solid ${P.border}` }}>
+          <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.1em' }}>FILTERED:</span>
+          {activeDomain && (
+            <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: domains.find(d => d.key === activeDomain)?.color, padding: '3px 10px', background: `color-mix(in srgb, ${domains.find(d => d.key === activeDomain)?.color} 12%, transparent)`, borderRadius: 999 }}>
+              {domains.find(d => d.key === activeDomain)?.name} <span onClick={() => setActiveDomain(null)} style={{ cursor: 'pointer', opacity: 0.7, marginLeft: 4 }}>×</span>
+            </span>
+          )}
+          {activeSubtype && (
+            <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: SUBTYPE_META[activeSubtype]?.color ?? P.dim, padding: '3px 10px', background: `color-mix(in srgb, ${SUBTYPE_META[activeSubtype]?.color ?? P.dim} 12%, transparent)`, borderRadius: 999 }}>
+              {SUBTYPE_META[activeSubtype]?.label ?? activeSubtype} <span onClick={() => setActiveSubtype(null)} style={{ cursor: 'pointer', opacity: 0.7, marginLeft: 4 }}>×</span>
+            </span>
+          )}
+          <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, marginLeft: 'auto' }}>{filtered.length} spark{filtered.length !== 1 ? 's' : ''}</span>
+          <button onClick={() => { setActiveDomain(null); setActiveSubtype(null); }} style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim, background: 'transparent', border: 'none', cursor: 'pointer', letterSpacing: '0.1em' }}>CLEAR ALL</button>
+        </div>
+      )}
+
+      {/* ── Spark grid ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {visible.map(s => {
+          const stMeta = SUBTYPE_META[s.subtype ?? 'resonance'] ?? SUBTYPE_META.resonance;
           return (
             <div
               key={s.id}
@@ -796,29 +965,63 @@ function C2Sparks({ P }: { P: Palette }) {
               style={{
                 background: P.bg2,
                 border: `1px solid ${P.border}`,
-                borderLeft: `3px solid ${d.color}`,
+                borderLeft: `3px solid ${s.color}`,
                 borderRadius: 12,
-                padding: 28,
-                position: 'relative',
+                padding: '22px 24px',
                 cursor: 'pointer',
-                transition: 'border-color 0.2s, background 0.2s',
+                transition: 'all 0.2s',
+                position: 'relative',
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = d.color;
-                (e.currentTarget as HTMLElement).style.background = `color-mix(in srgb, ${d.color} 5%, ${P.bg2})`;
+                const el = e.currentTarget as HTMLElement;
+                el.style.background = `color-mix(in srgb, ${s.color} 5%, ${P.bg2})`;
+                el.style.borderColor = s.color;
+                el.style.boxShadow = `0 4px 24px color-mix(in srgb, ${s.color} 12%, transparent)`;
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = P.border;
-                (e.currentTarget as HTMLElement).style.background = P.bg2;
+                const el = e.currentTarget as HTMLElement;
+                el.style.background = P.bg2;
+                el.style.borderColor = P.border;
+                el.style.boxShadow = 'none';
               }}
             >
-              <div style={{ position: 'absolute', top: 16, right: 20, fontSize: 16, color: d.color, opacity: 0.7 }}>⚡</div>
-              <div style={{ fontFamily: c2Style.serif, fontSize: 17, lineHeight: 2.0, marginBottom: 14, paddingRight: 24 }}>{s.text}</div>
-              <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: d.color, letterSpacing: '0.15em', textTransform: 'uppercase' }}>● {d.name}</div>
+              {/* Subtype glyph */}
+              <div style={{ position: 'absolute', top: 14, right: 18, fontFamily: c2Style.mono, fontSize: 13, color: stMeta.color, opacity: 0.6 }}>{stMeta.glyph}</div>
+              {/* Title */}
+              <div style={{ fontFamily: c2Style.serif, fontSize: 16, lineHeight: 1.45, marginBottom: 10, paddingRight: 28, fontStyle: 'italic' }}>{s.text}</div>
+              {/* Excerpt */}
+              {s.excerpt && (
+                <div style={{ fontSize: 12, color: P.dim, lineHeight: 1.55, marginBottom: 14 }}>{s.excerpt.slice(0, 110)}{s.excerpt.length > 110 ? '…' : ''}</div>
+              )}
+              {/* Footer chips */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: s.color, letterSpacing: '0.12em', textTransform: 'uppercase' }}>● {s.domainName}</span>
+                <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2 }}>·</span>
+                <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: stMeta.color, letterSpacing: '0.08em' }}>{stMeta.glyph} {stMeta.label}</span>
+              </div>
             </div>
           );
         })}
       </div>
+
+      {/* Load more */}
+      {hasMore && (
+        <div style={{ textAlign: 'center', marginTop: 32 }}>
+          <button
+            onClick={() => setLimit(l => l + 40)}
+            style={{
+              fontFamily: c2Style.mono, fontSize: 11, letterSpacing: '0.15em',
+              padding: '10px 28px', borderRadius: 999,
+              border: `1px solid ${P.border}`, background: P.bg2, color: P.dim,
+              cursor: 'pointer', transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = P.borderHi; (e.currentTarget as HTMLElement).style.color = P.text; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = P.border; (e.currentTarget as HTMLElement).style.color = P.dim; }}
+          >
+            LOAD MORE · {filtered.length - limit} remaining
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -854,25 +1057,185 @@ function C2Tensions({ P }: { P: Palette }) {
   );
 }
 
-// ─── WORKSHOP ────────────────────────────────────────────────────────────────
+// ─── WORKSHOP / SIGNAL BOARD ─────────────────────────────────────────────────
 function C2Workshop({ P }: { P: Palette }) {
   const C2_DATA = useNylusData();
+  const router = useRouter();
+
+  const maxConcepts = uM(() => Math.max(...C2_DATA.DOMAINS.map(d => d.concepts)), [C2_DATA.DOMAINS]);
+
+  // Subtype breakdown for spark pipeline
+  const subtypeBreakdown = uM(() => {
+    const counts: Record<string, number> = {};
+    C2_DATA.SPARKS.forEach(s => {
+      const k = s.subtype || 'resonance';
+      counts[k] = (counts[k] ?? 0) + 1;
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, [C2_DATA.SPARKS]);
+
+  // Status breakdown
+  const statusBreakdown = uM(() => {
+    const counts: Record<string, number> = {};
+    C2_DATA.SPARKS.forEach(s => {
+      const k = s.status || 'raw';
+      counts[k] = (counts[k] ?? 0) + 1;
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, [C2_DATA.SPARKS]);
+
+  const recentSparks = C2_DATA.SPARKS.slice(0, 10);
+  const hotCollisions = C2_DATA.COLLISIONS.slice(0, 8);
+
+  const statCards = [
+    { label: 'Concepts',   value: C2_DATA.STATS.concepts.toLocaleString(),   color: '#e8b86a', glyph: '★' },
+    { label: 'Sparks',     value: C2_DATA.STATS.sparks.toLocaleString(),      color: '#5fc9a8', glyph: '⚡' },
+    { label: 'Collisions', value: C2_DATA.STATS.collisions.toLocaleString(),  color: '#b794f4', glyph: '×' },
+    { label: 'Sources',    value: C2_DATA.STATS.sources.toLocaleString(),     color: '#60a5fa', glyph: '⊹' },
+  ];
+
   return (
-    <div style={{ flex: 1, padding: '40px 56px 60px', overflow: 'auto', maxWidth: 1100, margin: '0 auto', width: '100%' }}>
-      <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 24px', letterSpacing: '-0.02em' }}>Workshop<em>.</em></h1>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 18 }}>
-        {[
-          ['◌ seeds', C2_DATA.SPARKS.map(s => s.text), '#e8b86a'] as const,
-          ['◐ drafts', C2_DATA.ESSAYS.filter(e => e.status === 'draft').map(e => e.title), '#a78bfa'] as const,
-          ['● fixed',  C2_DATA.ESSAYS.filter(e => e.status === 'complete').slice(0,4).map(e => e.title), '#5fc9a8'] as const,
-        ].map(([label, items, color]) => (
-          <div key={label}>
-            <div style={{ fontFamily: c2Style.mono, fontSize: 10, color, letterSpacing: '0.2em', textTransform: 'uppercase', paddingBottom: 12, borderBottom: `1px solid ${color}`, marginBottom: 14 }}>{label} · {items.length}</div>
-            {(items as string[]).map((t2, i) => (
-              <div key={i} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 8, padding: 14, marginBottom: 10, fontFamily: c2Style.serif, fontSize: 13, lineHeight: 1.4 }}>{t2}</div>
-            ))}
+    <div style={{ flex: 1, overflow: 'auto', padding: '36px 48px 64px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+      {/* Header */}
+      <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>◈ Signal Board</div>
+      <h1 style={{ fontFamily: c2Style.serif, fontSize: 44, fontWeight: 400, margin: '0 0 28px', letterSpacing: '-0.02em' }}>The <em>whole picture</em>.</h1>
+
+      {/* ── Stat cards ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 32 }}>
+        {statCards.map(sc => (
+          <div key={sc.label} style={{
+            background: P.bg2,
+            border: `1px solid color-mix(in srgb, ${sc.color} 20%, ${P.border})`,
+            borderRadius: 14,
+            padding: '22px 24px 20px',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: sc.color, opacity: 0.6, borderRadius: '14px 14px 0 0' }} />
+            <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: sc.color, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 8 }}>{sc.glyph} {sc.label}</div>
+            <div style={{ fontFamily: c2Style.serif, fontSize: 38, fontWeight: 400, color: P.text, lineHeight: 1, letterSpacing: '-0.02em' }}>{sc.value}</div>
           </div>
         ))}
+      </div>
+
+      {/* ── Main grid: 3 columns ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr 1fr', gap: 20, alignItems: 'start' }}>
+
+        {/* Left col: Domain density + Pipeline status */}
+        <div>
+          {/* Domain density */}
+          <div style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 14, padding: '20px 22px', marginBottom: 16 }}>
+            <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 16 }}>Domain Density</div>
+            {C2_DATA.DOMAINS.slice(0, 8).map(d => (
+              <div key={d.id} style={{ marginBottom: 12 }} onClick={() => router.push(`/domain/${d.key}`)} className="cursor-pointer">
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: d.color, letterSpacing: '0.05em' }}>{d.name.length > 18 ? d.name.slice(0, 16) + '…' : d.name}</span>
+                  <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2 }}>{d.concepts}</span>
+                </div>
+                <div style={{ height: 4, background: P.bg3, borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${Math.round((d.concepts / maxConcepts) * 100)}%`,
+                    background: `linear-gradient(90deg, ${d.color}, color-mix(in srgb, ${d.color} 60%, transparent))`,
+                    borderRadius: 2,
+                    transition: 'width 0.8s ease-out',
+                  }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pipeline status */}
+          <div style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 14, padding: '20px 22px' }}>
+            <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 16 }}>Spark Pipeline</div>
+            {statusBreakdown.map(([status, count]) => (
+              <div key={status} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: `1px solid ${P.border}` }}>
+                <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.08em', textTransform: 'capitalize' }}>{status}</span>
+                <span style={{ fontFamily: c2Style.mono, fontSize: 12, color: '#e8b86a' }}>{count}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 14 }}>
+              <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10 }}>By Kind</div>
+              {subtypeBreakdown.slice(0, 4).map(([key, count]) => {
+                const meta = SUBTYPE_META[key] ?? { label: key, color: P.dim, glyph: '◦' };
+                return (
+                  <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0' }}>
+                    <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: meta.color }}>{meta.glyph} {meta.label}</span>
+                    <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2 }}>{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Center col: Recent sparks */}
+        <div style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 14, padding: '20px 22px' }}>
+          <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: '#5fc9a8', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 16 }}>⚡ Recent Sparks</div>
+          {recentSparks.map(s => {
+            const stMeta = SUBTYPE_META[s.subtype ?? 'resonance'] ?? SUBTYPE_META.resonance;
+            return (
+              <div
+                key={s.id}
+                onClick={() => router.push(`/spark/${s.id}`)}
+                style={{ padding: '12px 0', borderBottom: `1px solid ${P.border}`, cursor: 'pointer' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.paddingLeft = '6px'; (e.currentTarget as HTMLElement).style.transition = 'padding 0.15s'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.paddingLeft = '0px'; }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 5 }}>
+                  <span style={{ color: s.color, fontSize: 8, marginTop: 4, flexShrink: 0 }}>●</span>
+                  <span style={{ fontFamily: c2Style.serif, fontSize: 14, lineHeight: 1.4, fontStyle: 'italic' }}>{s.text}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 8, paddingLeft: 16 }}>
+                  <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: s.color, letterSpacing: '0.08em' }}>{s.domainName}</span>
+                  <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2 }}>·</span>
+                  <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: stMeta.color }}>{stMeta.glyph} {stMeta.label}</span>
+                </div>
+              </div>
+            );
+          })}
+          <div
+            onClick={() => {}}
+            style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, textAlign: 'center', paddingTop: 14, cursor: 'pointer', letterSpacing: '0.12em' }}
+          >→ all sparks</div>
+        </div>
+
+        {/* Right col: Hot collisions */}
+        <div style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 14, padding: '20px 22px' }}>
+          <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: '#b794f4', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 16 }}>× Hot Collisions</div>
+          {hotCollisions.map(c => {
+            const dA = C2_DATA.DOMAINS.find(x => x.id === c.domains[0]) ?? C2_DATA.DOMAINS[0];
+            const dB = C2_DATA.DOMAINS.find(x => x.id === c.domains[1]) ?? C2_DATA.DOMAINS[1];
+            return (
+              <div
+                key={c.id}
+                onClick={() => router.push(`/collision/${c.id}`)}
+                style={{ padding: '12px 0', borderBottom: `1px solid ${P.border}`, cursor: 'pointer' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.paddingLeft = '6px'; (e.currentTarget as HTMLElement).style.transition = 'padding 0.15s'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.paddingLeft = '0px'; }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: dA.color, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontFamily: c2Style.serif, fontSize: 13, flex: 1, lineHeight: 1.35, fontStyle: 'italic' }}>{c.a}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2, width: 6, textAlign: 'center', flexShrink: 0 }}>×</span>
+                  <span style={{ fontFamily: c2Style.serif, fontSize: 13, flex: 1, lineHeight: 1.35, fontStyle: 'italic' }}>{c.b}</span>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: dB.color, flexShrink: 0, display: 'inline-block' }} />
+                </div>
+                {typeof c.pressure === 'number' && (
+                  <div style={{ height: 2, background: P.bg3, borderRadius: 1, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${Math.round((c.pressure / 12) * 100)}%`, background: `linear-gradient(90deg, ${dA.color}, ${dB.color})` }} />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <div
+            onClick={() => router.push('/collisions')}
+            style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, textAlign: 'center', paddingTop: 14, cursor: 'pointer', letterSpacing: '0.12em' }}
+          >→ all collisions</div>
+        </div>
       </div>
     </div>
   );
@@ -888,7 +1251,9 @@ function C2Research({ P, setOpenEssay }: { P: Palette; setOpenEssay: (e: NylusEs
       {C2_DATA.ESSAYS.map(e => {
         const dom = C2_DATA.DOMAINS.find(d => e.tags.includes(d.name)) ?? C2_DATA.DOMAINS[0];
         return (
-          <div key={e.id} onClick={() => setOpenEssay(e)} style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 12, padding: 22, marginBottom: 12, cursor: 'pointer' }}>
+          <div key={e.id} onClick={() => setOpenEssay(e)} style={{ marginBottom: 28, padding: '20px 24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, cursor: 'pointer', transition: 'background 0.2s' }}
+            onMouseEnter={ev => (ev.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+            onMouseLeave={ev => (ev.currentTarget.style.background = 'rgba(255,255,255,0.03)')}>
             <div style={{ fontFamily: c2Style.serif, fontSize: 19, lineHeight: 1.2, marginBottom: 8 }}>{e.title}</div>
             <div style={{ color: P.dim, fontSize: 13, lineHeight: 1.5, marginBottom: 10 }}>{e.excerpt.slice(0, 200)}…</div>
             <div style={{ display: 'flex', gap: 12, fontFamily: c2Style.mono, fontSize: 10, color: P.dim2 }}>
@@ -903,7 +1268,7 @@ function C2Research({ P, setOpenEssay }: { P: Palette; setOpenEssay: (e: NylusEs
   );
 }
 
-// ─── READER ───────────────────────────────────────────────────────────────────
+// ─── READER ────────────────────────────────────────────────────────────────────────────────
 function C2Reader({ P, essay, close }: { P: Palette; essay: NylusEssay; close: () => void }) {
   const C2_DATA = useNylusData();
   const [scroll, setScroll] = uS(0);
@@ -925,7 +1290,6 @@ function C2Reader({ P, essay, close }: { P: Palette; essay: NylusEssay; close: (
   const visible = notes.filter(n => scroll >= n.y - 200);
   const dom = C2_DATA.DOMAINS.find(d => essay.tags.includes(d.name)) ?? C2_DATA.DOMAINS[0];
 
-  // Parse content into paragraphs
   const paragraphs = essay.content
     ? essay.content.split(/\n\n+/).filter(p => p.trim().length > 40).slice(0, 6)
     : [essay.excerpt];
@@ -967,7 +1331,7 @@ function C2Reader({ P, essay, close }: { P: Palette; essay: NylusEssay; close: (
   );
 }
 
-// ─── CONCEPT PAGE ─────────────────────────────────────────────────────────────
+// ─── CONCEPT PAGE ─────────────────────────────────────────────────────────────────────────────
 function C2ConceptPage({ P, tweaks, concept, close, setOpenEssay }: {
   P: Palette; tweaks: Tweaks; concept: NylusConcept;
   close: () => void; setOpenEssay: (e: NylusEssay) => void;
@@ -1059,13 +1423,13 @@ function C2ConceptPage({ P, tweaks, concept, close, setOpenEssay }: {
   );
 }
 
-// ─── MAIN CONSTELLATION V2 ────────────────────────────────────────────────────
+// ─── MAIN CONSTELLATION V2 ────────────────────────────────────────────────────────────────────────────
 interface ConstellationV2Props {
   data: NylusData;
   initialPage?: string;
 }
 
-// ─── MOBILE VIEW ─────────────────────────────────────────────────────────────
+// ─── MOBILE VIEW ─────────────────────────────────────────────────────────────────────────────
 function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
   const router = useRouter();
   const [tab, setTab] = uS<'domains' | 'hubs' | 'sparks'>('domains');
@@ -1074,7 +1438,6 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
   return (
     <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
       fontFamily: c2Style.font, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-      {/* Mobile header */}
       <div style={{ padding: '20px 20px 0', borderBottom: `1px solid ${P.border}`,
         background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
@@ -1096,7 +1459,6 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
         </div>
       </div>
 
-      {/* Domains tab */}
       {tab === 'domains' && (
         <div style={{ padding: '16px 16px 60px' }}>
           {data.DOMAINS.map(d => (
@@ -1114,7 +1476,6 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
         </div>
       )}
 
-      {/* Hubs tab */}
       {tab === 'hubs' && (
         <div style={{ padding: '16px 16px 60px' }}>
           {data.HUBS.slice(0, 30).map(h => (
@@ -1131,7 +1492,6 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
         </div>
       )}
 
-      {/* Sparks tab */}
       {tab === 'sparks' && (
         <div style={{ padding: '16px 16px 60px' }}>
           {data.SPARKS.slice(0, 40).map(s => (
@@ -1166,7 +1526,6 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
 
   const P = C2_PALETTES[tweaks.palette] ?? C2_PALETTES.ember;
 
-  // Mobile detection
   uE(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -1192,12 +1551,11 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
           {page === 'collisions' && <C2Collisions P={P} tweaks={tweaks} />}
           {page === 'sparks'     && <C2Sparks P={P} />}
           {page === 'tensions'   && <C2Tensions P={P} />}
-          {page === 'workshop'   && <C2Workshop P={P} />}
-          {page === 'research'   && <C2Research P={P} setOpenEssay={setOpenEssay} />}
-        </div>
 
-        {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}
+          {page === 'workshop'   && <C2Workshop P={P} />}
+        </div>
         {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
+        {openConcept && <C2ConceptPage P={P} concept={openConcept} close={() => setOpenConcept(null)} />}
       </div>
     </NylusDataCtx.Provider>
   );

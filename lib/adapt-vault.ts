@@ -48,15 +48,19 @@ export interface NylusCollision {
   domains: [string, string];
   color: string;
   note: string;
+  pressure?: number;  // 0-12 tension score
 }
 
 export interface NylusSpark {
   id: string;
-  text: string;
-  domain: string;      // short id
+  text: string;       // title
+  domain: string;     // short id
   domainKey: string;
+  domainName: string;
   color: string;
   excerpt: string;
+  subtype: string;    // resonance | essay-seed | question | speculative | etc.
+  status: string;     // raw | developing | staged | stub
 }
 
 export interface NylusTension {
@@ -311,36 +315,38 @@ export function buildNylusData(): NylusData {
       const { a, b } = parseCollisionTitle(c.title ?? '');
       const dk = c.domain ?? 'cross-domain';
       return {
-        id:      c.id,
-        a:       a.slice(0, 60),
-        b:       b.slice(0, 60),
-        domains: getCollisionDomains(c),
-        color:   domainColor(dk),
-        note:    (c.excerpt ?? c.candidate_idea ?? '').slice(0, 200).trim() || 'A productive tension in the vault.',
+        id:       c.id,
+        a:        a.slice(0, 60),
+        b:        b.slice(0, 60),
+        domains:  getCollisionDomains(c),
+        color:    domainColor(dk),
+        note:     (c.excerpt ?? c.candidate_idea ?? '').slice(0, 200).trim() || 'A productive tension in the vault.',
+        pressure: typeof c.pressure_score === 'number' ? c.pressure_score : undefined,
       };
     })
     .filter((c: NylusCollision) => c.a && c.b && c.a !== c.b)
     .slice(0, 40);
 
   // ── SPARKS ─────────────────────────────────────────────────────────────────
-  // Exclude essay seeds — those are a separate type
+  // Include all sparks (resonance, essay-seed, question, speculative, etc.)
   const SPARKS: NylusSpark[] = rawSparks
-    .filter((s: any) =>
-      s.title &&
-      DOMAIN_CONFIG[s.domain] &&
-      !s.id?.includes('essay-seed') &&
-      s.subtype !== 'essay-seed'
-    )
-    .slice(0, 100)
+    .filter((s: any) => s.title)
     .map((s: any) => {
       const dk = s.domain ?? 'cross-domain';
+      // Normalise subtype: resonance-harvest → resonance
+      let subtype = s.subtype ?? '';
+      if (subtype === 'resonance-harvest') subtype = 'resonance';
+      if (!subtype && s.id?.includes('essay-seed')) subtype = 'essay-seed';
       return {
-        id:        s.id,
-        text:      s.title,
-        domain:    shortId(dk),
-        domainKey: dk,
-        color:     domainColor(dk),
-        excerpt:   s.excerpt ?? '',
+        id:         s.id,
+        text:       s.title,
+        domain:     shortId(dk),
+        domainKey:  dk,
+        domainName: domainName(dk),
+        color:      domainColor(dk),
+        excerpt:    s.excerpt ?? '',
+        subtype:    subtype || 'resonance',
+        status:     s.status ?? 'raw',
       };
     });
 
@@ -372,5 +378,9 @@ export function buildNylusData(): NylusData {
       };
     });
 
-    return { STATS, DOMAINS, HUBS, CONCEPTS, COLLISIONS, SPARKS, TENSIONS, ESSAYS };
+  const TENSIONS: NylusTension[] = COLLISIONS.slice(0, 20).map((c) => ({
+    id: `ten-${c.id}`, a: c.a, b: c.b, topic: c.note, domain: c.domains[0],
+  }));
+
+  return { STATS, DOMAINS, HUBS, CONCEPTS, COLLISIONS, SPARKS, TENSIONS, ESSAYS };
 }
