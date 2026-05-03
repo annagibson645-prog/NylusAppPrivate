@@ -4,6 +4,7 @@ import { marked } from "marked";
 import { useState, useEffect } from "react";
 import type { VaultNode } from "@/lib/types";
 import { DOMAIN_LABELS } from "@/lib/types";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
   node: VaultNode;
@@ -109,15 +110,16 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) 
 
       {/* Nav */}
       <nav className="void-nav">
-        <Link href="/" className="void-nav-brand">lotusmind</Link>
+        <Link href="/" className="void-nav-brand">NylusS</Link>
         <div className="void-nav-right">
-          <Link href="/" className="void-nav-back">← galaxy</Link>
+          <Link href="/" className="void-nav-back">← constellation</Link>
           <a
             href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(node.path)}`}
             className="void-nav-obsidian"
           >
             obsidian ↗
           </a>
+          <ThemeToggle />
         </div>
       </nav>
 
@@ -268,9 +270,8 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) 
             </div>
           )}
         </div>
-
-        </div>
       </div>
     </div>
+  </div>
   );
 }

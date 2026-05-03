@@ -973,3 +973,67 @@ html, body {
 [data-theme="sepia"] .void-nav-brand     { color: #3c2010; }
 [data-theme="sepia"] .void-nav-obsidian  { color: #8b7355; }
 
+   
+
+/* ================================================================
+   SEPIA PATCH: missing overrides (hub cards, domain page, body)
+   ================================================================ */
+
+/* body override -- beats layout.tsx inline style */
+[data-theme="sepia"] body { background: #f5f0e8 !important; }
+
+/* void-hub-card (domain page: hub cards) */
+[data-theme="sepia"] .void-hub-card         { background: #ede6d4 !important; border-color: #d0c4a8 !important; }
+[data-theme="sepia"] .void-hub-card:hover   { background: #e6dcc8 !important; }
+[data-theme="sepia"] .void-hub-card-count   { color: var(--domain-color, #8b6914) !important; }
+[data-theme="sepia"] .void-hub-card-title   { color: #1e1408 !important; }
+[data-theme="sepia"] .void-hub-card-excerpt { color: #5c4228 !important; }
+[data-theme="sepia"] .void-hub-card-arrow   { color: #8b7355 !important; }
+[data-theme="sepia"] .void-hub-card:hover .void-hub-card-arrow { color: var(--domain-color, #8b6914) !important; }
+[data-theme="sepia"] .void-hub-card-accent  { opacity: 0.6; }
+
+/* compact concept list (domain page: ungrouped concepts) */
+[data-theme="sepia"] .void-compact-item                           { border-bottom-color: #d8cdb8 !important; }
+[data-theme="sepia"] .void-compact-status                         { color: #a09070 !important; }
+[data-theme="sepia"] .void-compact-title                          { color: #3c2e18 !important; }
+[data-theme="sepia"] .void-compact-item:hover .void-compact-title { color: #1e1408 !important; }
+[data-theme="sepia"] .void-compact-arrow                          { color: #a09070 !important; }
+[data-theme="sepia"] .void-compact-item:hover .void-compact-arrow { color: var(--domain-color, #8b6914) !important; }
+[data-theme="sepia"] .void-browse-all                             { color: #5c4228 !important; }
+[data-theme="sepia"] .void-browse-all:hover                       { color: var(--domain-color, #8b6914) !important; }
+
+/* ornament & meta (domain page) */
+[data-theme="sepia"] .void-ornament    { color: var(--domain-color, #8b6914) !important; opacity: 0.7; }
+[data-theme="sepia"] .void-meta-inline { color: #8b7355 !important; }
+[data-theme="sepia"] .void-meta-dot    { color: #c0aa80 !important; }
+
+/* essay page */
+[data-theme="sepia"] .void-essay-header { background: #f0ead8 !important; border-bottom-color: #d8cdb8 !important; }
+[data-theme="sepia"] .void-essay-body   { background: #f5f0e8 !important; color: #3c2e18 !important; }
+[data-theme="sepia"] .void-essay-title  { color: #1e1408 !important; }
+[data-theme="sepia"] .void-essay-meta   { color: #8b7355 !important; }
+[data-theme="sepia"] .void-essay-tag    { color: var(--domain-color, #8b6914) !important; background: rgba(139,105,20,0.08) !important; }
+
+/* ================================================================
+   SEPIA: CSS variable overrides for essay/component pages
+   ================================================================ */
+[data-theme="sepia"] {
+  --bg:        #f5f0e8;
+  --bg2:       #f0ead8;
+  --surface:   #ede6d4;
+  --surface-2: #e6dcc8;
+  --border:    #d8cdb8;
+  --text:      #1e1408;
+  --text-muted: #5c4228;
+  --text-dim:  #8b7355;
+}
+
+/* prose (marked-generated HTML in essay pages) */
+[data-theme="sepia"] .prose      { color: #3c2e18; }
+[data-theme="sepia"] .prose h1,
+[data-theme="sepia"] .prose h2,
+[data-theme="sepia"] .prose h3   { color: #1e1408; }
+[data-theme="sepia"] .prose p    { color: #3c2e18; }
+[data-theme="sepia"] .prose a    { color: #7a4a1c; }
+[data-theme="sepia"] .prose code { background: #e6dcc8; color: #3c2e18; }
+[data-theme="sepia"] .prose blockquote { border-left-color: #c0a870; color: #5c4228; }

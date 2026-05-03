@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { marked } from "marked";
 import type { VaultNode } from "@/lib/types";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export const dynamic = 'force-dynamic';
 
@@ -55,13 +56,16 @@ export default async function EssayPage({ params }: { params: Promise<{ slug: st
           </Link>
           <span style={{ color: "var(--text-dim)" }}>/</span>
           <span className="truncate" style={{ color: "var(--text-dim)" }}>{essay.title}</span>
-          <a
-            href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(essay.path)}`}
-            className="ml-auto text-sm hover:opacity-70 transition-opacity flex-shrink-0"
-            style={{ color: "var(--text-dim)" }}
-          >
-            Open in Obsidian ↗
-          </a>
+          <div className="ml-auto flex items-center gap-3 flex-shrink-0">
+            <ThemeToggle />
+            <a
+              href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(essay.path)}`}
+              className="text-sm hover:opacity-70 transition-opacity"
+              style={{ color: "var(--text-dim)" }}
+            >
+              Open in Obsidian ↗
+            </a>
+          </div>
         </div>
 
         {/* Title block */}

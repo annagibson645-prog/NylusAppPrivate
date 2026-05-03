@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import SearchModal from "./SearchModal";
 
-
 function SunIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -38,19 +37,21 @@ export default function Nav() {
   const [light, setLight] = useState(false);
 
   useEffect(() => {
-    setLight(document.documentElement.classList.contains("light"));
+    const saved = localStorage.getItem("nylus-theme") as "sepia" | "void" | null;
+    if (saved === "sepia") {
+      setLight(true);
+      document.documentElement.setAttribute("data-theme", "sepia");
+    }
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   function toggleTheme() {
     const next = !light;
     setLight(next);
-    document.documentElement.classList.toggle("light", next);
-    try { localStorage.setItem("nyluss-theme", next ? "light" : "dark"); } catch {}
+    const theme = next ? "sepia" : "void";
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem("nylus-theme", theme); } catch {}
   }
 
   const isActive = (href: string) => pathname === href;
@@ -61,89 +62,50 @@ export default function Nav() {
         className="sticky top-0 z-40 border-b"
         style={{ background: "var(--bg)", borderColor: "var(--border)" }}
       >
-        {/* Main nav bar */}
         <div className="flex items-center gap-4 px-4 sm:px-6 h-12">
-          {/* Wordmark */}
           <Link href="/" className="font-semibold text-sm tracking-tight flex-shrink-0" style={{ color: "var(--text)" }}>
             NylusS
           </Link>
-
           <div className="w-px h-4 flex-shrink-0 hidden sm:block" style={{ background: "var(--border)" }} />
-
-          {/* Desktop primary nav */}
           <div className="hidden sm:flex items-center gap-5">
-            {[
-              { href: "/", label: "Dashboard" },
-              { href: "/workshop", label: "Workshop" },
-            ].map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="text-sm transition-colors"
-                style={{ color: isActive(href) ? "var(--text)" : "var(--text-muted)" }}
-              >
+            {[{ href: "/", label: "Dashboard" }, { href: "/workshop", label: "Workshop" }].map(({ href, label }) => (
+              <Link key={href} href={href} className="text-sm transition-colors"
+                style={{ color: isActive(href) ? "var(--text)" : "var(--text-muted)" }}>
                 {label}
               </Link>
             ))}
-
-            <Link
-              href="/domains"
-              className="text-sm transition-colors"
-              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}
-            >
+            <Link href="/domains" className="text-sm transition-colors"
+              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}>
               Domains
             </Link>
-            <Link
-              href="/essays"
-              className="text-sm transition-colors"
-              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}
-            >
+            <Link href="/essays" className="text-sm transition-colors"
+              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}>
               Essays
             </Link>
-            <Link
-              href="/research"
-              className="text-sm transition-colors"
-              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}
-            >
+            <Link href="/research" className="text-sm transition-colors"
+              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}>
               Research
             </Link>
           </div>
-
           <div className="flex-1" />
-
-          {/* Right controls — always visible */}
-          <button
-            onClick={toggleTheme}
-            className="transition-colors p-1.5 rounded"
+          <button onClick={toggleTheme} className="transition-colors p-1.5 rounded"
             style={{ color: "var(--text-muted)" }}
-            title={light ? "Switch to dark mode" : "Switch to light mode"}
-          >
+            title={light ? "Switch to dark mode" : "Switch to light mode"}>
             {light ? <MoonIcon /> : <SunIcon />}
           </button>
-
-          {/* Search — icon only on mobile, icon+text on desktop */}
-          <button
-            onClick={() => setSearchOpen(true)}
+          <button onClick={() => setSearchOpen(true)}
             className="flex items-center gap-2.5 text-sm transition-colors"
-            style={{ color: "var(--text-muted)" }}
-          >
+            style={{ color: "var(--text-muted)" }}>
             <SearchIcon />
             <span className="hidden sm:inline">Search</span>
-            <kbd
-              className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.5 rounded border"
-              style={{ color: "var(--text-dim)", borderColor: "var(--border)" }}
-            >
+            <kbd className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.5 rounded border"
+              style={{ color: "var(--text-dim)", borderColor: "var(--border)" }}>
               ⌘K
             </kbd>
           </button>
-
-          {/* Hamburger — mobile only */}
-          <button
-            className="sm:hidden p-1.5 rounded transition-colors"
+          <button className="sm:hidden p-1.5 rounded transition-colors"
             style={{ color: "var(--text-muted)" }}
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
-          >
+            onClick={() => setMenuOpen((o) => !o)} aria-label="Toggle menu">
             {menuOpen ? (
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M2 2L14 14M14 2L2 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -155,52 +117,30 @@ export default function Nav() {
             )}
           </button>
         </div>
-
-        {/* Mobile menu */}
         {menuOpen && (
-          <div
-            className="sm:hidden border-t px-4 py-3 space-y-1"
-            style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-          >
-            {[
-              { href: "/", label: "Dashboard" },
-              { href: "/workshop", label: "Workshop" },
-            ].map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="block py-2 text-sm transition-colors"
-                style={{ color: isActive(href) ? "var(--text)" : "var(--text-muted)" }}
-              >
+          <div className="sm:hidden border-t px-4 py-3 space-y-1"
+            style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+            {[{ href: "/", label: "Dashboard" }, { href: "/workshop", label: "Workshop" }].map(({ href, label }) => (
+              <Link key={href} href={href} className="block py-2 text-sm transition-colors"
+                style={{ color: isActive(href) ? "var(--text)" : "var(--text-muted)" }}>
                 {label}
               </Link>
             ))}
-
-            <Link
-              href="/domains"
-              className="block py-2 text-sm transition-colors"
-              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}
-            >
+            <Link href="/domains" className="block py-2 text-sm transition-colors"
+              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}>
               Domains
             </Link>
-            <Link
-              href="/essays"
-              className="block py-2 text-sm transition-colors"
-              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}
-            >
+            <Link href="/essays" className="block py-2 text-sm transition-colors"
+              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}>
               Essays
             </Link>
-            <Link
-              href="/research"
-              className="block py-2 text-sm transition-colors"
-              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}
-            >
+            <Link href="/research" className="block py-2 text-sm transition-colors"
+              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}>
               Research
             </Link>
           </div>
         )}
       </nav>
-
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );

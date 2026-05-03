@@ -4,6 +4,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import ThemeToggle from '@/components/ThemeToggle';
 
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), 'public/data', file), 'utf-8'));
@@ -83,7 +84,11 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
       <div className="void-ambient" />
 
       <nav className="void-nav">
-        <Link href="/" className="void-nav-back">← constellation</Link>
+        <Link href="/" className="void-nav-brand">NylusS</Link>
+        <div className="void-nav-right">
+          <Link href="/" className="void-nav-back">← constellation</Link>
+          <ThemeToggle />
+        </div>
       </nav>
 
       <div className="void-content">
