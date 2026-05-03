@@ -373,14 +373,19 @@ export function buildNylusData(): NylusData {
         words,
         status:  r.status ?? 'complete',
         tags:    [domainName(dk)],
-        content: paras.slice(0, 6).join('\n\n').slice(0, 3000),
         color:   domainColor(dk),
+        content: raw.slice(0, 500),
       };
     });
 
-  const TENSIONS: NylusTension[] = COLLISIONS.slice(0, 20).map((c) => ({
-    id: `ten-${c.id}`, a: c.a, b: c.b, topic: c.note, domain: c.domains[0],
-  }));
-
-  return { STATS, DOMAINS, HUBS, CONCEPTS, COLLISIONS, SPARKS, TENSIONS, ESSAYS };
+  return {
+    STATS,
+    DOMAINS,
+    HUBS,
+    CONCEPTS,
+    COLLISIONS,
+    SPARKS,
+    TENSIONS,
+    ESSAYS,
+  };
 }
