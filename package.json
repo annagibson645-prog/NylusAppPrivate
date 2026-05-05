@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "parse": "npx ts-node --esm build-vault.ts",
+    "parse": "npx tsx build-vault.ts",
     "dev": "npm run parse && next dev",
     "build": "next build",
     "start": "next start",
