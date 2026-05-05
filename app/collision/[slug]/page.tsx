@@ -121,16 +121,38 @@ export default async function CollisionPage({
       }}>
         <Link href="/" style={{
           fontFamily: FF, fontStyle: "italic", fontWeight: 300,
-          fontSize: 17, color: "#e8e3f0", textDecoration: "none",
-          letterSpacing: "-.01em",
+          fontSize: 19, color: "#ffffff", textDecoration: "none",
+          letterSpacing: "-.01em", flexShrink: 0,
         }}>NylusS</Link>
-        <span style={{ color: "#2a2540", fontSize: 16 }}>|</span>
+        <span style={{ color: "#2a2540", fontSize: 16, flexShrink: 0 }}>/</span>
         <Link href="/collisions" style={{
-          fontFamily: FM, fontSize: 11, color: "#4a4468",
-          textDecoration: "none", letterSpacing: ".08em",
-          textTransform: "uppercase",
-        }}>back to collisions</Link>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+          fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)", fontSize: 11,
+          color: "#8b5cf6", textDecoration: "none", letterSpacing: ".08em",
+          textTransform: "uppercase", flexShrink: 0,
+        }}>Collisions</Link>
+        <span style={{ color: "#2a2540", fontSize: 14, flexShrink: 0 }}>›</span>
+        <span style={{
+          fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)", fontSize: 10,
+          color: "#3a3460", letterSpacing: ".06em", textTransform: "uppercase",
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 320,
+        }}>{cleanTitle(node.title)}</span>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 20 }}>
+          {[
+            { href: "/essays", label: "Essays" },
+            { href: "/research", label: "Research" },
+            { href: "/sparks", label: "Sparks" },
+          ].map(({ href, label }) => (
+            <Link key={href} href={href} style={{
+              fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+              fontSize: 10, color: "#2a2540", letterSpacing: ".08em",
+              textTransform: "uppercase", textDecoration: "none",
+            }}>{label}</Link>
+          ))}
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: col, display: "inline-block", boxShadow: `0 0 8px ${col}80` }} />
+          <span style={{ fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)", fontSize: 11, color: col, letterSpacing: ".1em", textTransform: "uppercase" }}>{DOMAIN_LABEL[node.domain] || node.domain}</span>
+        </div>
+        {/* domain color indicator - replaced above */}
+        <div style={{ display: "none" }}>
           <span style={{
             width: 7, height: 7, borderRadius: "50%", background: col,
             display: "inline-block", boxShadow: `0 0 8px ${col}80`,
