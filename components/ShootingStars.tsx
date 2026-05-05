@@ -156,7 +156,7 @@ export default function ShootingStars({
             ? 1 - (s.life - 0.75) / 0.25
             : 1;
 
-        const alpha = s.alpha * fade;
+        const alpha = Math.max(0, s.alpha * fade);
 
         // trail gradient
         const tailX = s.x - s.vx * (s.len / Math.sqrt(s.vx * s.vx + s.vy * s.vy));
@@ -164,7 +164,7 @@ export default function ShootingStars({
 
         const grad = ctx!.createLinearGradient(tailX, tailY, s.x, s.y);
         grad.addColorStop(0, `rgba(255,255,255,0)`);
-        grad.addColorStop(0.6, `${s.color}${Math.round(alpha * 80).toString(16).padStart(2,'0')}`);
+        grad.addColorStop(0.6, `${s.color}${Math.round(Math.max(0, alpha * 80)).toString(16).padStart(2,'0')}`);
         grad.addColorStop(1, `rgba(255,255,255,${alpha * 0.9})`);
 
         ctx!.beginPath();
