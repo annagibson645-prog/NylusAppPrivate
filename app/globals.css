@@ -101,8 +101,8 @@ html, body {
 [data-theme="sepia"] .hcr-meta    { color: #c0aa80; }
 
 /* Section label */
-[data-theme="sepia"] .void-section-label { color: #8b7355; }
-[data-theme="sepia"] .void-section-label::after { background: #d8cdb8; }
+[data-theme="sepia"] .void-section-label { color: #2a1a08; border-bottom-color: #d8cdb8; }
+[data-theme="sepia"] .void-section-label::after { display: none; }
 
 /* Connections grid */
 [data-theme="sepia"] .void-connections-grid { background: #d0c4a8; }
@@ -323,21 +323,19 @@ html, body {
 
 /* Section label */
 .void-section-label {
-  font-family: var(--font-jetbrains), monospace;
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  color: #4a4468;
-  text-transform: uppercase;
+  font-family: var(--font-newsreader), serif;
+  font-size: 20px;
+  font-style: italic;
+  letter-spacing: 0;
+  color: #ffffff;
+  text-transform: none;
   margin: 72px 0 28px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  display: block;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #1c1828;
 }
 .void-section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #1c1828;
+  display: none;
 }
 
 /* ── Prose ── */
@@ -973,7 +971,7 @@ html, body {
 [data-theme="sepia"] .void-nav-brand     { color: #3c2010; }
 [data-theme="sepia"] .void-nav-obsidian  { color: #8b7355; }
 
-   
+
 
 /* ================================================================
    SEPIA PATCH: missing overrides (hub cards, domain page, body)
@@ -1133,17 +1131,18 @@ html, body {
 
 .vrn-sibling {
   display: block;
-  font-family: var(--font-jetbrains), monospace;
-  font-size: 15px;
+  font-family: var(--font-newsreader), serif;
+  font-size: 13px;
+  font-style: italic;
   color: #ffffff;
   text-decoration: none;
-  padding: 4px 0;
-  letter-spacing: 0.04em;
+  padding: 5px 0;
+  letter-spacing: 0;
   transition: color 0.15s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.5;
+  line-height: 1.55;
   border-bottom: 1px solid transparent;
 }
 .vrn-sibling:hover { color: var(--domain-color, #a78bfa); }
@@ -1166,6 +1165,6 @@ html, body {
 [data-theme="sepia"] .vrn-link { color: #9a8a6a; }
 [data-theme="sepia"] .vrn-link:hover { color: #3c2010; }
 [data-theme="sepia"] .vrn-section-label { color: #b8a888; }
-[data-theme="sepia"] .vrn-sibling { color: #8b7a5a; }
+[data-theme="sepia"] .vrn-sibling { color: #2a1a08; font-family: var(--font-newsreader), serif; font-style: italic; }
 [data-theme="sepia"] .vrn-sibling:hover { color: #3c2010; }
 [data-theme="sepia"] .vrn-domain-label { opacity: 0.9; }
