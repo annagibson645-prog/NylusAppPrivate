@@ -1421,8 +1421,8 @@ interface ConstellationV2Props {
 // ─── MOBILE VIEW ─────────────────────────────────────────────────────────────────────────────
 function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
   const router = useRouter();
-  const [tab, setTab] = uS<'domains' | 'hubs' | 'sparks'>('domains');
-  const tabs: Array<'domains' | 'hubs' | 'sparks'> = ['domains', 'hubs', 'sparks'];
+  const [tab, setTab] = uS<'domains' | 'hubs' | 'sparks' | 'collisions'>('domains');
+  const tabs: Array<'domains' | 'hubs' | 'sparks' | 'collisions'> = ['domains', 'hubs', 'sparks', 'collisions'];
 
   return (
     <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
@@ -1434,14 +1434,14 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
           <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</span>
           <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.15em', textTransform: 'uppercase', marginLeft: 4 }}>vault</span>
         </div>
-        <div style={{ display: 'flex', gap: 0, marginBottom: -1 }}>
+        <div style={{ display: 'flex', gap: 0, marginBottom: -1, overflowX: 'auto', scrollbarWidth: 'none' }}>
           {tabs.map(t => (
             <button key={t} onClick={() => setTab(t)}
-              style={{ flex: 1, padding: '10px 0', background: 'transparent', border: 'none',
+              style={{ flex: '0 0 auto', padding: '10px 18px', background: 'transparent', border: 'none',
                 borderBottom: tab === t ? `2px solid ${P.hub}` : '2px solid transparent',
                 color: tab === t ? P.text : P.dim, fontFamily: c2Style.font,
                 fontSize: 12, cursor: 'pointer', letterSpacing: '0.02em',
-                textTransform: 'capitalize', transition: 'color 0.2s' }}>
+                textTransform: 'capitalize', transition: 'color 0.2s', whiteSpace: 'nowrap' }}>
               {t}
             </button>
           ))}
@@ -1489,6 +1489,30 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
               <span style={{ fontSize: 13, lineHeight: 1.5 }}>{s.text}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {tab === 'collisions' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '60px 24px' }}>
+          <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>⚡ Collisions</div>
+          <div style={{ fontFamily: c2Style.serif, fontSize: 22, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, marginBottom: 10, color: P.text }}>
+            Ideas in tension
+          </div>
+          <div style={{ fontSize: 13, color: P.dim, textAlign: 'center', marginBottom: 32, maxWidth: 260, lineHeight: 1.6 }}>
+            Speculative collisions generated from source tensions across the vault.
+          </div>
+          <button
+            onClick={() => router.push('/collisions')}
+            style={{
+              fontFamily: c2Style.font, fontSize: 13, fontWeight: 600,
+              color: P.bg, background: P.hub,
+              border: 'none', borderRadius: 999,
+              padding: '12px 28px', cursor: 'pointer',
+              letterSpacing: '0.01em',
+            }}
+          >
+            View all collisions →
+          </button>
         </div>
       )}
     </div>

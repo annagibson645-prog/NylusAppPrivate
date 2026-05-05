@@ -50,7 +50,8 @@ const DOMAIN_LABEL: Record<string, string> = {
 };
 
 const DOMAINS = Object.keys(DOMAIN_COLOR);
-const NAV_H   = 68;
+const NAV_H   = 80;
+const BLUE    = "#60a5fa";
 const ARC_SZ  = 480;
 const CX = 240, CY = 240, R = 155, CORE = 24;
 
@@ -551,71 +552,109 @@ export default function CollisionsPage() {
   return (
     <div style={{ minHeight: "100vh", background: BG, color: TEXT2, fontFamily: FS }}>
 
-      {/* ── NAV ── */}
+      {/* ── NAV (Proto G: Fraunces italic + blue freq bars) ── */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes navBarAnim {
+          0%,100% { height: 3px; opacity: 0.4; }
+          50%      { height: 10px; opacity: 1; }
+        }
+        .nav-freq-bars span { width: 3px; background: #60a5fa; border-radius: 1px; display: inline-block; }
+        .nav-freq-bars span:nth-child(1) { animation: navBarAnim 0.9s ease-in-out infinite; }
+        .nav-freq-bars span:nth-child(2) { animation: navBarAnim 0.9s ease-in-out infinite 0.15s; }
+        .nav-freq-bars span:nth-child(3) { animation: navBarAnim 0.9s ease-in-out infinite 0.3s; }
+        .nav-freq-bars span:nth-child(4) { animation: navBarAnim 0.9s ease-in-out infinite 0.1s; }
+        .nav-freq-bars span:nth-child(5) { animation: navBarAnim 0.9s ease-in-out infinite 0.25s; }
+        .nav-item-g { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 0 18px; cursor: pointer; border-right: 1px solid rgba(255,255,255,0.07); overflow: hidden; height: 100%; text-decoration: none; transition: background 0.2s; }
+        .nav-item-g:hover { background: rgba(255,255,255,0.025); }
+        .nav-item-g.active-nav { background: rgba(96,165,250,0.04); }
+        .nav-item-g.active-nav::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: #60a5fa; box-shadow: 0 0 8px rgba(96,165,250,0.5); }
+        .nav-ghost-num { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-family: 'Fraunces', Georgia, serif; font-size: 52px; font-style: italic; color: #eae6f5; opacity: 0.03; font-weight: 600; pointer-events: none; user-select: none; line-height: 1; }
+        .nav-lbl-g { font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-style: italic; font-weight: 300; color: #8a849a; letter-spacing: -0.01em; position: relative; z-index: 1; transition: color 0.2s; }
+        .nav-item-g:hover .nav-lbl-g { color: #cdc8dd; }
+        .nav-item-g.active-nav .nav-lbl-g { color: #eae6f5; font-weight: 500; }
+        .nav-freq-bars { display: flex; align-items: flex-end; gap: 2px; height: 10px; opacity: 0; transition: opacity 0.25s; position: relative; z-index: 1; }
+        .nav-item-g.active-nav .nav-freq-bars { opacity: 1; }
+      ` }} />
       <nav style={{
         position: "sticky", top: 0, zIndex: 100,
-        height: NAV_H, display: "flex", alignItems: "center", gap: 4,
-        padding: `0 ${isMobile ? 20 : 40}px`,
-        background: "rgba(14,13,20,0.82)",
-        backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        height: NAV_H, display: "flex", alignItems: "stretch",
+        background: BG2,
+        borderBottom: "1px solid rgba(255,255,255,0.07)",
       }}>
-        <Link href="/" style={{
-          fontFamily: FF, fontStyle: "italic", fontWeight: 200,
-          fontSize: 22, color: GOLD, textDecoration: "none",
-          marginRight: 10, flexShrink: 0,
-        }}>⊹</Link>
+        {/* Logo */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10,
+          padding: "0 24px", borderRight: "1px solid rgba(255,255,255,0.07)",
+          flexShrink: 0,
+        }}>
+          <Link href="/" style={{
+            fontFamily: FF, fontStyle: "italic", fontWeight: 400,
+            fontSize: 20, color: TEXT, textDecoration: "none", letterSpacing: "-0.02em",
+          }}>Nylus</Link>
+          <span style={{
+            fontFamily: FM, fontSize: 8, color: DIM2,
+            letterSpacing: "0.18em", textTransform: "uppercase",
+            alignSelf: "flex-end", marginBottom: 16,
+          }}>vault</span>
+        </div>
 
+        {/* Nav items — desktop */}
         {!isMobile && (
           <>
             {([
-              { href: "/essays",   label: "essays" },
-              { href: "/",         label: "domains" },
-              { href: "/sparks",   label: "sparks" },
-            ] as const).map(({ href, label }) => (
-              <Link key={href} href={href} style={{
-                fontFamily: FS, fontSize: 13, color: DIM,
-                padding: "5px 14px", borderRadius: 999,
-                textDecoration: "none",
-              }}
-              onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.color = TEXT2)}
-              onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.color = DIM)}
-              >{label}</Link>
-            ))}
-            <span style={{
-              fontFamily: FS, fontSize: 13, color: TEXT2,
-              padding: "5px 14px", borderRadius: 999, background: BG3,
-            }}>collisions</span>
+              { href: "/",          label: "dashboard", idx: "01" },
+              { href: "/",          label: "domains",   idx: "02" },
+              { href: "/essays",    label: "essays",    idx: "03" },
+              { href: "/workshop",  label: "workshop",  idx: "04" },
+              { href: "/collisions",label: "collisions",idx: "05" },
+              { href: "/sparks",    label: "sparks",    idx: "06" },
+              { href: "/research",  label: "research",  idx: "07" },
+            ] as const).map(({ href, label, idx }) => {
+              const isActive = label === "collisions";
+              return (
+                <Link
+                  key={label}
+                  href={href}
+                  className={`nav-item-g${isActive ? " active-nav" : ""}`}
+                >
+                  <span className="nav-ghost-num">{idx}</span>
+                  <span className="nav-lbl-g">{label}</span>
+                  <div className="nav-freq-bars">
+                    <span /><span /><span /><span /><span />
+                  </div>
+                </Link>
+              );
+            })}
           </>
         )}
 
-        {/* Count badge */}
-        <span style={{
-          fontFamily: FM, fontSize: 11, color: DIM2,
-          background: BG3, border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: 999, padding: "3px 10px",
-          marginLeft: isMobile ? 0 : 6, flexShrink: 0,
-        }}>
-          {allNodes.length > 0 ? `${filtered.length} / ${allNodes.length}` : "—"}
-        </span>
-
-        {/* Sort — desktop only */}
-        {!isMobile && (
-          <div style={{ display: "flex", gap: 3, marginLeft: 8 }}>
-            {(["pressure", "date", "alpha"] as const).map(s => (
-              <button key={s} onClick={() => setSortBy(s)} style={{
-                fontFamily: FM, fontSize: 10, letterSpacing: "0.1em",
-                textTransform: "uppercase", padding: "4px 10px", borderRadius: 4,
-                border: `1px solid ${sortBy === s ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)"}`,
-                background: sortBy === s ? BG3 : "transparent",
-                color: sortBy === s ? TEXT2 : DIM2,
-                cursor: "pointer", transition: "all 0.15s",
-              }}>
-                {s === "alpha" ? "a→z" : s}
-              </button>
-            ))}
+        {/* Right — count + sort */}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, padding: "0 20px", borderLeft: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+          {!isMobile && (
+            <div style={{ display: "flex", gap: 3 }}>
+              {(["pressure", "date", "alpha"] as const).map(s => (
+                <button key={s} onClick={() => setSortBy(s)} style={{
+                  fontFamily: FM, fontSize: 10, letterSpacing: "0.1em",
+                  textTransform: "uppercase", padding: "4px 10px", borderRadius: 4,
+                  border: `1px solid ${sortBy === s ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)"}`,
+                  background: sortBy === s ? BG3 : "transparent",
+                  color: sortBy === s ? TEXT2 : DIM2,
+                  cursor: "pointer", transition: "all 0.15s",
+                }}>
+                  {s === "alpha" ? "a→z" : s}
+                </button>
+              ))}
+            </div>
+          )}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+            <span style={{ fontFamily: FF, fontStyle: "italic", fontSize: 20, color: TEXT, fontWeight: 400, lineHeight: 1 }}>
+              {allNodes.length > 0 ? filtered.length : "—"}
+            </span>
+            <span style={{ fontFamily: FM, fontSize: 8, color: BLUE, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+              {allNodes.length > 0 ? `of ${allNodes.length}` : "loading"}
+            </span>
           </div>
-        )}
+        </div>
 
         <input
           value={search}
