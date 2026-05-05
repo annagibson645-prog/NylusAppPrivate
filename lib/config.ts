@@ -32,17 +32,38 @@ export const DEFAULT_CONFIG: VaultConfig = {
 
 // Allow environment-based override for builds
 export function getConfig(): VaultConfig {
-  const maxConcepts = process.env.VAULT_MAX_CONCEPTS
-    ? parseInt(process.env.VAULT_MAX_CONCEPTS, 10)
-    : DEFAULT_CONFIG.maxConcepts;
+  const parsePositiveInt = (envKey: string, fallback: number): number => {
+    const val = process.env[envKey];
+    if (!val) return fallback;
 
-  const maxCollisions = process.env.VAULT_MAX_COLLISIONS
-    ? parseInt(process.env.VAULT_MAX_COLLISIONS, 10)
-    : DEFAULT_CONFIG.maxCollisions;
+    const parsed = parseInt(val, 10); // Base 10 for consistency with decimal env vars
+    if (isNaN(parsed) || parsed <= 0) {
+      console.warn(`Invalid ${envKey}="${val}" (must be positive integer), using default: ${fallback}`);
+      return fallback;
+    }
+    return parsed;
+  };
+
+  const parsePositiveFloat = (envKey: string, fallback: number): number => {
+    const val = process.env[envKey];
+    if (!val) return fallback;
+
+    const parsed = parseFloat(val);
+    if (isNaN(parsed) || parsed <= 0 || parsed > 1) {
+      console.warn(`Invalid ${envKey}="${val}" (must be 0 < x < 1), using default: ${fallback}`);
+      return fallback;
+    }
+    return parsed;
+  };
 
   return {
-    ...DEFAULT_CONFIG,
-    maxConcepts,
-    maxCollisions,
+    maxConcepts: parsePositiveInt('VAULT_MAX_CONCEPTS', DEFAULT_CONFIG.maxConcepts),
+    maxCollisions: parsePositiveInt('VAULT_MAX_COLLISIONS', DEFAULT_CONFIG.maxCollisions),
+    maxSparks: parsePositiveInt('VAULT_MAX_SPARKS', DEFAULT_CONFIG.maxSparks),
+    maxEssays: parsePositiveInt('VAULT_MAX_ESSAYS', DEFAULT_CONFIG.maxEssays),
+    tensionRatio: parsePositiveFloat('VAULT_TENSION_RATIO', DEFAULT_CONFIG.tensionRatio),
+    seedRatio: parsePositiveFloat('VAULT_SEED_RATIO', DEFAULT_CONFIG.seedRatio),
+    collisionTitleMaxChars: parsePositiveInt('VAULT_COLLISION_TITLE_MAX', DEFAULT_CONFIG.collisionTitleMaxChars),
+    excerptMaxChars: parsePositiveInt('VAULT_EXCERPT_MAX', DEFAULT_CONFIG.excerptMaxChars),
   };
 }
