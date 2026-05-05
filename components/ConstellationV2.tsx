@@ -1523,7 +1523,6 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
       <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
         fontFamily: c2Style.font, display: 'flex', flexDirection: 'column',
         position: 'relative', overflow: 'hidden' }}>
-        <C2Starfield P={P} density={tweaks.starDensity} motion={tweaks.motion} />
         <ShootingStars density={tweaks.starDensity} paused={!tweaks.motion} />
         <C2Header P={P} page={page} setPage={setPage} tweaks={tweaks} onCyclePalette={onCyclePalette} />
         <div style={{ flex: 1, display: 'flex', minHeight: 0, position: 'relative', zIndex: 1 }}>
