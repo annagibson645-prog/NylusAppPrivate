@@ -184,31 +184,39 @@ export default function CollisionsPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#0e0d14", color: "#e8e3f0", fontFamily: FN }}>
 
-      {/* NAV */}
+      {/* NAV — Proto 4 Dossier */}
       <nav style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "0 32px", height: 64,
+        display: "flex", alignItems: "center", gap: 20,
+        padding: "0 48px", height: 76,
         borderBottom: "1px solid #1c1828",
-        background: "#0a0912",
+        background: "linear-gradient(180deg, #0d0c18 0%, #0a0912 100%)",
         position: "sticky", top: 0, zIndex: 100,
-        flexWrap: "wrap",
+        flexShrink: 0,
       }}>
         <Link href="/" style={{
-          fontFamily: FF, fontStyle: "italic", fontWeight: 300,
-          fontSize: 19, color: "#e8e3f0", textDecoration: "none",
-          letterSpacing: "-.01em",
+          fontFamily: FF, fontStyle: "italic", fontWeight: 200,
+          fontSize: 30, color: "#ffffff", textDecoration: "none",
+          letterSpacing: "-.02em", flexShrink: 0,
         }}>NylusS</Link>
-        <span style={{ color: "#2a2540", fontSize: 16 }}>|</span>
-        <span style={{ fontFamily: FM, fontSize: 11, color: "#4a4468", letterSpacing: ".08em", textTransform: "uppercase" }}>
-          collisions
+
+        <span style={{ fontFamily: FM, fontSize: 22, color: "#2a2540" }}>/</span>
+
+        <span style={{
+          fontFamily: FF, fontStyle: "italic", fontWeight: 200,
+          fontSize: 26, color: "#8b5cf6", letterSpacing: "-.01em", flexShrink: 0,
+        }}>Collisions</span>
+
+        <span style={{
+          fontFamily: FM, fontSize: 11, color: "#6c6490",
+          background: "#1c1828", border: "1px solid #2a2540",
+          borderRadius: 999, padding: "4px 12px", letterSpacing: ".06em",
+          flexShrink: 0,
+        }}>
+          {allNodes.length > 0 ? `${allNodes.length} active` : "—"}
         </span>
-        <span style={{ fontFamily: FM, fontSize: 11, color: "#2a2540", letterSpacing: ".04em" }}>
-          {allNodes.length > 0 ? `${allNodes.length}` : "—"}
-        </span>
-        <span style={{ color: "#2a2540", fontSize: 16, marginLeft: 4 }}>|</span>
 
         {/* Domain dots */}
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 9, alignItems: "center", flexShrink: 0 }}>
           {domains.map((d) => {
             const col = DOMAIN_COLOR[d] || "#8b5cf6";
             const active = domainFilter === d;
@@ -216,11 +224,13 @@ export default function CollisionsPage() {
               <button key={d} onClick={() => setDomainFilter(active ? "all" : d)}
                 title={DOMAIN_LABEL[d] || d}
                 style={{
-                  width: 9, height: 9, borderRadius: "50%",
+                  width: 13, height: 13, borderRadius: "50%",
                   background: col,
-                  opacity: domainFilter === "all" ? 0.6 : active ? 1 : 0.2,
+                  opacity: domainFilter === "all" ? 0.8 : active ? 1 : 0.2,
                   border: "none", cursor: "pointer", padding: 0,
-                  boxShadow: active ? `0 0 8px ${col}` : "none",
+                  boxShadow: active ? `0 0 12px ${col}cc, 0 0 4px ${col}` : "none",
+                  outline: active ? `2px solid ${col}50` : "none",
+                  outlineOffset: 2,
                   transition: "all 0.15s",
                 }}
               />
@@ -228,22 +238,26 @@ export default function CollisionsPage() {
           })}
         </div>
 
-        <span style={{ color: "#2a2540", fontSize: 16 }}>|</span>
-
         {/* Sort */}
-        <div style={{ display: "flex", gap: 4 }}>
-          {(["pressure", "date", "alpha"] as const).map((s) => (
-            <button key={s} onClick={() => setSortBy(s)}
-              style={{
-                fontFamily: FM, fontSize: 10, letterSpacing: ".08em",
-                textTransform: "uppercase", padding: "3px 8px",
-                background: sortBy === s ? "#1c1828" : "transparent",
-                border: `1px solid ${sortBy === s ? "#2a2540" : "transparent"}`,
-                borderRadius: 2, color: sortBy === s ? "#8c84b0" : "#3a3460",
-                cursor: "pointer",
-              }}
-            >{s}</button>
-          ))}
+        <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+          {(["pressure", "date", "alpha"] as const).map((s) => {
+            const label = s === "alpha" ? "A→Z" : s;
+            const active = sortBy === s;
+            return (
+              <button key={s} onClick={() => setSortBy(s)}
+                style={{
+                  fontFamily: FM, fontSize: 12, letterSpacing: ".08em",
+                  textTransform: "uppercase", padding: "6px 16px",
+                  background: active ? "#1c1828" : "transparent",
+                  border: `1px solid ${active ? "#3a3460" : "#1c1828"}`,
+                  borderRadius: 3,
+                  color: active ? "#ffffff" : "#4a4468",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+              >{label}</button>
+            );
+          })}
         </div>
 
         {/* Search */}
@@ -256,24 +270,23 @@ export default function CollisionsPage() {
               background: "transparent",
               border: "1px solid #1c1828",
               borderRadius: 2,
-              padding: "4px 10px",
-              fontFamily: FM, fontSize: 11,
+              padding: "7px 14px",
+              fontFamily: FM, fontSize: 12,
               color: "#8c84b0",
               outline: "none",
-              width: 140,
+              width: 180,
             }}
           />
         </div>
       </nav>
-
       {/* BODY */}
       <div style={{ display: "flex", width: "100%", minHeight: "calc(100vh - 64px)" }}>
 
         {/* LEFT — Crater Map */}
         <div style={{
-          width: "60%", flexShrink: 0,
+          width: "74%", flexShrink: 0,
           padding: "32px 32px 32px 48px",
-          position: "sticky", top: 64, height: "calc(100vh - 64px)",
+          position: "sticky", top: 76, height: "calc(100vh - 76px)",
           overflow: "hidden",
           borderRight: "1px solid #1c1828",
           display: "flex", flexDirection: "column",
@@ -298,7 +311,7 @@ export default function CollisionsPage() {
         </div>
 
         {/* RIGHT — List */}
-        <div style={{ width: "40%", flexShrink: 0, padding: "32px 28px 80px 32px", overflowY: "auto", height: "calc(100vh - 64px)", position: "sticky", top: 64 }}>
+        <div style={{ width: "26%", flexShrink: 0, padding: "32px 40px 80px 20px", overflowY: "auto", height: "calc(100vh - 64px)", position: "sticky", top: 64 }}>
           {filtered.length === 0 && (
             <div style={{ fontFamily: FM, fontSize: 12, color: "#2a2540", letterSpacing: ".08em", textTransform: "uppercase", marginTop: 40, textAlign: "center" }}>
               no collisions found
