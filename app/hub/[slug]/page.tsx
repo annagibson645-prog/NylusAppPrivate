@@ -178,14 +178,22 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
     <div className="void-page" style={{ '--domain-color': color } as React.CSSProperties}>
       <div className="void-ambient" />
 
-      <nav className="void-nav">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link href="/" className="void-nav-back">{'<- constellation'}</Link>
-          <span style={{ color: '#2a2535' }}>.</span>
-          <Link href={`/domain/${hub.domain}`} className="void-nav-back">{label}</Link>
-        </div>
-        <ThemeToggle />
-      </nav>
+      {/* Right-side nav */}
+      <aside className="void-right-nav hub-right-nav">
+        <div className="vrn-toggle"><ThemeToggle /></div>
+        <Link href="/" className="vrn-brand">NylusS</Link>
+        <div className="vrn-sep" />
+        <Link href="/" className="vrn-link">← constellation</Link>
+        <Link href={`/domain/${hub.domain}`} className="vrn-link">← {label}</Link>
+        {hub.path && (
+          <a href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(hub.path)}`} className="vrn-link">
+            obsidian ↗
+          </a>
+        )}
+        <div className="vrn-sep" />
+        <Link href="/collisions" className="vrn-link">collisions →</Link>
+        <Link href="/sparks" className="vrn-link">sparks →</Link>
+      </aside>
 
       <div className="hub-outer">
 
@@ -603,6 +611,16 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         }
         @media (max-width: 400px) {
           .hub-sidebar { grid-template-columns: 1fr; }
+        }
+
+        /* Hub right nav — fixed to right edge */
+        .hub-right-nav {
+          position: fixed !important;
+          right: 0;
+          top: 0;
+        }
+        @media (max-width: 900px) {
+          .hub-right-nav { display: none !important; }
         }
 
         /* Sepia concept grid */

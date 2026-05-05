@@ -3,22 +3,17 @@ import Link from "next/link";
 import { marked } from "marked";
 import { useState, useEffect } from "react";
 import type { VaultNode } from "@/lib/types";
-import { DOMAIN_LABELS } from "@/lib/types";
 import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
   node: VaultNode;
   backlinkedNodes: VaultNode[];
   nodeTypes: Map<string, string>;
+  domainSiblings?: VaultNode[];
 }
 
 function slugFromWikilink(target: string): string {
-  return target
-    .split("/")
-    .pop()!
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+  return target.split("/").pop()!.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 function routeForType(type: string, slug: string): string {
@@ -78,7 +73,7 @@ const DOMAIN_BACK: Record<string, string> = {
   unknown: "Other",
 };
 
-export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) {
+export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSiblings = [] }: Props) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -94,184 +89,203 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes }: Props) 
 
   const html = renderContent(node.content, nodeTypes);
   const hasConnections = backlinkedNodes.length > 0 || node.links.length > 0;
-
   const typeRoute = (n: VaultNode) => routeForType(n.type, n.id);
 
   return (
-    <div className="void-page" style={{ '--domain-color': node.color } as React.CSSProperties}>
-
+    <div className="void-page" style={{ "--domain-color": node.color } as React.CSSProperties}>
       {/* Reading progress */}
       <div className="void-progress-track">
         <div className="void-progress-bar" style={{ width: `${progress}%` }} />
       </div>
-
-      {/* Ambient glow */}
       <div className="void-ambient" />
 
-      {/* Nav */}
-      <nav className="void-nav">
-        <Link href="/" className="void-nav-brand">NylusS</Link>
-        <div className="void-nav-right">
-          <Link href="/" className="void-nav-back">← constellation</Link>
+      {/* Layout: main content + right nav */}
+      <div className="void-layout">
+
+        {/* ── Main content ─────────────────────────────────────────── */}
+        <div className="void-layout-main">
+
+          {/* Domain chip */}
+          <div className="void-domain-chip">
+            {DOMAIN_FULL[node.domain] || node.domain}
+          </div>
+
+          {/* Title */}
+          <h1 className="void-title">{node.title}</h1>
+
+          {/* Lede */}
+          {node.excerpt && (
+            <div className="void-lede">{node.excerpt}</div>
+          )}
+
+          {/* Meta */}
+          <div className="void-meta-inline">
+            <span className="void-meta-status" style={{ color: node.color }}>{node.status}</span>
+            <span className="void-meta-dot">·</span>
+            <span className="void-meta-type">{node.type}</span>
+            {node.sources > 0 && (
+              <>
+                <span className="void-meta-dot">·</span>
+                <span className="void-meta-type">{node.sources} {node.sources === 1 ? "source" : "sources"}</span>
+              </>
+            )}
+            {node.updated && (
+              <>
+                <span className="void-meta-dot">·</span>
+                <span className="void-meta-type">{formatDate(node.updated)}</span>
+              </>
+            )}
+          </div>
+
+          {/* Ornament */}
+          <div className="void-ornament">
+            <div className="void-ornament-line" />
+            <span className="void-ornament-glyph">✦</span>
+            <div className="void-ornament-line" />
+          </div>
+
+          {/* Body */}
+          <div className="void-prose" dangerouslySetInnerHTML={{ __html: html }} />
+
+          {/* Tensions */}
+          {node.tension_a && node.tension_b && (
+            <>
+              <div className="void-section-label">tensions</div>
+              <div className="void-tension-pair">
+                <div className="void-tension-side">{node.tension_a}</div>
+                <div className="void-tension-vs">VS</div>
+                <div className="void-tension-side">{node.tension_b}</div>
+              </div>
+            </>
+          )}
+
+          {/* Live wire */}
+          {node.live_wire && (
+            <>
+              <div className="void-section-label">live edge</div>
+              <div className="void-live-wire">{node.live_wire}</div>
+            </>
+          )}
+
+          {/* Connections */}
+          {hasConnections && (
+            <>
+              <div className="void-section-label">connected concepts</div>
+              <div className="void-connections-grid">
+                {backlinkedNodes.slice(0, 8).map((n) => (
+                  <Link key={n.id} href={typeRoute(n)} className="void-conn-cell">
+                    <div className="void-conn-domain" style={{ color: n.color }}>
+                      {DOMAIN_BACK[n.domain] || n.domain}
+                    </div>
+                    <div className="void-conn-title">{n.title}</div>
+                  </Link>
+                ))}
+                {node.links.slice(0, 8).map((id) => (
+                  <Link key={id} href={`/concept/${id}`} className="void-conn-cell">
+                    <div className="void-conn-domain">→ link</div>
+                    <div className="void-conn-title">{id.replace(/-/g, " ")}</div>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Hub */}
+          {node.hub && (
+            <div className="void-hub-row">
+              <span className="void-hub-label">hub</span>
+              <Link href={`/concept/${node.hub}`} className="void-hub-link">
+                ↑ {node.hub.replace(/-hub$/, "").replace(/-/g, " ")}
+              </Link>
+            </div>
+          )}
+
+          {/* Metadata strip */}
+          <div className="void-meta-strip">
+            <div className="void-meta-item">
+              <span className="void-meta-k">domain</span>
+              <span className="void-meta-v">{DOMAIN_FULL[node.domain] || node.domain}</span>
+            </div>
+            <div className="void-meta-item">
+              <span className="void-meta-k">status</span>
+              <span className="void-meta-v" style={{ color: node.color }}>{node.status}</span>
+            </div>
+            {node.sources > 0 && (
+              <div className="void-meta-item">
+                <span className="void-meta-k">sources</span>
+                <span className="void-meta-v">{node.sources}</span>
+              </div>
+            )}
+            {node.created && (
+              <div className="void-meta-item">
+                <span className="void-meta-k">created</span>
+                <span className="void-meta-v">{formatDate(node.created)}</span>
+              </div>
+            )}
+            {backlinkedNodes.length > 0 && (
+              <div className="void-meta-item">
+                <span className="void-meta-k">inbound links</span>
+                <span className="void-meta-v">{backlinkedNodes.length}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Right nav ─────────────────────────────────────────────── */}
+        <aside className="void-right-nav">
+          <div className="vrn-toggle">
+            <ThemeToggle />
+          </div>
+
+          <Link href="/" className="vrn-brand">NylusS</Link>
+
+          <div className="vrn-sep" />
+
+          <Link href="/" className="vrn-link">← constellation</Link>
           <a
             href={`obsidian://open?vault=NylusS&file=${encodeURIComponent(node.path)}`}
-            className="void-nav-obsidian"
+            className="vrn-link"
           >
             obsidian ↗
           </a>
-          <ThemeToggle />
-        </div>
-      </nav>
 
-      {/* Content */}
-      <div className="concept-outer">
-
-        {/* Sidebar — backlinks */}
-        {backlinkedNodes.length > 0 && (
-          <aside className="concept-sidebar">
-            <div className="csb-label">Backlinks</div>
-            {backlinkedNodes.map((n) => (
-              <Link key={n.id} href={typeRoute(n)} className="csb-item">
-                <span className="csb-domain">{DOMAIN_BACK[n.domain] || n.domain}</span>
-                {n.title}
-              </Link>
-            ))}
-          </aside>
-        )}
-
-        <div className="void-content">
-
-        {/* Domain chip */}
-        <div className="void-domain-chip">
-          {DOMAIN_FULL[node.domain] || node.domain}
-        </div>
-
-        {/* Title */}
-        <h1 className="void-title">{node.title}</h1>
-
-        {/* Lede — excerpt as styled intro */}
-        {node.excerpt && (
-          <div className="void-lede">{node.excerpt}</div>
-        )}
-
-        {/* Status + meta */}
-        <div className="void-meta-inline">
-          <span className="void-meta-status" style={{ color: node.color }}>
-            {node.status}
-          </span>
-          <span className="void-meta-dot">·</span>
-          <span className="void-meta-type">{node.type}</span>
-          {node.sources > 0 && (
+          {/* Domain siblings */}
+          {domainSiblings.length > 0 && (
             <>
-              <span className="void-meta-dot">·</span>
-              <span className="void-meta-type">{node.sources} {node.sources === 1 ? "source" : "sources"}</span>
-            </>
-          )}
-          {node.updated && (
-            <>
-              <span className="void-meta-dot">·</span>
-              <span className="void-meta-type">{formatDate(node.updated)}</span>
-            </>
-          )}
-        </div>
-
-        {/* Ornament */}
-        <div className="void-ornament">
-          <div className="void-ornament-line" />
-          <span className="void-ornament-glyph">✦</span>
-          <div className="void-ornament-line" />
-        </div>
-
-        {/* Body content */}
-        <div
-          className="void-prose"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-
-        {/* Tensions — if structured data exists */}
-        {node.tension_a && node.tension_b && (
-          <>
-            <div className="void-section-label">tensions</div>
-            <div className="void-tension-pair">
-              <div className="void-tension-side">{node.tension_a}</div>
-              <div className="void-tension-vs">VS</div>
-              <div className="void-tension-side">{node.tension_b}</div>
-            </div>
-          </>
-        )}
-
-        {/* Live wire */}
-        {node.live_wire && (
-          <>
-            <div className="void-section-label">live edge</div>
-            <div className="void-live-wire">{node.live_wire}</div>
-          </>
-        )}
-
-        {/* Connections */}
-        {hasConnections && (
-          <>
-            <div className="void-section-label">connected concepts</div>
-            <div className="void-connections-grid">
-              {backlinkedNodes.slice(0, 8).map((n) => (
-                <Link key={n.id} href={typeRoute(n)} className="void-conn-cell">
-                  <div className="void-conn-domain" style={{ color: n.color }}>
-                    {DOMAIN_BACK[n.domain] || n.domain}
-                  </div>
-                  <div className="void-conn-title">{n.title}</div>
+              <div className="vrn-sep" />
+              <span className="vrn-domain-label">
+                {DOMAIN_FULL[node.domain] || node.domain}
+              </span>
+              {domainSiblings.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/concept/${s.id}`}
+                  className={`vrn-sibling${s.id === node.id ? " vrn-sibling-current" : ""}`}
+                  title={s.title}
+                >
+                  {s.title}
                 </Link>
               ))}
-              {node.links.slice(0, 8).map((id) => (
-                <Link key={id} href={`/concept/${id}`} className="void-conn-cell">
-                  <div className="void-conn-domain">→ link</div>
-                  <div className="void-conn-title">{id.replace(/-/g, " ")}</div>
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Hub membership */}
-        {node.hub && (
-          <div className="void-hub-row">
-            <span className="void-hub-label">hub</span>
-            <Link href={`/concept/${node.hub}`} className="void-hub-link">
-              ↑ {node.hub.replace(/-hub$/, "").replace(/-/g, " ")}
-            </Link>
-          </div>
-        )}
-
-        {/* Metadata strip */}
-        <div className="void-meta-strip">
-          <div className="void-meta-item">
-            <span className="void-meta-k">domain</span>
-            <span className="void-meta-v">{DOMAIN_FULL[node.domain] || node.domain}</span>
-          </div>
-          <div className="void-meta-item">
-            <span className="void-meta-k">status</span>
-            <span className="void-meta-v" style={{ color: node.color }}>{node.status}</span>
-          </div>
-          {node.sources > 0 && (
-            <div className="void-meta-item">
-              <span className="void-meta-k">sources</span>
-              <span className="void-meta-v">{node.sources}</span>
-            </div>
+            </>
           )}
-          {node.created && (
-            <div className="void-meta-item">
-              <span className="void-meta-k">created</span>
-              <span className="void-meta-v">{formatDate(node.created)}</span>
-            </div>
-          )}
+
+          <div className="vrn-sep" />
+          <Link href="/collisions" className="vrn-link">collisions →</Link>
+          <Link href="/sparks" className="vrn-link">sparks →</Link>
+
+          {/* Backlinks */}
           {backlinkedNodes.length > 0 && (
-            <div className="void-meta-item">
-              <span className="void-meta-k">inbound links</span>
-              <span className="void-meta-v">{backlinkedNodes.length}</span>
-            </div>
+            <>
+              <span className="vrn-section-label">backlinks</span>
+              {backlinkedNodes.slice(0, 6).map((n) => (
+                <Link key={n.id} href={typeRoute(n)} className="vrn-sibling" title={n.title}>
+                  {n.title}
+                </Link>
+              ))}
+            </>
           )}
-        </div>
+        </aside>
       </div>
     </div>
-  </div>
   );
 }

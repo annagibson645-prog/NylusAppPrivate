@@ -231,8 +231,8 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
   const domains = uM(() => C2_DATA.DOMAINS.map((d, i) => ({
     ...d,
     baseAngle: (i / C2_DATA.DOMAINS.length) * Math.PI * 2 - Math.PI / 2,
-    orbitR: R * (0.6 + (d.concepts / 800) * 0.5),
-    radius: 7 + Math.sqrt(Math.max(d.concepts, 1)) * 0.55,
+    orbitR: R * (0.68 + (Math.min(d.concepts, 300) / 400) * 0.22),
+    radius: 7 + Math.sqrt(Math.min(d.concepts, 150)) * 0.55,
     speed: 0.04 + (1 / (i + 2)) * 0.12,
   })), [C2_DATA.DOMAINS]);
 
@@ -491,7 +491,7 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
       </p>
 
       {/* 3-column display grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
         {C2_DATA.DOMAINS.map((d, i) => {
           const isHovered = hovered === d.id;
           const num = String(i + 1).padStart(2, '0');

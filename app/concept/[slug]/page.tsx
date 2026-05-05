@@ -21,5 +21,10 @@ export default async function ConceptPage({ params }: { params: Promise<{ slug: 
   const nodeTypes = new Map(nodes.map((n) => [n.id, n.type]));
   const backlinkedNodes = node.backlinks.flatMap((id) => nodeMap.has(id) ? [nodeMap.get(id)!] : []);
 
-  return <NodeReader node={node} backlinkedNodes={backlinkedNodes} nodeTypes={nodeTypes} />;
+  const domainSiblings = nodes
+    .filter(n => n.domain === node.domain && n.id !== slug && n.type === 'concept')
+    .sort((a, b) => (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0))
+    .slice(0, 15);
+
+  return <NodeReader node={node} backlinkedNodes={backlinkedNodes} nodeTypes={nodeTypes} domainSiblings={domainSiblings} />;
 }
