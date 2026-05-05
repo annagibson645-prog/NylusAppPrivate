@@ -168,13 +168,13 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   const C2_DATA = useNylusData();
   const router = useRouter();
   const items: { n: string; idx: string; route?: string }[] = [
-    { n: 'dashboard', idx: '01' },
-    { n: 'domains',   idx: '02' },
-    { n: 'essays',    idx: '03', route: '/essays' },
-    { n: 'workshop',  idx: '04' },
-    { n: 'collisions',idx: '05', route: '/collisions' },
-    { n: 'sparks',    idx: '06', route: '/sparks' },
-    { n: 'research',  idx: '07' },
+    { n: 'Dashboard', idx: '01' },
+    { n: 'Domains',   idx: '02' },
+    { n: 'Essays',    idx: '03', route: '/essays' },
+    { n: 'Workshop',  idx: '04' },
+    { n: 'Collisions',idx: '05', route: '/collisions' },
+    { n: 'Sparks',    idx: '06', route: '/sparks' },
+    { n: 'Research',  idx: '07' },
   ];
   return (
     <>
@@ -192,8 +192,8 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
           {items.map(({ n, idx, route }) => (
             <button
               key={n}
-              className={`c2-nav-item${n === page ? ' c2-active' : ''}`}
-              onClick={() => route ? router.push(route) : setPage(n)}
+              className={`c2-nav-item${n.toLowerCase() === page.toLowerCase() ? ' c2-active' : ''}`}
+              onClick={() => route ? router.push(route) : setPage(n.toLowerCase())}
             >
               <span className="c2-nav-ghost">{idx}</span>
               <span className="c2-nav-lbl">{n}</span>
@@ -1485,8 +1485,8 @@ interface ConstellationV2Props {
 // ─── MOBILE VIEW ─────────────────────────────────────────────────────────────────────────────
 function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
   const router = useRouter();
-  const [tab, setTab] = uS<'domains' | 'hubs' | 'sparks' | 'collisions'>('domains');
-  const tabs: Array<'domains' | 'hubs' | 'sparks' | 'collisions'> = ['domains', 'hubs', 'sparks', 'collisions'];
+  const [tab, setTab] = uS<'Domains' | 'Hubs' | 'Sparks' | 'Collisions'>('Domains');
+  const tabs: Array<'Domains' | 'Hubs' | 'Sparks' | 'Collisions'> = ['Domains', 'Hubs', 'Sparks', 'Collisions'];
 
   return (
     <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
@@ -1512,7 +1512,7 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
         </div>
       </div>
 
-      {tab === 'domains' && (
+      {tab === 'Domains' && (
         <div style={{ padding: '16px 16px 60px' }}>
           {data.DOMAINS.map(d => (
             <div key={d.id} onClick={() => router.push(`/domain/${d.key}`)}
@@ -1529,7 +1529,7 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
         </div>
       )}
 
-      {tab === 'hubs' && (
+      {tab === 'Hubs' && (
         <div style={{ padding: '16px 16px 60px' }}>
           {data.HUBS.slice(0, 30).map(h => (
             <div key={h.id} onClick={() => router.push(`/hub/${h.id}`)}
@@ -1545,7 +1545,7 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
         </div>
       )}
 
-      {tab === 'sparks' && (
+      {tab === 'Sparks' && (
         <div style={{ padding: '16px 16px 60px' }}>
           {data.SPARKS.slice(0, 40).map(s => (
             <div key={s.id} style={{ padding: '14px 0', borderBottom: `1px solid ${P.border}` }}>
@@ -1556,7 +1556,7 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
         </div>
       )}
 
-      {tab === 'collisions' && (
+      {tab === 'Collisions' && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '60px 24px' }}>
           <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>⚡ Collisions</div>
           <div style={{ fontFamily: c2Style.serif, fontSize: 22, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, marginBottom: 10, color: P.text }}>

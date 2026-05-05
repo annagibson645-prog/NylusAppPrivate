@@ -113,7 +113,7 @@ export default async function CollisionPage({
     <div style={{ minHeight: "100vh", background: "#0e0d14", color: "#e8e3f0", fontFamily: FN }}>
 
       <NavG
-        active="collisions"
+        active="Collisions"
         right={
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ width: 7, height: 7, borderRadius: "50%", background: col, display: "inline-block", boxShadow: `0 0 8px ${col}80`, flexShrink: 0 }} />

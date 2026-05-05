@@ -84,7 +84,7 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
     <div className="void-page" style={{ '--domain-color': domainColor } as React.CSSProperties}>
       <div className="void-ambient" />
 
-      <NavG active="domains" />
+      <NavG active="Domains" />
 
       <div className="void-content">
         <div className="void-domain-chip">{label}</div>
