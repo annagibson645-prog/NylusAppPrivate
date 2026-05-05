@@ -122,30 +122,31 @@ function useShootingStars(
 
     function tick(ts: number) {
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
-      if (ts - lastSpawn > 900 + Math.random() * 500) {
+
+      // spawn: time-based OR top up if pool is thin
+      if (ts - lastSpawn > 700 + Math.random() * 600 || stars.length < 3) {
         stars.push(mkStar());
         lastSpawn = ts;
         if (stars.length > 12) stars.shift();
       }
+
       for (let i = stars.length - 1; i >= 0; i--) {
         const s = stars[i];
         s.life++;
+        const progress = s.life / s.maxLife;
+        // clamp alpha to [0,1] so negative values never corrupt color strings
+        const a = Math.max(0, s.alpha * (1 - Math.pow(Math.max(0, progress - 0.5) * 2, 2)));
         const tail = Math.min(s.life, s.maxLife);
         const tx = s.x - s.vx * tail;
         const ty = s.y - s.vy * tail;
-        const progress = s.life / s.maxLife;
-        const a = s.alpha * (1 - Math.pow(Math.max(0, progress - 0.5) * 2, 2));
         const grad = ctx!.createLinearGradient(tx, ty, s.x, s.y);
         grad.addColorStop(0, "rgba(255,255,255,0)");
-        grad.addColorStop(1, s.hue === "#ffffff"
-          ? `rgba(255,255,255,${a})`
-          : s.hue + Math.round(a * 255).toString(16).padStart(2, "0")
-        );
+        grad.addColorStop(1, `rgba(255,255,255,${a})`);
         ctx!.beginPath();
         ctx!.moveTo(tx, ty);
         ctx!.lineTo(s.x, s.y);
         ctx!.strokeStyle = grad;
-        ctx!.lineWidth = 0.8 + (1 - progress) * 0.6;
+        ctx!.lineWidth = 0.8 + Math.max(0, 1 - progress) * 0.6;
         ctx!.lineCap = "round";
         ctx!.stroke();
         ctx!.beginPath();
@@ -154,7 +155,9 @@ function useShootingStars(
         ctx!.fill();
         s.x += s.vx;
         s.y += s.vy;
+        // remove if offscreen OR past max lifetime (prevents stuck stars)
         if (
+          s.life > s.maxLife + 20 ||
           s.x < -20 || s.x > canvas!.width + 20 ||
           s.y < -20 || s.y > canvas!.height + 20
         ) stars.splice(i, 1);
