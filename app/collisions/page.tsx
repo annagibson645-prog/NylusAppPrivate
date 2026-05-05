@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
-import type { VaultNode, GraphData } from "@/lib/types";
+import type { VaultNode } from "@/lib/types";
 
 const DOMAIN_COLOR: Record<string, string> = {
   "cross-domain":         "#14b8a6",
@@ -139,10 +139,10 @@ export default function CollisionsPage() {
   const listItemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
-    fetch("/data/graph.json")
+    fetch("/data/collisions.json")
       .then((r) => r.json())
-      .then((data: GraphData) => {
-        const cols = data.nodes.filter((n) => n.type === "collision");
+      .then((data: VaultNode[]) => {
+        const cols = data.filter((n) => n.type === "collision");
         setAllNodes(cols);
       });
   }, []);
