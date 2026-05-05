@@ -144,7 +144,7 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
         {/* Ungrouped concepts */}
         {ungrouped.length > 0 && (
           <>
-            <div className="void-section-label" style={{ marginTop: 48 }}>ungrouped concepts</div>
+            <div className="void-section-label" style={{ marginTop: 48 }}>Ungrouped Concepts</div>
             <div className="void-compact-list">
               {ungrouped.map((n: any) => (
                 <Link key={n.id} href={`/concept/${n.id}`} className="void-compact-item">
