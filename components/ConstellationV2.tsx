@@ -233,7 +233,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
     baseAngle: (i / C2_DATA.DOMAINS.length) * Math.PI * 2 - Math.PI / 2,
     orbitR: R * (0.80 + (i % 3) * 0.07),
     radius: 9 + Math.min(d.concepts, 200) / 50,
-    speed: 0.036 + i * 0.003,
+    speed: 0.042,
   })), [C2_DATA.DOMAINS]);
 
   const positioned = domains.map(d => {
