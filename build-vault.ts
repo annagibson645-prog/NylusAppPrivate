@@ -59,6 +59,7 @@ interface VaultNode {
   tension_b?: string;
   pressure_score?: number;
   word_count?: number;
+  concepts?: string[];
 }
 
 interface VaultEdge {
@@ -336,6 +337,8 @@ async function buildVault() {
   if (fs.existsSync(hubsDir)) {
     for (const hubFile of walkDir(hubsDir)) {
       const hubSlug = slugify(hubFile);
+      const hubNode = nodes.get(hubSlug);
+      if (hubNode) hubNode.concepts = [];
       const { content: hubContent } = matter(
         fs.readFileSync(hubFile, "utf-8")
       );
@@ -344,6 +347,9 @@ async function buildVault() {
         const target = nodes.get(ls);
         if (target && target.type === "concept") {
           target.hub = hubSlug;
+          if (hubNode && hubNode.concepts && !hubNode.concepts.includes(ls)) {
+            hubNode.concepts.push(ls);
+          }
         }
       }
     }
