@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import matter from "gray-matter";
-import { truncateAtWord } from './lib/string-utils.ts';
+import { truncateAtWord } from './lib/string-utils';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
