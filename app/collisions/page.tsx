@@ -349,7 +349,7 @@ function ArcOrbital({
             {tooltip.label}
           </div>
           <div style={{ fontFamily: FM, fontSize: 10, color: tooltip.color, marginTop: 2 }}>
-            {tooltip.count} collisions
+            {tooltip.count} {tooltip.label.toLowerCase() === 'all domains' ? 'nodes' : 'items'}
           </div>
         </div>
       )}
