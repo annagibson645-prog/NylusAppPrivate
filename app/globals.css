@@ -1053,6 +1053,7 @@ html, body {
   min-width: 0;
   padding: 48px 56px 180px;
   max-width: 820px;
+  margin: 0 auto;
 }
 
 .void-right-nav {
@@ -1075,9 +1076,9 @@ html, body {
 
 .vrn-brand {
   font-family: var(--font-jetbrains), monospace;
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: 0.3em;
-  color: #4a4468;
+  color: #ffffff;
   text-transform: uppercase;
   text-decoration: none;
   display: block;
@@ -1095,8 +1096,8 @@ html, body {
 .vrn-link {
   display: block;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 10px;
-  color: #4a4468;
+  font-size: 15px;
+  color: #ffffff;
   text-decoration: none;
   padding: 5px 0;
   letter-spacing: 0.1em;
@@ -1111,21 +1112,21 @@ html, body {
 
 .vrn-domain-label {
   font-family: var(--font-jetbrains), monospace;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--domain-color, #a78bfa);
-  opacity: 0.8;
+  opacity: 1;
   margin-bottom: 8px;
   display: block;
 }
 
 .vrn-section-label {
   font-family: var(--font-jetbrains), monospace;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #332f4a;
+  color: #ffffff;
   margin: 14px 0 6px;
   display: block;
 }
@@ -1133,8 +1134,8 @@ html, body {
 .vrn-sibling {
   display: block;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 10px;
-  color: #5a5478;
+  font-size: 15px;
+  color: #ffffff;
   text-decoration: none;
   padding: 4px 0;
   letter-spacing: 0.04em;
