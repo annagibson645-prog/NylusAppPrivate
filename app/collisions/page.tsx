@@ -72,15 +72,15 @@ function CraterMap({ nodes, hoveredId, onHover }: CraterMapProps) {
   const placed: Array<{ x: number; y: number; r: number; node: VaultNode }> = [];
 
   for (const node of nodes) {
-    const r = 4 + (node.pressure_score ?? 0) * 1.1;
+    const r = 2 + (node.pressure_score ?? 0) * 0.35;
     let x = 0, y = 0, tries = 0;
     do {
       x = r + rand() * (W - 2 * r);
       y = r + rand() * (H - 2 * r);
       tries++;
     } while (
-      tries < 30 &&
-      placed.some((p) => Math.hypot(p.x - x, p.y - y) < p.r + r + 3)
+      tries < 60 &&
+      placed.some((p) => Math.hypot(p.x - x, p.y - y) < p.r + r + 2)
     );
     placed.push({ x, y, r, node });
   }
@@ -101,7 +101,7 @@ function CraterMap({ nodes, hoveredId, onHover }: CraterMapProps) {
             style={{ cursor: "pointer" }}
           >
             <circle
-              cx={x} cy={y} r={r + (isHov ? 3 : 0)}
+              cx={x} cy={y} r={r + (isHov ? 2 : 0)}
               fill={col}
               opacity={isHov ? 0.95 : 0.55}
               style={{ transition: "all 0.15s" }}
@@ -112,7 +112,7 @@ function CraterMap({ nodes, hoveredId, onHover }: CraterMapProps) {
             />
             {isHov && (
               <circle
-                cx={x} cy={y} r={r + 7}
+                cx={x} cy={y} r={r + 5}
                 fill="none"
                 stroke={col}
                 strokeWidth={1}

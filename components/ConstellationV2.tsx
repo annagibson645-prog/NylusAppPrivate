@@ -119,7 +119,13 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   tweaks: Tweaks; onCyclePalette: () => void;
 }) {
   const C2_DATA = useNylusData();
+  const router = useRouter();
   const items = ['dashboard','domains','essays','workshop','collisions','sparks','research'];
+  const routedItems: Record<string, string> = {
+    collisions: '/collisions',
+    sparks: '/sparks',
+    essays: '/essays',
+  };
   return (
     <div style={{ display: 'flex', alignItems: 'center', height: 68, padding: '0 36px',
       gap: 28, position: 'relative', zIndex: 2,
@@ -133,7 +139,7 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
         {items.map(n => {
           const active = n === page;
           return (
-            <button key={n} onClick={() => setPage(n)}
+            <button key={n} onClick={() => routedItems[n] ? router.push(routedItems[n]) : setPage(n)}
               style={{ background: active ? P.bg3 : 'transparent', border: 'none', cursor: 'pointer',
                 padding: '8px 16px', borderRadius: 999, color: active ? P.text : P.dim,
                 fontFamily: c2Style.font, fontSize: 13, fontWeight: active ? 600 : 400, whiteSpace: 'nowrap',
