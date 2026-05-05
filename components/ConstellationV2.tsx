@@ -226,14 +226,14 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
   const router = useRouter();
   const [hover, setHover] = uS<string | null>(null);
   const t = useTime(tweaks.motion);
-  const cx = 380, cy = 320, R = 220;
+  const cx = 320, cy = 320, R = 220;
 
   const domains = uM(() => C2_DATA.DOMAINS.map((d, i) => ({
     ...d,
     baseAngle: (i / C2_DATA.DOMAINS.length) * Math.PI * 2 - Math.PI / 2,
     orbitR: R * (0.68 + (Math.min(d.concepts, 300) / 400) * 0.22),
     radius: 7 + Math.sqrt(Math.min(d.concepts, 150)) * 0.55,
-    speed: 0.04 + (1 / (i + 2)) * 0.12,
+    speed: 0.06 - Math.min(d.concepts, 600) / 15000,
   })), [C2_DATA.DOMAINS]);
 
   const positioned = domains.map(d => {
