@@ -5,10 +5,14 @@
  * If text is shorter than maxChars, returns as-is.
  * Otherwise finds the last space before maxChars and truncates there.
  *
+ * Note: The ellipsis is added after truncation. If ellipsis length
+ * exceeds maxChars, the function reserves space for it (output may
+ * be slightly longer than maxChars in edge cases, e.g. 1-2 char limits).
+ *
  * @param text - Input text
- * @param maxChars - Maximum character length
+ * @param maxChars - Target maximum character length (soft limit)
  * @param ellipsis - Suffix to add if truncated (default: "…")
- * @returns Truncated text
+ * @returns Truncated text with ellipsis if needed
  *
  * Examples:
  *   truncateAtWord("Hello world", 5) → "Hello"
@@ -23,16 +27,19 @@ export function truncateAtWord(
   if (!text || maxChars <= 0) return "";
   if (text.length <= maxChars) return text;
 
-  // Find last space before maxChars
-  const truncated = text.slice(0, maxChars);
+  // Ensure maxChars is at least as long as ellipsis
+  const availableChars = Math.max(1, maxChars - ellipsis.length);
+
+  // Find last space before availableChars
+  const truncated = text.slice(0, availableChars);
   const lastSpace = truncated.lastIndexOf(" ");
 
   if (lastSpace > 0) {
     return truncated.slice(0, lastSpace) + ellipsis;
   }
 
-  // No space found, hard truncate
-  return truncated.slice(0, Math.max(1, maxChars - ellipsis.length)) + ellipsis;
+  // No space found, hard truncate with available space
+  return truncated.slice(0, availableChars) + ellipsis;
 }
 
 /**

@@ -16,6 +16,15 @@ describe('truncateAtWord', () => {
   it('handles empty input', () => {
     expect(truncateAtWord('', 10)).toBe('');
   });
+
+  it('handles ellipsis longer than maxChars', () => {
+    expect(truncateAtWord('Hello world', 3, '...')).toBe('H...');
+  });
+
+  it('handles null-like values gracefully', () => {
+    expect(truncateAtWord('', 10)).toBe('');
+    expect(truncateAtWord('text', 0)).toBe('');
+  });
 });
 
 describe('cleanTitle', () => {
