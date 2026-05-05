@@ -3,7 +3,6 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
 import type { VaultNode, GraphData } from "@/lib/types";
 
-// ─── Domain config ────────────────────────────────────────────────────────────
 const DOMAIN_COLOR: Record<string, string> = {
   "cross-domain":         "#14b8a6",
   "psychology":           "#3b82f6",
@@ -25,10 +24,6 @@ const DOMAIN_LABEL: Record<string, string> = {
   "ai-collaboration":     "AI Collaboration",
 };
 
-function cleanTitle(t: string) {
-  return t.replace(/^Collision:\s*/i, "");
-}
-
 function seededRand(seed: number) {
   let s = seed;
   return () => {
@@ -37,11 +32,15 @@ function seededRand(seed: number) {
   };
 }
 
-function hexToRgb(hex: string): string {
+function cleanTitle(t: string) {
+  return t.replace(/^Collision:\s*/i, "");
+}
+
+function hexToRgb(hex: string) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  return `${r}, ${g}, ${b}`;
+  return `${r},${g},${b}`;
 }
 
 function Pips({ score, color }: { score: number; color: string }) {
@@ -52,94 +51,74 @@ function Pips({ score, color }: { score: number; color: string }) {
       {Array.from({ length: total }).map((_, i) => (
         <span key={i} style={{
           width: 5, height: 5, borderRadius: "50%",
-          background: i < filled ? color : "rgba(255,255,255,0.08)",
-          display: "inline-block", flexShrink: 0,
+          background: i < filled ? color : "rgba(255,255,255,0.07)",
+          display: "inline-block",
+          flexShrink: 0,
         }} />
       ))}
     </span>
   );
 }
 
-function CraterMap({
-  collisions, activeDomains, onHover, hovered,
-}: {
-  collisions: VaultNode[];
-  activeDomains: Set<string>;
+interface CraterMapProps {
+  nodes: VaultNode[];
+  hoveredId: string | null;
   onHover: (id: string | null) => void;
-  hovered: string | null;
-}) {
-  const W = 500; const H = 420;
-  const CX = W / 2; const CY = H / 2;
-  const MAX_R = 195;
+}
 
-  const mapNodes = useMemo(
-    () => collisions.filter((c) => (c.pressure_score ?? 0) >= 8),
-    [collisions]
-  );
+function CraterMap({ nodes, hoveredId, onHover }: CraterMapProps) {
+  const W = 400, H = 520;
+  const rand = seededRand(42);
+  const placed: Array<{ x: number; y: number; r: number; node: VaultNode }> = [];
 
-  const placed = useMemo(() => {
-    const positions: { id: string; x: number; y: number; r: number; node: VaultNode }[] = [];
-    mapNodes.forEach((node, i) => {
-      const rng = seededRand(i * 73 + 11);
-      const score = node.pressure_score ?? 8;
-      const craterR = 4 + (score / 14) * 10;
-      let bestX = CX, bestY = CY;
-      for (let attempt = 0; attempt < 100; attempt++) {
-        const angle = rng() * Math.PI * 2;
-        const dist = 18 + rng() * (MAX_R - craterR - 10);
-        const px = CX + Math.cos(angle) * dist;
-        const py = CY + Math.sin(angle) * dist;
-        const ok = positions.every(
-          (p) => Math.hypot(px - p.x, py - p.y) > p.r + craterR + 3
-        );
-        if (ok || attempt === 99) { bestX = px; bestY = py; break; }
-      }
-      positions.push({ id: node.id, x: bestX, y: bestY, r: craterR, node });
-    });
-    return positions;
-  }, [mapNodes]);
+  for (const node of nodes) {
+    const r = 4 + (node.pressure_score ?? 0) * 1.1;
+    let x = 0, y = 0, tries = 0;
+    do {
+      x = r + rand() * (W - 2 * r);
+      y = r + rand() * (H - 2 * r);
+      tries++;
+    } while (
+      tries < 30 &&
+      placed.some((p) => Math.hypot(p.x - x, p.y - y) < p.r + r + 3)
+    );
+    placed.push({ x, y, r, node });
+  }
 
   return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}
-      style={{ display: "block", maxWidth: "100%" }}>
-      {[55, 105, 155, 200].map((r) => (
-        <circle key={r} cx={CX} cy={CY} r={r}
-          fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth={1} />
-      ))}
-      {placed.map(({ id, x, y, r, node }) => {
+    <svg
+      width={W} height={H}
+      viewBox={`0 0 ${W} ${H}`}
+      style={{ display: "block", overflow: "visible" }}
+    >
+      {placed.map(({ x, y, r, node }) => {
         const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
-        const isActive = activeDomains.size === 0 || activeDomains.has(node.domain);
-        const isHov = hovered === id;
+        const isHov = hoveredId === node.id;
         return (
-          <g key={id}>
-            {isHov && <circle cx={x} cy={y} r={r + 7} fill={col} opacity={0.1} />}
-            <circle cx={x} cy={y} r={r} fill="none"
-              stroke={isActive ? col : "rgba(255,255,255,0.07)"}
-              strokeWidth={isHov ? 1.5 : 1}
-              opacity={isActive ? (isHov ? 1 : 0.55) : 0.12} />
-            <circle cx={x} cy={y} r={r * 0.5} fill="none"
-              stroke={isActive ? col : "rgba(255,255,255,0.04)"}
-              strokeWidth={0.7}
-              opacity={isActive ? 0.35 : 0.08} />
-            <circle cx={x} cy={y} r={1.8}
-              fill={isActive ? col : "rgba(255,255,255,0.08)"}
-              opacity={isActive ? (isHov ? 1 : 0.65) : 0.12} />
-            {isHov && isActive && (
-              <>
-                <line x1={x} y1={y - r - 2} x2={x} y2={y - r - 12}
-                  stroke={col} strokeWidth={0.8} opacity={0.5} />
-                <text x={x} y={y - r - 16}
-                  textAnchor="middle" fill={col}
-                  fontSize={10} fontFamily="'JetBrains Mono', monospace">
-                  {cleanTitle(node.title).slice(0, 32)}
-                  {cleanTitle(node.title).length > 32 ? "…" : ""}
-                </text>
-              </>
+          <g key={node.id}
+            onMouseEnter={() => onHover(node.id)}
+            onMouseLeave={() => onHover(null)}
+            style={{ cursor: "pointer" }}
+          >
+            <circle
+              cx={x} cy={y} r={r + (isHov ? 3 : 0)}
+              fill={col}
+              opacity={isHov ? 0.95 : 0.55}
+              style={{ transition: "all 0.15s" }}
+            />
+            <circle
+              cx={x} cy={y} r={r * 0.45}
+              fill="rgba(0,0,0,0.35)"
+            />
+            {isHov && (
+              <circle
+                cx={x} cy={y} r={r + 7}
+                fill="none"
+                stroke={col}
+                strokeWidth={1}
+                opacity={0.5}
+              />
             )}
-            <circle cx={x} cy={y} r={Math.max(r + 5, 10)} fill="transparent"
-              style={{ cursor: "pointer" }}
-              onMouseEnter={() => onHover(id)}
-              onMouseLeave={() => onHover(null)} />
           </g>
         );
       })}
@@ -147,282 +126,241 @@ function CraterMap({
   );
 }
 
+const FF = "var(--font-fraunces, 'Fraunces', serif)";
+const FN = "var(--font-newsreader, 'Newsreader', serif)";
+const FM = "var(--font-jetbrains, 'JetBrains Mono', monospace)";
+
 export default function CollisionsPage() {
-  const [collisions, setCollisions] = useState<VaultNode[]>([]);
-  const [activeDomains, setActiveDomains] = useState<Set<string>>(new Set());
-  const [sort, setSort] = useState<"pressure" | "recent" | "domain">("pressure");
+  const [allNodes, setAllNodes] = useState<VaultNode[]>([]);
   const [search, setSearch] = useState("");
-  const [hovered, setHovered] = useState<string | null>(null);
-  const listRef = useRef<HTMLDivElement>(null);
+  const [domainFilter, setDomainFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"pressure" | "date" | "alpha">("pressure");
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const listItemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     fetch("/data/graph.json")
       .then((r) => r.json())
-      .then((d: GraphData) => {
-        setCollisions(
-          d.nodes.filter((n) => n.type === "collision")
-            .sort((a, b) => (b.pressure_score ?? 0) - (a.pressure_score ?? 0))
-        );
+      .then((data: GraphData) => {
+        const cols = data.nodes.filter((n) => n.type === "collision");
+        setAllNodes(cols);
       });
   }, []);
 
-  useEffect(() => {
-    if (!hovered || !listRef.current) return;
-    const el = listRef.current.querySelector(`[data-id="${hovered}"]`) as HTMLElement;
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [hovered]);
-
   const domains = useMemo(() => {
-    const map: Record<string, number> = {};
-    collisions.forEach((c) => { map[c.domain] = (map[c.domain] || 0) + 1; });
-    return Object.entries(map).sort((a, b) => b[1] - a[1]);
-  }, [collisions]);
-
-  const toggleDomain = (d: string) =>
-    setActiveDomains((prev) => {
-      const next = new Set(prev);
-      next.has(d) ? next.delete(d) : next.add(d);
-      return next;
-    });
+    const set = new Set(allNodes.map((n) => n.domain).filter(Boolean));
+    return Array.from(set).sort();
+  }, [allNodes]);
 
   const filtered = useMemo(() => {
-    let list = collisions;
-    if (activeDomains.size > 0) list = list.filter((c) => activeDomains.has(c.domain));
+    let list = allNodes;
+    if (domainFilter !== "all") list = list.filter((n) => n.domain === domainFilter);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter(
-        (c) => c.title.toLowerCase().includes(q) || c.excerpt?.toLowerCase().includes(q)
+      list = list.filter((n) =>
+        n.title.toLowerCase().includes(q) ||
+        (n.excerpt || "").toLowerCase().includes(q)
       );
     }
-    if (sort === "pressure") return [...list].sort((a, b) => (b.pressure_score ?? 0) - (a.pressure_score ?? 0));
-    if (sort === "recent")   return [...list].sort((a, b) => b.created.localeCompare(a.created));
-    if (sort === "domain")   return [...list].sort((a, b) => a.domain.localeCompare(b.domain));
+    if (sortBy === "pressure") list = [...list].sort((a, b) => (b.pressure_score ?? 0) - (a.pressure_score ?? 0));
+    else if (sortBy === "alpha") list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+    else if (sortBy === "date") list = [...list].sort((a, b) => (b.created || "").localeCompare(a.created || ""));
     return list;
-  }, [collisions, activeDomains, search, sort]);
+  }, [allNodes, search, domainFilter, sortBy]);
 
-  const FF  = "var(--font-fraunces, 'Fraunces', serif)";
-  const FN  = "var(--font-newsreader, 'Newsreader', serif)";
-  const FM  = "var(--font-jetbrains, 'JetBrains Mono', monospace)";
+  const craterNodes = useMemo(
+    () => allNodes.filter((n) => (n.pressure_score ?? 0) >= 8),
+    [allNodes]
+  );
+
+  function handleHover(id: string | null) {
+    setHoveredId(id);
+    if (id && listItemRefs.current[id]) {
+      listItemRefs.current[id]!.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#0e0d14", color: "#e8e3f0", fontFamily: FN }}>
 
       {/* NAV */}
       <nav style={{
-        display: "flex", alignItems: "center", gap: 14,
+        display: "flex", alignItems: "center", gap: 12,
         padding: "0 28px", height: 52,
         borderBottom: "1px solid #1c1828",
         background: "#0a0912",
         position: "sticky", top: 0, zIndex: 100,
-        overflowX: "auto",
+        flexWrap: "wrap",
       }}>
         <Link href="/" style={{
           fontFamily: FF, fontStyle: "italic", fontWeight: 300,
           fontSize: 17, color: "#e8e3f0", textDecoration: "none",
-          letterSpacing: "-.01em", flexShrink: 0,
+          letterSpacing: "-.01em",
         }}>NylusS</Link>
-
-        <span style={{ fontFamily: FM, fontSize: 11, color: "#4a4468", letterSpacing: ".06em", flexShrink: 0 }}>
-          {collisions.length} collisions
+        <span style={{ color: "#2a2540", fontSize: 16 }}>|</span>
+        <span style={{ fontFamily: FM, fontSize: 11, color: "#4a4468", letterSpacing: ".08em", textTransform: "uppercase" }}>
+          collisions
         </span>
-
-        <span style={{ color: "#2a2540", fontSize: 16, flexShrink: 0 }}>|</span>
+        <span style={{ fontFamily: FM, fontSize: 11, color: "#2a2540", letterSpacing: ".04em" }}>
+          {allNodes.length > 0 ? `${allNodes.length}` : "—"}
+        </span>
+        <span style={{ color: "#2a2540", fontSize: 16, marginLeft: 4 }}>|</span>
 
         {/* Domain dots */}
-        {domains.map(([domain, count]) => {
-          const col = DOMAIN_COLOR[domain] || "#8b5cf6";
-          const active = activeDomains.has(domain);
-          const faded = activeDomains.size > 0 && !active;
-          return (
-            <button key={domain} onClick={() => toggleDomain(domain)} style={{
-              display: "flex", alignItems: "center", gap: 5,
-              background: "none", border: "none", cursor: "pointer",
-              padding: "3px 0", opacity: faded ? 0.25 : 1,
-              transition: "opacity 0.15s", flexShrink: 0,
-            }}>
-              <span style={{
-                width: 7, height: 7, borderRadius: "50%", background: col,
-                display: "inline-block", flexShrink: 0,
-                boxShadow: active ? `0 0 6px ${col}90` : "none",
-                transition: "box-shadow 0.15s",
-              }} />
-              <span style={{
-                fontFamily: FM, fontSize: 10,
-                color: active ? col : "#4a4468",
-                letterSpacing: ".08em", textTransform: "uppercase",
-                transition: "color 0.15s",
-              }}>{DOMAIN_LABEL[domain] || domain} {count}</span>
-            </button>
-          );
-        })}
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          {domains.map((d) => {
+            const col = DOMAIN_COLOR[d] || "#8b5cf6";
+            const active = domainFilter === d;
+            return (
+              <button key={d} onClick={() => setDomainFilter(active ? "all" : d)}
+                title={DOMAIN_LABEL[d] || d}
+                style={{
+                  width: 9, height: 9, borderRadius: "50%",
+                  background: col,
+                  opacity: domainFilter === "all" ? 0.6 : active ? 1 : 0.2,
+                  border: "none", cursor: "pointer", padding: 0,
+                  boxShadow: active ? `0 0 8px ${col}` : "none",
+                  transition: "all 0.15s",
+                }}
+              />
+            );
+          })}
+        </div>
 
-        <span style={{ color: "#2a2540", fontSize: 16, marginLeft: "auto", flexShrink: 0 }}>|</span>
+        <span style={{ color: "#2a2540", fontSize: 16 }}>|</span>
 
         {/* Sort */}
-        {(["pressure", "recent", "domain"] as const).map((s) => (
-          <button key={s} onClick={() => setSort(s)} style={{
-            fontFamily: FM, fontSize: 10, letterSpacing: ".08em",
-            textTransform: "uppercase",
-            color: sort === s ? "#c9b8e8" : "#4a4468",
-            background: sort === s ? "rgba(201,184,232,0.08)" : "none",
-            border: sort === s ? "1px solid rgba(201,184,232,0.18)" : "1px solid transparent",
-            borderRadius: 3, padding: "3px 8px", cursor: "pointer",
-            transition: "all 0.15s", flexShrink: 0,
-          }}>{s}</button>
-        ))}
+        <div style={{ display: "flex", gap: 4 }}>
+          {(["pressure", "date", "alpha"] as const).map((s) => (
+            <button key={s} onClick={() => setSortBy(s)}
+              style={{
+                fontFamily: FM, fontSize: 10, letterSpacing: ".08em",
+                textTransform: "uppercase", padding: "3px 8px",
+                background: sortBy === s ? "#1c1828" : "transparent",
+                border: `1px solid ${sortBy === s ? "#2a2540" : "transparent"}`,
+                borderRadius: 2, color: sortBy === s ? "#8c84b0" : "#3a3460",
+                cursor: "pointer",
+              }}
+            >{s}</button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div style={{ marginLeft: "auto" }}>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="search…"
+            style={{
+              background: "transparent",
+              border: "1px solid #1c1828",
+              borderRadius: 2,
+              padding: "4px 10px",
+              fontFamily: FM, fontSize: 11,
+              color: "#8c84b0",
+              outline: "none",
+              width: 140,
+            }}
+          />
+        </div>
       </nav>
 
       {/* BODY */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "540px 1fr",
-        minHeight: "calc(100vh - 52px)",
-      }}>
+      <div style={{ display: "flex", maxWidth: 1280, margin: "0 auto" }}>
 
         {/* LEFT — Crater Map */}
         <div style={{
-          borderRight: "1px solid #1c1828",
-          padding: "28px 20px 28px 28px",
-          position: "sticky", top: 52,
-          height: "calc(100vh - 52px)",
-          display: "flex", flexDirection: "column", gap: 16,
+          width: 440, flexShrink: 0,
+          padding: "40px 24px 40px 32px",
+          position: "sticky", top: 52, height: "calc(100vh - 52px)",
           overflow: "hidden",
+          borderRight: "1px solid #1c1828",
+          display: "flex", flexDirection: "column",
         }}>
-          <div>
-            <div style={{ fontFamily: FM, fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "#2a2540", marginBottom: 3 }}>
-              Pressure Map — p8+
-            </div>
-            <div style={{ fontFamily: FN, fontStyle: "italic", fontSize: 13, color: "#3a3460" }}>
-              {collisions.filter((c) => (c.pressure_score ?? 0) >= 8 && (activeDomains.size === 0 || activeDomains.has(c.domain))).length} high-pressure collisions
-            </div>
+          <div style={{ fontFamily: FM, fontSize: 11, color: "#2a2540", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 16 }}>
+            pressure ≥ 8 · {craterNodes.length} collisions
           </div>
-
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0 }}>
-            {collisions.length > 0 && (
-              <CraterMap collisions={collisions} activeDomains={activeDomains} onHover={setHovered} hovered={hovered} />
-            )}
+          <div style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "flex-start" }}>
+            <CraterMap nodes={craterNodes} hoveredId={hoveredId} onHover={handleHover} />
           </div>
-
-          <div style={{ borderTop: "1px solid #1c1828", paddingTop: 12, minHeight: 52 }}>
-            {hovered ? (() => {
-              const node = collisions.find((c) => c.id === hovered);
-              if (!node) return null;
-              const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
-              return (
-                <div>
-                  <div style={{ fontFamily: FF, fontStyle: "italic", fontWeight: 300, fontSize: 15, color: "#e8e3f0", lineHeight: 1.25, marginBottom: 5 }}>
-                    {cleanTitle(node.title)}
-                  </div>
-                  <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                    <span style={{ fontFamily: FM, fontSize: 10, color: col, letterSpacing: ".1em", textTransform: "uppercase" }}>
-                      {DOMAIN_LABEL[node.domain] || node.domain}
-                    </span>
-                    <Pips score={node.pressure_score ?? 0} color={col} />
-                  </div>
-                </div>
-              );
-            })() : (
-              <div style={{ fontFamily: FM, fontSize: 10, color: "#2a2540", letterSpacing: ".08em" }}>
-                hover crater to inspect
+          {/* Legend */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px", marginTop: 16 }}>
+            {Object.entries(DOMAIN_COLOR).map(([d, col]) => (
+              <div key={d} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: col, display: "inline-block" }} />
+                <span style={{ fontFamily: FM, fontSize: 9, color: "#3a3460", letterSpacing: ".06em", textTransform: "uppercase" }}>
+                  {DOMAIN_LABEL[d]}
+                </span>
               </div>
-            )}
+            ))}
           </div>
         </div>
 
         {/* RIGHT — List */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {/* Search */}
-          <div style={{
-            padding: "14px 28px",
-            borderBottom: "1px solid #1c1828",
-            position: "sticky", top: 52,
-            background: "#0e0d14", zIndex: 10,
-          }}>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="search collisions…"
-              style={{
-                width: "100%", background: "#12111f",
-                border: "1px solid #1c1828", borderRadius: 4,
-                padding: "9px 14px", fontFamily: FM,
-                fontSize: 12, color: "#8c84b0", outline: "none",
-                letterSpacing: ".04em",
-              }}
-            />
-          </div>
-
-          <div ref={listRef} style={{ flex: 1 }}>
-            {filtered.length === 0 && (
-              <div style={{ padding: "60px 28px", fontFamily: FM, fontSize: 11, color: "#3a3460", letterSpacing: ".1em" }}>
-                no collisions match
-              </div>
-            )}
-            {filtered.map((node) => {
-              const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
-              const isHov = hovered === node.id;
-              const score = node.pressure_score ?? 0;
-              return (
-                <Link
-                  key={node.id}
-                  href={`/collision/${node.id}`}
-                  data-id={node.id}
-                  onMouseEnter={() => setHovered(node.id)}
-                  onMouseLeave={() => setHovered(null)}
-                  style={{
-                    display: "block",
-                    padding: "16px 28px",
-                    borderBottom: "1px solid #1c1828",
-                    borderLeft: `2px solid ${isHov ? col : "transparent"}`,
-                    background: isHov ? "rgba(255,255,255,0.018)" : "transparent",
-                    textDecoration: "none",
-                    transition: "background 0.1s, border-left-color 0.1s",
-                  }}
-                >
-                  <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    {/* Pressure bar */}
-                    <div style={{
-                      flexShrink: 0, width: 3, height: 44,
-                      background: `rgba(${hexToRgb(col)}, 0.12)`,
-                      borderRadius: 2, marginTop: 2, position: "relative", overflow: "hidden",
-                    }}>
-                      <div style={{
-                        position: "absolute", bottom: 0, width: "100%",
-                        height: `${(score / 14) * 100}%`,
-                        background: col, borderRadius: 2,
-                        opacity: isHov ? 0.9 : 0.4, transition: "opacity 0.15s",
-                      }} />
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
-                        <span style={{ fontFamily: FM, fontSize: 10, color: col, letterSpacing: ".1em", textTransform: "uppercase" }}>
-                          {DOMAIN_LABEL[node.domain] || node.domain}
-                        </span>
-                        <Pips score={score} color={col} />
-                        <span style={{ fontFamily: FM, fontSize: 10, color: "#3a3460", marginLeft: "auto" }}>
-                          {node.created}
-                        </span>
-                      </div>
-
-                      <div style={{
-                        fontFamily: FF, fontStyle: "italic", fontWeight: 300,
-                        fontSize: 19, color: isHov ? "#e8e3f0" : "#c4bdd8",
-                        lineHeight: 1.2, letterSpacing: "-.01em", marginBottom: 6,
-                        transition: "color 0.15s",
-                      }}>{cleanTitle(node.title)}</div>
-
-                      <div style={{
-                        fontFamily: FN, fontSize: 14, color: "#4a4468", lineHeight: 1.5,
-                        display: "-webkit-box", WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical", overflow: "hidden",
-                      }}>{node.excerpt}</div>
-                    </div>
+        <div style={{ flex: 1, padding: "40px 32px 80px", minWidth: 0 }}>
+          {filtered.length === 0 && (
+            <div style={{ fontFamily: FM, fontSize: 12, color: "#2a2540", letterSpacing: ".08em", textTransform: "uppercase", marginTop: 40, textAlign: "center" }}>
+              no collisions found
+            </div>
+          )}
+          {filtered.map((node) => {
+            const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
+            const score = node.pressure_score ?? 0;
+            const isHov = hoveredId === node.id;
+            return (
+              <div
+                key={node.id}
+                ref={(el) => { listItemRefs.current[node.id] = el; }}
+                onMouseEnter={() => setHoveredId(node.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                style={{
+                  borderBottom: "1px solid #1c1828",
+                  padding: "22px 0",
+                  background: isHov ? `rgba(${hexToRgb(col)},0.04)` : "transparent",
+                  transition: "background 0.15s",
+                  paddingLeft: isHov ? 12 : 0,
+                  borderLeft: isHov ? `2px solid ${col}` : "2px solid transparent",
+                }}
+              >
+                <Link href={`/collision/${node.id}`} style={{ textDecoration: "none", display: "block" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 7 }}>
+                    <span style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: col, display: "inline-block", flexShrink: 0,
+                    }} />
+                    <span style={{
+                      fontFamily: FM, fontSize: 10, color: col,
+                      letterSpacing: ".1em", textTransform: "uppercase",
+                    }}>{DOMAIN_LABEL[node.domain] || node.domain}</span>
+                    <span style={{ fontFamily: FM, fontSize: 10, color: "#2a2540", marginLeft: "auto" }}>
+                      {node.created}
+                    </span>
+                  </div>
+                  <h2 style={{
+                    fontFamily: FF, fontStyle: "italic", fontWeight: 200,
+                    fontSize: 22, color: isHov ? "#e8e3f0" : "#c9b8e8",
+                    letterSpacing: "-.01em", marginBottom: 6, lineHeight: 1.2,
+                    transition: "color 0.15s",
+                  }}>{cleanTitle(node.title)}</h2>
+                  {node.excerpt && (
+                    <p style={{
+                      fontFamily: FN, fontSize: 14, color: "#6c6490",
+                      lineHeight: 1.6, marginBottom: 10,
+                    }}>{node.excerpt}</p>
+                  )}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Pips score={score} color={col} />
+                    <span style={{ fontFamily: FM, fontSize: 11, color: "#3a3460", letterSpacing: ".06em" }}>
+                      {score}
+                    </span>
+                    <span style={{ fontFamily: FM, fontSize: 10, color: "#2a2540", letterSpacing: ".08em", textTransform: "uppercase", marginLeft: 8 }}>
+                      {node.status}
+                    </span>
                   </div>
                 </Link>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
