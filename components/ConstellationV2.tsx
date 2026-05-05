@@ -114,49 +114,113 @@ function C2Logo({ P }: { P: Palette }) {
 }
 
 // ─── HEADER ───────────────────────────────────────────────────────────────────
+const C2_HEADER_STYLES = `
+  @keyframes c2BarAnim {
+    0%,100% { height: 3px; opacity: 0.4; }
+    50%      { height: 10px; opacity: 1; }
+  }
+  .c2-nav-item {
+    position: relative; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 5px;
+    padding: 0 18px; cursor: pointer; height: 100%;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    overflow: hidden; background: transparent; border-top: none;
+    border-bottom: none; border-left: none;
+    transition: background 0.2s;
+  }
+  .c2-nav-item:hover { background: rgba(255,255,255,0.025); }
+  .c2-nav-item.c2-active { background: rgba(96,165,250,0.04); }
+  .c2-nav-item.c2-active::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: #60a5fa;
+    box-shadow: 0 0 8px rgba(96,165,250,0.5);
+  }
+  .c2-nav-ghost {
+    position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+    font-family: 'Fraunces', Georgia, serif; font-size: 52px; font-style: italic;
+    color: #eae6f5; opacity: 0.03; font-weight: 600; pointer-events: none;
+    user-select: none; line-height: 1;
+  }
+  .c2-nav-lbl {
+    font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-style: italic;
+    font-weight: 300; color: #8a849a; letter-spacing: -0.01em;
+    position: relative; z-index: 1; transition: color 0.2s; white-space: nowrap;
+  }
+  .c2-nav-item:hover .c2-nav-lbl { color: #cdc8dd; }
+  .c2-nav-item.c2-active .c2-nav-lbl { color: #eae6f5; font-weight: 500; }
+  .c2-nav-bars {
+    display: flex; align-items: flex-end; gap: 2px; height: 10px;
+    opacity: 0; transition: opacity 0.25s; position: relative; z-index: 1;
+  }
+  .c2-nav-item.c2-active .c2-nav-bars { opacity: 1; }
+  .c2-nav-bars span { width: 3px; background: #60a5fa; border-radius: 1px; display: inline-block; }
+  .c2-nav-bars span:nth-child(1) { animation: c2BarAnim 0.9s ease-in-out infinite; }
+  .c2-nav-bars span:nth-child(2) { animation: c2BarAnim 0.9s ease-in-out infinite 0.15s; }
+  .c2-nav-bars span:nth-child(3) { animation: c2BarAnim 0.9s ease-in-out infinite 0.3s; }
+  .c2-nav-bars span:nth-child(4) { animation: c2BarAnim 0.9s ease-in-out infinite 0.1s; }
+  .c2-nav-bars span:nth-child(5) { animation: c2BarAnim 0.9s ease-in-out infinite 0.25s; }
+`;
+
 function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   P: Palette; page: string; setPage: (p: string) => void;
   tweaks: Tweaks; onCyclePalette: () => void;
 }) {
   const C2_DATA = useNylusData();
   const router = useRouter();
-  const items = ['dashboard','domains','essays','workshop','collisions','sparks','research'];
-  const routedItems: Record<string, string> = {
-    collisions: '/collisions',
-    sparks: '/sparks',
-    essays: '/essays',
-  };
+  const items: { n: string; idx: string; route?: string }[] = [
+    { n: 'dashboard', idx: '01' },
+    { n: 'domains',   idx: '02' },
+    { n: 'essays',    idx: '03', route: '/essays' },
+    { n: 'workshop',  idx: '04' },
+    { n: 'collisions',idx: '05', route: '/collisions' },
+    { n: 'sparks',    idx: '06', route: '/sparks' },
+    { n: 'research',  idx: '07' },
+  ];
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 68, padding: '0 36px',
-      gap: 28, position: 'relative', zIndex: 2,
-      background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <C2Logo P={P} />
-        <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</div>
-        <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.15em', textTransform: 'uppercase', marginLeft: 4 }}>constellation</div>
-      </div>
-      <div style={{ display: 'flex', gap: 4, marginLeft: 16, flexWrap: 'nowrap', overflow: 'auto' }}>
-        {items.map(n => {
-          const active = n === page;
-          return (
-            <button key={n} onClick={() => routedItems[n] ? router.push(routedItems[n]) : setPage(n)}
-              style={{ background: active ? P.bg3 : 'transparent', border: 'none', cursor: 'pointer',
-                padding: '8px 16px', borderRadius: 999, color: active ? P.text : P.dim,
-                fontFamily: c2Style.font, fontSize: 13, fontWeight: active ? 600 : 400, whiteSpace: 'nowrap',
-                letterSpacing: '-0.01em', transition: 'color 0.2s, background 0.2s' }}>
-              {n}
+    <>
+      <style dangerouslySetInnerHTML={{ __html: C2_HEADER_STYLES }} />
+      <div style={{ display: 'flex', alignItems: 'stretch', height: 80, position: 'relative', zIndex: 2, background: P.bg2, borderBottom: `1px solid ${P.border}` }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 24px', borderRight: `1px solid ${P.border}`, flexShrink: 0 }}>
+          <C2Logo P={P} />
+          <span style={{ fontFamily: c2Style.serif, fontStyle: 'italic', fontSize: 20, fontWeight: 400, letterSpacing: '-0.02em', color: P.text }}>Nylus</span>
+          <span style={{ fontFamily: c2Style.mono, fontSize: 8, color: P.dim2, letterSpacing: '0.18em', textTransform: 'uppercase', alignSelf: 'flex-end', marginBottom: 16 }}>constellation</span>
+        </div>
+
+        {/* Nav items */}
+        <div style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' as const }}>
+          {items.map(({ n, idx, route }) => (
+            <button
+              key={n}
+              className={`c2-nav-item${n === page ? ' c2-active' : ''}`}
+              onClick={() => route ? router.push(route) : setPage(n)}
+            >
+              <span className="c2-nav-ghost">{idx}</span>
+              <span className="c2-nav-lbl">{n}</span>
+              <div className="c2-nav-bars">
+                <span /><span /><span /><span /><span />
+              </div>
             </button>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Right */}
+        <div style={{ flex: 1 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', borderLeft: `1px solid ${P.border}`, flexShrink: 0 }}>
+          <button onClick={onCyclePalette} style={{ background: 'transparent', border: 'none', color: P.dim, padding: '4px 8px', borderRadius: 6, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.6 }}>
+            {tweaks.palette}
+          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <span style={{ fontFamily: c2Style.serif, fontStyle: 'italic', fontSize: 20, color: P.text, fontWeight: 400, lineHeight: 1 }}>
+              {C2_DATA.STATS.concepts.toLocaleString()}
+            </span>
+            <span style={{ fontFamily: c2Style.mono, fontSize: 8, color: '#60a5fa', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              {C2_DATA.STATS.seeds} ripe
+            </span>
+          </div>
+        </div>
       </div>
-      <div style={{ flex: 1 }} />
-      <button onClick={onCyclePalette} style={{ background: 'transparent', border: 'none', color: P.dim, padding: '4px 8px', borderRadius: 6, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: 8, opacity: 0.6 }}>
-        {tweaks.palette}
-      </button>
-      <div style={{ fontFamily: c2Style.mono, fontSize: 11, color: P.dim, letterSpacing: '0.08em' }}>
-        ⊹ {C2_DATA.STATS.concepts.toLocaleString()} <span style={{ color: P.hub }}>{C2_DATA.STATS.seeds} ripe</span>
-      </div>
-    </div>
+    </>
   );
 }
 

@@ -5,6 +5,7 @@ import path from 'path';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
+import NavG from '@/components/NavG';
 
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), 'public/data', file), 'utf-8'));
@@ -83,13 +84,7 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
     <div className="void-page" style={{ '--domain-color': domainColor } as React.CSSProperties}>
       <div className="void-ambient" />
 
-      <nav className="void-nav">
-        <Link href="/" className="void-nav-brand">NylusS</Link>
-        <div className="void-nav-right">
-          <Link href="/" className="void-nav-back">← constellation</Link>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <NavG active="domains" />
 
       <div className="void-content">
         <div className="void-domain-chip">{label}</div>
