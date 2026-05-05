@@ -1,10 +1,30 @@
+export type VaultNodeType =
+  | "concept"
+  | "hub"
+  | "spark"
+  | "collision"
+  | "thread"
+  | "source"
+  | "question"
+  | "essay"
+  | "research";
+
+export type VaultNodeStatus =
+  | "stub"
+  | "developing"
+  | "stable"
+  | "speculative"
+  | "raw"
+  | "complete"
+  | "draft";
+
 export interface VaultNode {
   id: string;
   title: string;
-  type: "concept" | "hub" | "spark" | "collision" | "thread" | "source" | "question" | string;
+  type: VaultNodeType;
   subtype?: string;
   domain: string;
-  status: "stub" | "developing" | "stable" | "speculative" | "raw" | string;
+  status: VaultNodeStatus;
   created: string;
   updated: string;
   sources: number;
@@ -38,9 +58,9 @@ export interface GraphData {
 export interface SearchItem {
   id: string;
   title: string;
-  type: string;
+  type: VaultNodeType;
   domain: string;
-  status: string;
+  status: VaultNodeStatus;
   excerpt: string;
   path: string;
   color: string;
@@ -84,7 +104,7 @@ export interface IndexConcept {
   slug: string;
   title: string;
   description: string;
-  status?: string;
+  status?: VaultNodeStatus;
   sources?: number;
   isHub?: boolean;
 }
@@ -96,10 +116,20 @@ export interface IndexSection {
   isMeta?: boolean;
 }
 
-export const STATUS_COLORS: Record<string, string> = {
+export const STATUS_COLORS: Record<VaultNodeStatus, string> = {
   stable: "#22c55e",
   developing: "#f59e0b",
   stub: "#6b7280",
   speculative: "#a78bfa",
   raw: "#94a3b8",
+  complete: "#22c55e",
+  draft: "#f59e0b",
 };
+
+export function isNodeType(node: VaultNode, type: VaultNodeType): boolean {
+  return node.type === type;
+}
+
+export function isNodeStatus(node: VaultNode, status: VaultNodeStatus): boolean {
+  return node.status === status;
+}
