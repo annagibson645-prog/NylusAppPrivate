@@ -231,7 +231,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
   const domains = uM(() => C2_DATA.DOMAINS.map((d, i) => ({
     ...d,
     baseAngle: (i / C2_DATA.DOMAINS.length) * Math.PI * 2 - Math.PI / 2,
-    orbitR: R * (0.80 + (i % 3) * 0.07),
+    orbitR: R * 0.75,
     radius: 9 + Math.min(d.concepts, 200) / 50,
     speed: 0.042,
   })), [C2_DATA.DOMAINS]);
@@ -262,31 +262,14 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
             ))}
           </defs>
           <circle cx={cx} cy={cy} r={R + 100} fill="url(#hubGlow)" />
-          {[0.6, 0.85, 1.1].map((m, i) => (
-            <circle key={i} cx={cx} cy={cy} r={R * m} fill="none" stroke={P.border} strokeDasharray="2 5" />
-          ))}
+          <circle cx={cx} cy={cy} r={R * 0.75} fill="none" stroke={P.border} strokeDasharray="2 6" opacity="0.6" />
           {positioned.map(d => (
             <line key={'l'+d.id} x1={cx} y1={cy} x2={d.x} y2={d.y}
               stroke={hover === d.id ? d.color : 'rgba(255,255,255,0.06)'}
               strokeWidth={hover === d.id ? 1.5 : 0.5}
               style={{ transition: 'stroke 0.2s' }} />
           ))}
-          {C2_DATA.COLLISIONS.map((c, i) => {
-            const a = positioned.find(d => d.id === c.domains[0]);
-            const b = positioned.find(d => d.id === c.domains[1]);
-            if (!a || !b) return null;
-            const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-            const dx = b.x - a.x, dy = b.y - a.y;
-            const dist = Math.sqrt(dx*dx + dy*dy) || 1;
-            const nx = -dy / dist, ny = dx / dist;
-            const cpx = mx + nx * dist * 0.3, cpy = my + ny * dist * 0.3;
-            const lit = hover && (a.id === hover || b.id === hover);
-            return <path key={c.id} d={`M ${a.x} ${a.y} Q ${cpx} ${cpy} ${b.x} ${b.y}`}
-              stroke={lit ? P.hub : 'rgba(232,184,106,0.18)'}
-              strokeWidth={lit ? 1.4 : 0.7} fill="none"
-              strokeDasharray={lit ? '0' : '3 4'}
-              style={{ transition: 'stroke 0.2s' }} />;
-          })}
+          {/* collision arcs removed — hub-and-spoke topology: all lines connect to VAULT center (lines 267-270) */}
           <circle cx={cx} cy={cy} r={6} fill={P.hub} />
           <circle cx={cx} cy={cy} r={14} fill="none" stroke={P.hub} strokeOpacity="0.4" />
           {tweaks.motion && (
