@@ -93,7 +93,7 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
                 </span>
               </>
             )}
-            {report.status && report.status !== "unknown" && (
+            {report.status && (
               <>
                 <span>·</span>
                 <span

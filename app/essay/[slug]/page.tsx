@@ -68,7 +68,7 @@ export default async function EssayPage({ params }: { params: Promise<{ slug: st
                   <span>{readTime(essay.word_count)}</span>
                 </>
               )}
-              {essay.status && essay.status !== "unknown" && (
+              {essay.status && (
                 <>
                   <span>·</span>
                   <span

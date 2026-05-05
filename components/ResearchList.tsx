@@ -154,7 +154,7 @@ export default function ResearchList({ reports }: { reports: VaultNode[] }) {
                           {report.domain}
                         </span>
                       )}
-                      {report.status && report.status !== "unknown" && (
+                      {report.status && (
                         <span
                           className="capitalize px-2 py-0.5 rounded-full text-[10px] font-medium"
                           style={{ background: "var(--surface-2)", color: "var(--text-muted)" }}
