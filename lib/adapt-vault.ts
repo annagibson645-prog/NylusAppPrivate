@@ -3,6 +3,9 @@
 
 import { readFileSync } from 'fs';
 import path from 'path';
+import { truncateAtWord, cleanTitle } from './string-utils';
+import { getConfig } from './config';
+import { safeDomain, safePressureScore } from './validation';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -208,6 +211,7 @@ function inferTags(n: any): string[] {
 // ─── Main builder ─────────────────────────────────────────────────────────────
 
 export function buildNylusData(): NylusData {
+  const config      = getConfig();
   const stats       = loadJSON<any>('stats.json');
   const rawCollisions = loadJSON<any[]>('collisions.json');
   const rawSparks   = loadJSON<any[]>('sparks.json');
@@ -240,7 +244,7 @@ export function buildNylusData(): NylusData {
 
   // ── STATS ──────────────────────────────────────────────────────────────────
   const essaySeeds = rawSparks.filter((s: any) =>
-    s.id?.includes('essay-seed') || s.title?.toLowerCase().includes('essay seed')
+    s.subtype === 'essay-seed' || s.id?.includes('essay-seed')
   );
 
   const STATS: NylusStats = {
@@ -248,8 +252,8 @@ export function buildNylusData(): NylusData {
     sources:    stats.total_sources    ?? 0,
     sparks:     stats.total_sparks     ?? 0,
     collisions: stats.total_collisions ?? 0,
-    tensions:   Math.floor((stats.total_collisions ?? 0) * 0.15),
-    seeds:      essaySeeds.length || Math.floor((stats.total_sparks ?? 0) * 0.08),
+    tensions:   Math.floor((stats.total_collisions ?? 0) * config.tensionRatio),
+    seeds:      essaySeeds.length || Math.floor((stats.total_sparks ?? 0) * config.seedRatio),
     hubs:       HUBS.length,
     domains:    Object.keys(stats.domains ?? {}).length,
   };
@@ -276,11 +280,11 @@ export function buildNylusData(): NylusData {
     });
 
   // ── CONCEPTS ───────────────────────────────────────────────────────────────
-  // Top 100 concept nodes by backlink count, extended with hub + color
+  // Top concepts by backlink count, extended with hub + color
   const conceptNodes = rawGraph.nodes
     .filter((n: any) => n.type === 'concept' && n.title && DOMAIN_CONFIG[n.domain])
     .sort((a: any, b: any) => (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0))
-    .slice(0, 100);
+    .slice(0, config.maxConcepts);
 
   const CONCEPTS: NylusConcept[] = conceptNodes.map((n: any) => {
     const dk = n.domain ?? 'cross-domain';
@@ -301,8 +305,11 @@ export function buildNylusData(): NylusData {
   function getCollisionDomains(c: any): [string, string] {
     const pair: string[] = [];
     for (const linkId of (c.links ?? []).slice(0, 2)) {
-      const dom = nodeMap.get(linkId)?.domain;
-      if (dom) pair.push(shortId(dom));
+      const node = nodeMap.get(linkId);
+      const dom = node?.domain;
+      if (dom && typeof dom === 'string' && dom.trim()) {
+        pair.push(shortId(dom));
+      }
     }
     if (pair.length === 2 && pair[0] !== pair[1]) return [pair[0], pair[1]];
     const own = shortId(c.domain ?? 'cross-domain');
@@ -316,16 +323,16 @@ export function buildNylusData(): NylusData {
       const dk = c.domain ?? 'cross-domain';
       return {
         id:       c.id,
-        a:        a.slice(0, 60),
-        b:        b.slice(0, 60),
+        a:        truncateAtWord(a, config.collisionTitleMaxChars),
+        b:        truncateAtWord(b, config.collisionTitleMaxChars),
         domains:  getCollisionDomains(c),
         color:    domainColor(dk),
         note:     (c.excerpt ?? c.candidate_idea ?? '').slice(0, 200).trim() || 'A productive tension in the vault.',
-        pressure: typeof c.pressure_score === 'number' ? c.pressure_score : undefined,
+        pressure: safePressureScore(c),
       };
     })
     .filter((c: NylusCollision) => c.a && c.b && c.a !== c.b)
-    .slice(0, 40);
+    .slice(0, Math.round(config.maxCollisions * 0.67));
 
   // ── SPARKS ─────────────────────────────────────────────────────────────────
   // Include all sparks (resonance, essay-seed, question, speculative, etc.)

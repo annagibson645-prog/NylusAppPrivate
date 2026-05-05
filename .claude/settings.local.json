@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path . -Recurse -Exclude node_modules -Include *.ts,*.tsx,*.js,*.jsx,*.json)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
