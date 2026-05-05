@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import matter from "gray-matter";
+import { truncateAtWord } from './lib/string-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,7 +99,7 @@ function extractSection(content: string, heading: string): string {
     "i"
   );
   const match = content.match(regex);
-  return match ? match[1].trim().slice(0, 400) : "";
+  return match ? truncateAtWord(match[1].trim(), 400) : "";
 }
 
 function daysSince(dateStr: string): number {
@@ -149,7 +150,7 @@ function generateExcerpt(content: string, title: string): string {
   if (current.length > 60) paragraphs.push(current.trim());
 
   const best = paragraphs[0] || lines.find((l) => l.trim().length > 60) || "";
-  return stripMarkdown(best).replace(/\s+/g, " ").trim().slice(0, 200);
+  return truncateAtWord(stripMarkdown(best).replace(/\s+/g, " ").trim(), 200);
 }
 
 function getTitle(content: string, filePath: string): string {
