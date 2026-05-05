@@ -87,9 +87,10 @@ function CraterMap({ nodes, hoveredId, onHover }: CraterMapProps) {
 
   return (
     <svg
-      width={W} height={H}
+      width="100%" height="100%"
       viewBox={`0 0 ${W} ${H}`}
-      style={{ display: "block", overflow: "visible" }}
+      preserveAspectRatio="xMidYMid meet"
+      style={{ display: "block" }}
     >
       {placed.map(({ x, y, r, node }) => {
         const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
@@ -186,7 +187,7 @@ export default function CollisionsPage() {
       {/* NAV */}
       <nav style={{
         display: "flex", alignItems: "center", gap: 12,
-        padding: "0 28px", height: 52,
+        padding: "0 32px", height: 64,
         borderBottom: "1px solid #1c1828",
         background: "#0a0912",
         position: "sticky", top: 0, zIndex: 100,
@@ -194,7 +195,7 @@ export default function CollisionsPage() {
       }}>
         <Link href="/" style={{
           fontFamily: FF, fontStyle: "italic", fontWeight: 300,
-          fontSize: 17, color: "#e8e3f0", textDecoration: "none",
+          fontSize: 19, color: "#e8e3f0", textDecoration: "none",
           letterSpacing: "-.01em",
         }}>NylusS</Link>
         <span style={{ color: "#2a2540", fontSize: 16 }}>|</span>
@@ -266,13 +267,13 @@ export default function CollisionsPage() {
       </nav>
 
       {/* BODY */}
-      <div style={{ display: "flex", maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ display: "flex", width: "100%", minHeight: "calc(100vh - 64px)" }}>
 
         {/* LEFT — Crater Map */}
         <div style={{
-          width: 440, flexShrink: 0,
-          padding: "40px 24px 40px 32px",
-          position: "sticky", top: 52, height: "calc(100vh - 52px)",
+          width: "60%", flexShrink: 0,
+          padding: "32px 32px 32px 48px",
+          position: "sticky", top: 64, height: "calc(100vh - 64px)",
           overflow: "hidden",
           borderRight: "1px solid #1c1828",
           display: "flex", flexDirection: "column",
@@ -280,7 +281,7 @@ export default function CollisionsPage() {
           <div style={{ fontFamily: FM, fontSize: 11, color: "#2a2540", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 16 }}>
             pressure ≥ 8 · {craterNodes.length} collisions
           </div>
-          <div style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "flex-start" }}>
+          <div style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "stretch", minHeight: 0 }}>
             <CraterMap nodes={craterNodes} hoveredId={hoveredId} onHover={handleHover} />
           </div>
           {/* Legend */}
@@ -297,7 +298,7 @@ export default function CollisionsPage() {
         </div>
 
         {/* RIGHT — List */}
-        <div style={{ flex: 1, padding: "40px 32px 80px", minWidth: 0 }}>
+        <div style={{ width: "40%", flexShrink: 0, padding: "32px 28px 80px 32px", overflowY: "auto", height: "calc(100vh - 64px)", position: "sticky", top: 64 }}>
           {filtered.length === 0 && (
             <div style={{ fontFamily: FM, fontSize: 12, color: "#2a2540", letterSpacing: ".08em", textTransform: "uppercase", marginTop: 40, textAlign: "center" }}>
               no collisions found
