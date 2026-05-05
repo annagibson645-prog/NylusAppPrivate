@@ -643,4 +643,9 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         :global([data-theme="sepia"]) .hub-concept-row:hover .hcr-title { color: #3c1808 !important; }
         :global([data-theme="sepia"]) .hcr-excerpt { color: #5a4530; }
         :global([data-theme="sepia"]) .hcr-meta { color: #7a6848; }
-        :global([data-theme="sepia"]) .hub-summa
+        :global([data-theme="sepia"]) .hub-summary { background: #e0d5bf; }
+        :global([data-theme="sepia"]) .hub-details[open] .hub-summary { background: #d8ccb8; }
+      `}</style>
+    </div>
+  );
+}
