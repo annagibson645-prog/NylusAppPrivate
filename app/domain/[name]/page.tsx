@@ -73,9 +73,10 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
   const concepts = nodes.filter((n) => n.type === 'concept' || n.type === 'thread');
   const stableCount = concepts.filter((n) => n.status === 'stable').length;
 
-  // Ungrouped concepts — not in any hub (any domain's hub counts; cross-domain absorption is real)
+  // Ungrouped concepts — not in any hub (any domain's hub counts; cross-domain absorption is real).
+  // Exclude threads: they live in LAB/Threads/ as developing research lines and aren't expected to be in hubs.
   const ungrouped = concepts
-    .filter((n) => !n.hub)
+    .filter((n) => n.type === 'concept' && !n.hub)
     .sort((a, b) => new Date(b.updated || 0).getTime() - new Date(a.updated || 0).getTime())
     .slice(0, 12);
 
