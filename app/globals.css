@@ -1055,7 +1055,7 @@ html, body {
 }
 
 .void-right-nav {
-  width: 176px;
+  width: 220px;
   flex-shrink: 0;
   position: sticky;
   top: 0;
@@ -1063,7 +1063,7 @@ html, body {
   overflow-y: auto;
   scrollbar-width: none;
   border-left: 1px solid #1c1828;
-  padding: 28px 0 40px 20px;
+  padding: 28px 16px 40px 20px;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -1100,9 +1100,9 @@ html, body {
   padding: 5px 0;
   letter-spacing: 0.1em;
   transition: color 0.15s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  word-break: break-word;
   line-height: 1.5;
 }
 .vrn-link:hover { color: var(--domain-color, #a78bfa); }
@@ -1139,9 +1139,9 @@ html, body {
   padding: 5px 0;
   letter-spacing: 0;
   transition: color 0.15s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  word-break: break-word;
   line-height: 1.55;
   border-bottom: 1px solid transparent;
 }
@@ -1152,7 +1152,7 @@ html, body {
   opacity: 0.9;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .void-right-nav { display: none; }
   .void-layout-main { padding: 32px 24px 120px; }
 }
