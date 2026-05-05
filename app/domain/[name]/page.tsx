@@ -73,10 +73,9 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
   const concepts = nodes.filter((n) => n.type === 'concept' || n.type === 'thread');
   const stableCount = concepts.filter((n) => n.status === 'stable').length;
 
-  // Ungrouped concepts — not in any hub
-  const groupedIds = new Set(domainHubs.flatMap((h: any) => h.concepts ?? []));
+  // Ungrouped concepts — not in any hub (any domain's hub counts; cross-domain absorption is real)
   const ungrouped = concepts
-    .filter((n) => !groupedIds.has(n.id))
+    .filter((n) => !n.hub)
     .sort((a, b) => new Date(b.updated || 0).getTime() - new Date(a.updated || 0).getTime())
     .slice(0, 12);
 
