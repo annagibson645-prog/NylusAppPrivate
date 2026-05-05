@@ -72,7 +72,7 @@ function useWindowWidth() {
 
 // ─── SHOOTING STARS ───────────────────────────────────────────────────────────
 function useShootingStars(
-  canvasRef: React.RefObject<HTMLCanvasElement>,
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
   active: boolean
 ) {
   useEffect(() => {
