@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { domainColor } from '@/lib/adapt-vault';
 import ThemeToggle from '@/components/ThemeToggle';
+import HubSearch from '@/components/HubSearch';
 
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), 'public/data', file), 'utf-8'));
@@ -262,6 +263,8 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
             <div className="void-ornament-line" />
           </div>
 
+          <HubSearch concepts={allConceptNodes} domainColor={color} />
+
           <div className="hub-sections">
             {sections.map((sec, si) => {
               const nodes = sec.conceptIds
@@ -321,13 +324,13 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
             })}
 
             {unplaced.length > 0 && (
-              <details className="hub-details">
+              <details className="hub-details" open>
                 <summary
                   className="hub-summary"
                   style={{ '--lc': '#3a3450' } as React.CSSProperties}
                 >
                   <span className="hub-summary-inner">
-                    <span className="hub-section-title" style={{ color: '#9890b0' }}>Other</span>
+                    <span className="hub-section-title" style={{ color: '#9890b0' }}>Not yet grouped</span>
                     <span className="hub-section-count" style={{ color: '#9890b0' }}>{unplaced.length}</span>
                   </span>
                   <span className="hub-chevron">v</span>
@@ -369,6 +372,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           max-width: 1100px;
           margin: 0 auto;
           padding: 0 56px 160px;
+          padding-right: calc(56px + 196px); /* clear fixed right nav (176px + 20px gap) */
           position: relative;
           z-index: 2;
         }
@@ -537,26 +541,32 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         .hub-concept-row {
           display: flex;
           flex-direction: column;
-          gap: 0;
-          padding: 22px 24px 20px;
+          gap: 10px;
+          padding: 28px 24px 22px;
           margin: 0;
           text-decoration: none;
           border: none;
           border-bottom: none;
           background: #0d0b18;
           transition: background 0.15s;
-          min-height: 120px;
+          min-height: 140px;
         }
         .hub-concept-row:last-child { border-bottom: none; }
         .hub-concept-row:hover { background: #13101e; }
-        .hcr-left { flex: 1; min-width: 0; }
+        .hcr-left {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
         .hcr-title {
           font-family: var(--font-fraunces), serif;
-          font-size: 20px;
+          font-size: 22px;
           font-style: italic;
           color: #ffffff;
           line-height: 1.2;
-          margin-bottom: 10px;
+          margin-bottom: 0;
           transition: color 0.15s;
           font-optical-sizing: auto;
         }
@@ -565,52 +575,54 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           font-family: var(--font-newsreader), serif;
           font-size: 13px;
           line-height: 1.65;
-          color: #6a6480;
+          color: #a09ab8;
           font-weight: 300;
           font-optical-sizing: auto;
+          flex: 1;
         }
         .hcr-right {
           display: flex;
           flex-direction: row;
           align-items: center;
           gap: 12px;
-          margin-top: 14px;
+          margin-top: 4px;
         }
         .hcr-meta {
           font-family: var(--font-jetbrains), monospace;
-          font-size: 9px;
-          color: #3a3458;
+          font-size: 11px;
+          color: #6a6488;
           letter-spacing: 0.08em;
           text-transform: uppercase;
           white-space: nowrap;
         }
-        .hub-concept-row:hover .hcr-meta { color: #6a6090; }
+        .hub-concept-row:hover .hcr-meta { color: #9090b8; }
         @media (max-width: 1100px) {
           .hub-section-body { grid-template-columns: repeat(2, 1fr); }
         }
+
+        /* Right nav disappears at 900px — remove padding compensation */
         @media (max-width: 900px) {
-          .hub-outer { gap: 48px; padding: 0 32px 120px; }
+          .hub-outer {
+            gap: 48px;
+            padding: 0 40px 120px !important;
+          }
           .hub-sidebar { width: 160px; }
           .hub-section-body { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 680px) {
-          .hub-outer { flex-direction: column-reverse; padding: 0 20px 100px; gap: 0; }
-          .hub-sidebar {
-            position: static; width: 100%; max-height: none;
-            margin-top: 56px; padding-top: 32px;
-            border-top: 1px solid #1c1828;
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 32px;
+
+        /* Both sidebars hidden on mobile */
+        @media (max-width: 768px) {
+          .hub-outer {
+            padding: 0 20px 100px !important;
+            gap: 0;
           }
-          .hub-title { font-size: clamp(40px, 10vw, 64px) !important; }
+          .hub-sidebar { display: none !important; }
+          .hub-title { font-size: clamp(36px, 9vw, 56px) !important; }
           .hub-lede { font-size: 17px !important; }
           .hub-section-body { grid-template-columns: 1fr; }
-          .hub-concept-row { padding: 18px 20px; }
-          .hcr-title { font-size: 18px !important; }
-          .hub-summary { padding: 20px 0; }
-          .void-nav { padding: 16px 20px; margin-bottom: 28px; }
-        }
-        @media (max-width: 400px) {
-          .hub-sidebar { grid-template-columns: 1fr; }
+          .hub-concept-row { padding: 18px 16px; }
+          .hcr-title { font-size: 17px !important; }
+          .hub-summary { padding: 18px 0; }
         }
 
         /* Hub right nav — fixed to right edge */
@@ -629,11 +641,6 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         :global([data-theme="sepia"]) .hub-concept-row:hover { background: #e6dcc8; }
         :global([data-theme="sepia"]) .hcr-title { color: #1e1408 !important; }
         :global([data-theme="sepia"]) .hub-concept-row:hover .hcr-title { color: #3c1808 !important; }
-        :global([data-theme="sepia"]) .hcr-excerpt { color: #7a6545; }
-        :global([data-theme="sepia"]) .hcr-meta { color: #9a8a6a; }
-        :global([data-theme="sepia"]) .hub-summary { background: #e0d5bf; }
-        :global([data-theme="sepia"]) .hub-details[open] .hub-summary { background: #d8ccb8; }
-      `}</style>
-    </div>
-  );
-}
+        :global([data-theme="sepia"]) .hcr-excerpt { color: #5a4530; }
+        :global([data-theme="sepia"]) .hcr-meta { color: #7a6848; }
+        :global([data-theme="sepia"]) .hub-summa
