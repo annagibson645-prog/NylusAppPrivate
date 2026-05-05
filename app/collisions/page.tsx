@@ -4,6 +4,20 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { VaultNode } from "@/lib/types";
 
+// ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
+const BG    = "#0e0d14";
+const BG2   = "#15131c";
+const BG3   = "#1c1a26";
+const DIM   = "#8a849a";
+const DIM2  = "#494456";
+const TEXT  = "#eae6f5";
+const TEXT2 = "#cdc8dd";
+const GOLD  = "#e8b86a";
+
+const FF = "'Fraunces', Georgia, serif";
+const FS = "'Space Grotesk', -apple-system, sans-serif";
+const FM = "'JetBrains Mono', ui-monospace, monospace";
+
 const DOMAIN_COLOR: Record<string, string> = {
   "cross-domain":         "#14b8a6",
   "psychology":           "#3b82f6",
@@ -13,6 +27,16 @@ const DOMAIN_COLOR: Record<string, string> = {
   "history":              "#f59e0b",
   "african-spirituality": "#10b981",
   "ai-collaboration":     "#06b6d4",
+};
+const DOMAIN_SHORT: Record<string, string> = {
+  "cross-domain":         "cross",
+  "psychology":           "psych",
+  "eastern-spirituality": "eastern",
+  "behavioral-mechanics": "behavioral",
+  "creative-practice":    "creative",
+  "history":              "history",
+  "african-spirituality": "african",
+  "ai-collaboration":     "ai",
 };
 const DOMAIN_LABEL: Record<string, string> = {
   "cross-domain":         "Cross-Domain",
@@ -25,568 +49,708 @@ const DOMAIN_LABEL: Record<string, string> = {
   "ai-collaboration":     "AI Collaboration",
 };
 
-function seededRand(seed: number) {
-  let s = seed;
-  return () => {
-    s = (s * 1664525 + 1013904223) & 0xffffffff;
-    return (s >>> 0) / 0xffffffff;
-  };
-}
+const DOMAINS = Object.keys(DOMAIN_COLOR);
+const NAV_H   = 68;
+const ARC_SZ  = 480;
+const CX = 240, CY = 240, R = 155, CORE = 24;
 
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function cleanTitle(t: string) {
   return t.replace(/^Collision:\s*/i, "");
 }
 
-function hexToRgb(hex: string) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `${r},${g},${b}`;
-}
-
-function Pips({ score, color }: { score: number; color: string }) {
-  const total = 10;
-  const filled = Math.min(Math.max(Math.round((score / 14) * 10), 1), total);
-  return (
-    <span style={{ display: "flex", gap: 3, alignItems: "center" }}>
-      {Array.from({ length: total }).map((_, i) => (
-        <span key={i} style={{
-          width: 5, height: 5, borderRadius: "50%",
-          background: i < filled ? color : "rgba(255,255,255,0.07)",
-          display: "inline-block", flexShrink: 0,
-        }} />
-      ))}
-    </span>
-  );
-}
-
 function useWindowWidth() {
-  const [width, setWidth] = useState(1400);
+  const [w, setW] = useState(1400);
   useEffect(() => {
-    setWidth(window.innerWidth);
-    const handler = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
+    setW(window.innerWidth);
+    const h = () => setW(window.innerWidth);
+    window.addEventListener("resize", h);
+    return () => window.removeEventListener("resize", h);
   }, []);
-  return width;
+  return w;
 }
 
-// Grid-based placement: evenly distributes nodes across the canvas
-// Uses seeded shuffle so positions are deterministic but not ordered
-function placeNodes(nodes: VaultNode[], W: number, H: number) {
-  if (nodes.length === 0) return [];
-  const rand = seededRand(42);
-  const padding = 24;
-  const aW = W - 2 * padding;
-  const aH = H - 2 * padding;
-  const n = nodes.length;
+// ─── SHOOTING STARS ───────────────────────────────────────────────────────────
+function useShootingStars(
+  canvasRef: React.RefObject<HTMLCanvasElement>,
+  active: boolean
+) {
+  useEffect(() => {
+    if (!active) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-  // Calculate grid dimensions based on canvas aspect ratio
-  const aspect = aW / aH;
-  const cols = Math.max(2, Math.round(Math.sqrt(n * aspect)));
-  const rows = Math.ceil(n / cols);
-  const cellW = aW / cols;
-  const cellH = aH / rows;
-
-  // Fisher-Yates shuffle (seeded) — assigns nodes to grid cells randomly
-  const idx = Array.from({ length: n }, (_, i) => i);
-  for (let i = n - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [idx[i], idx[j]] = [idx[j], idx[i]];
-  }
-
-  return idx.map((nodeIdx, cellIdx) => {
-    const col = cellIdx % cols;
-    const row = Math.floor(cellIdx / cols);
-    // Place within inner 65% of cell to avoid clumping at edges
-    const x = padding + cellW * col + cellW * 0.175 + rand() * cellW * 0.65;
-    const y = padding + cellH * row + cellH * 0.175 + rand() * cellH * 0.65;
-    return {
-      x, y,
-      r: 2.5 + (nodes[nodeIdx].pressure_score ?? 0) * 0.28,
-      node: nodes[nodeIdx],
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
     };
-  });
+    resize();
+    window.addEventListener("resize", resize);
+
+    type Star = {
+      x: number; y: number; vx: number; vy: number;
+      len: number; life: number; maxLife: number;
+      alpha: number; hue: string;
+    };
+    const stars: Star[] = [];
+    const palette = Object.values(DOMAIN_COLOR);
+
+    function mkStar(): Star {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1.4 + Math.random() * 2.2;
+      const len   = 40 + Math.random() * 90;
+      return {
+        x: Math.random() * canvas!.width,
+        y: Math.random() * canvas!.height,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        len, life: 0,
+        maxLife: Math.round(len / speed),
+        alpha: 0.5 + Math.random() * 0.35,
+        hue: Math.random() < 0.3
+          ? palette[Math.floor(Math.random() * palette.length)]
+          : "#ffffff",
+      };
+    }
+    for (let i = 0; i < 5; i++) stars.push(mkStar());
+
+    let lastSpawn = 0;
+    let raf: number;
+
+    function tick(ts: number) {
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
+      if (ts - lastSpawn > 900 + Math.random() * 500) {
+        stars.push(mkStar());
+        lastSpawn = ts;
+        if (stars.length > 12) stars.shift();
+      }
+      for (let i = stars.length - 1; i >= 0; i--) {
+        const s = stars[i];
+        s.life++;
+        const tail = Math.min(s.life, s.maxLife);
+        const tx = s.x - s.vx * tail;
+        const ty = s.y - s.vy * tail;
+        const progress = s.life / s.maxLife;
+        const a = s.alpha * (1 - Math.pow(Math.max(0, progress - 0.5) * 2, 2));
+        const grad = ctx!.createLinearGradient(tx, ty, s.x, s.y);
+        grad.addColorStop(0, "rgba(255,255,255,0)");
+        grad.addColorStop(1, s.hue === "#ffffff"
+          ? `rgba(255,255,255,${a})`
+          : s.hue + Math.round(a * 255).toString(16).padStart(2, "0")
+        );
+        ctx!.beginPath();
+        ctx!.moveTo(tx, ty);
+        ctx!.lineTo(s.x, s.y);
+        ctx!.strokeStyle = grad;
+        ctx!.lineWidth = 0.8 + (1 - progress) * 0.6;
+        ctx!.lineCap = "round";
+        ctx!.stroke();
+        ctx!.beginPath();
+        ctx!.arc(s.x, s.y, 0.9, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(255,255,255,${a * 0.9})`;
+        ctx!.fill();
+        s.x += s.vx;
+        s.y += s.vy;
+        if (
+          s.x < -20 || s.x > canvas!.width + 20 ||
+          s.y < -20 || s.y > canvas!.height + 20
+        ) stars.splice(i, 1);
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, [active, canvasRef]);
 }
 
-const NAV_H = 76;
-const FF = "var(--font-fraunces, 'Fraunces', serif)";
-const FN = "var(--font-newsreader, 'Newsreader', serif)";
-const FM = "var(--font-jetbrains, 'JetBrains Mono', monospace)";
-
-interface PlacedNode { x: number; y: number; r: number; node: VaultNode }
-
-// Diamond Cross (Proto 05) — two thin diamond polygons forming a + shape
-function DiamondStar({
-  x, y, s, color, opacity, glow,
-}: {
-  x: number; y: number; s: number; color: string; opacity: number; glow?: boolean;
-}) {
-  const hw = s * 0.18; // half-width of each arm
-  const vPts = `${x},${y - s} ${x + hw},${y} ${x},${y + s} ${x - hw},${y}`;
-  const hPts = `${x - s},${y} ${x},${y - hw} ${x + s},${y} ${x},${y + hw}`;
-  return (
-    <g filter={glow ? "url(#galaxy-glow)" : undefined}>
-      <polygon points={vPts} fill={color} opacity={opacity} />
-      <polygon points={hPts} fill={color} opacity={opacity} />
-    </g>
-  );
-}
-
-function GalaxyMap({
-  allNodes,
-  hoveredId,
-  domainFilter,
-  onHover,
-  onSelect,
+// ─── ARC ORBITAL (desktop) ────────────────────────────────────────────────────
+function ArcOrbital({
+  allNodes, activeDomain, onSelect,
 }: {
   allNodes: VaultNode[];
-  hoveredId: string | null;
-  domainFilter: string;
-  onHover: (id: string | null) => void;
-  onSelect: (id: string) => void;
+  activeDomain: string | null;
+  onSelect: (d: string | null) => void;
 }) {
-  const W = 560, H = 660;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useShootingStars(canvasRef, true);
 
-  // Positions are stable — based on ALL nodes regardless of current filter
-  const placed: PlacedNode[] = useMemo(
-    () => placeNodes(allNodes, W, H),
-    [allNodes]
-  );
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    DOMAINS.forEach(d => { c[d] = allNodes.filter(n => n.domain === d).length; });
+    return c;
+  }, [allNodes]);
+
+  const [tooltip, setTooltip] = useState<{
+    label: string; count: number; color: string;
+  } | null>(null);
 
   return (
-    <svg
-      width="100%" height="100%"
-      viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="xMidYMid meet"
-      style={{ display: "block", overflow: "visible" }}
-    >
-      <defs>
-        <filter id="galaxy-glow" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="3.5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
+    <div style={{ position: "relative", width: ARC_SZ, height: ARC_SZ }}>
+      <canvas
+        ref={canvasRef}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+      />
+      <svg
+        viewBox={`0 0 ${ARC_SZ} ${ARC_SZ}`}
+        width={ARC_SZ} height={ARC_SZ}
+        style={{ position: "relative", zIndex: 1, overflow: "visible" }}
+      >
+        <defs>
+          <filter id="node-glow" x="-120%" y="-120%" width="340%" height="340%">
+            <feGaussianBlur stdDeviation="5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="core-glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="7" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="lbl-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
 
-      {placed.map(({ x, y, r, node }) => {
-        const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
-        const isHov = hoveredId === node.id;
-        const isDimmed = domainFilter !== "all" && node.domain !== domainFilter;
-        const opacity = isDimmed ? 0.07 : isHov ? 1 : 0.65;
-        const s = isHov && !isDimmed ? r + 2 : r;
+        {/* Orbit ring */}
+        <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5"/>
 
-        return (
-          <g
-            key={node.id}
-            style={{ cursor: isDimmed ? "default" : "pointer" }}
-            onMouseEnter={() => { if (!isDimmed) onHover(node.id); }}
-            onMouseLeave={() => onHover(null)}
-            onClick={() => { if (!isDimmed) onSelect(node.id); }}
-          >
-            {/* Outer glow halo on hover — larger, faint */}
-            {isHov && !isDimmed && (
-              <DiamondStar x={x} y={y} s={s + 6} color={col} opacity={0.28} glow />
-            )}
-            {/* Main diamond star */}
-            <DiamondStar x={x} y={y} s={s} color={col} opacity={opacity} glow={isHov && !isDimmed} />
-          </g>
-        );
-      })}
-    </svg>
+        {/* 8 domain nodes */}
+        {DOMAINS.map((domainId, i) => {
+          const angle   = (i / DOMAINS.length) * Math.PI * 2 - Math.PI / 2;
+          const nx      = CX + R * Math.cos(angle);
+          const ny      = CY + R * Math.sin(angle);
+          const color   = DOMAIN_COLOR[domainId];
+          const isActive = activeDomain === domainId;
+          const isDimmed = activeDomain !== null && !isActive;
+          const s       = isActive ? 13 : 10;
+          const hw      = s * 0.18;
+          const op      = isDimmed ? 0.18 : 0.85;
+          const count   = counts[domainId] || 0;
+          const short   = DOMAIN_SHORT[domainId];
+
+          // Label
+          const labelDist = s + 28;
+          const lx = nx + Math.cos(angle) * labelDist;
+          const ly = ny + Math.sin(angle) * labelDist;
+          const deg = ((angle * 180 / Math.PI) + 360) % 360;
+          const anchor = deg > 15 && deg < 165 ? "start"
+                       : deg > 195 && deg < 345 ? "end"
+                       : "middle";
+          const textColor = isActive ? color
+                          : isDimmed ? "rgba(73,68,86,0.45)"
+                          : "rgba(200,196,215,0.85)";
+
+          return (
+            <g key={domainId}>
+              {/* Spoke */}
+              <line x1={CX} y1={CY} x2={nx} y2={ny}
+                stroke="rgba(255,255,255,0.03)" strokeWidth="0.5"/>
+
+              {/* Active outer glow */}
+              {isActive && (
+                <g filter="url(#node-glow)">
+                  <polygon
+                    points={`${nx},${ny-s-5} ${nx+2},${ny} ${nx},${ny+s+5} ${nx-2},${ny}`}
+                    fill={color} opacity="0.35"/>
+                  <polygon
+                    points={`${nx-s-5},${ny} ${nx},${ny-2} ${nx+s+5},${ny} ${nx},${ny+2}`}
+                    fill={color} opacity="0.35"/>
+                </g>
+              )}
+
+              {/* Hit area */}
+              <circle cx={nx} cy={ny} r={20} fill="transparent"
+                style={{ cursor: "pointer" }}
+                onMouseEnter={() => setTooltip({ label: DOMAIN_LABEL[domainId], count, color })}
+                onMouseLeave={() => setTooltip(null)}
+                onClick={() => onSelect(activeDomain === domainId ? null : domainId)}
+              />
+
+              {/* Diamond cross */}
+              <g style={{ pointerEvents: "none" }}>
+                <polygon
+                  points={`${nx},${ny-s} ${nx+hw},${ny} ${nx},${ny+s} ${nx-hw},${ny}`}
+                  fill={color} opacity={op}/>
+                <polygon
+                  points={`${nx-s},${ny} ${nx},${ny-hw} ${nx+s},${ny} ${nx},${ny+hw}`}
+                  fill={color} opacity={op}/>
+              </g>
+
+              {/* Domain label */}
+              <text
+                x={lx} y={ly}
+                textAnchor={anchor} dominantBaseline="middle"
+                fontSize={isActive ? 13 : 12}
+                fontWeight={isActive ? 600 : 400}
+                fill={textColor}
+                fontFamily="Space Grotesk, sans-serif"
+                letterSpacing={isActive ? "0.04em" : "0.02em"}
+                style={{ pointerEvents: "none", userSelect: "none" }}
+                filter={isActive ? "url(#lbl-glow)" : undefined}
+              >{short}</text>
+
+              {/* Count suffix on active */}
+              {isActive && (
+                <text
+                  x={lx + (
+                    anchor === "start"  ?  short.length * 7.6 + 6
+                  : anchor === "end"   ? -(short.length * 7.6 + 6)
+                  : 0
+                  )}
+                  y={ly}
+                  textAnchor={anchor} dominantBaseline="middle"
+                  fontSize={10} fontWeight={400}
+                  fill={color} opacity={0.65}
+                  fontFamily="JetBrains Mono, monospace"
+                  style={{ pointerEvents: "none", userSelect: "none" }}
+                >{` · ${count}`}</text>
+              )}
+            </g>
+          );
+        })}
+
+        {/* Center — click resets to all */}
+        <g
+          filter="url(#core-glow)"
+          style={{ cursor: "pointer" }}
+          onClick={() => onSelect(null)}
+          onMouseEnter={() => setTooltip({ label: "All domains", count: allNodes.length, color: GOLD })}
+          onMouseLeave={() => setTooltip(null)}
+        >
+          <circle cx={CX} cy={CY} r={CORE} fill={BG2}
+            stroke={activeDomain === null ? "rgba(232,184,106,0.4)" : "rgba(255,255,255,0.08)"}
+            strokeWidth="1"/>
+          <polygon
+            points={`${CX},${CY-14} ${CX+2.6},${CY} ${CX},${CY+14} ${CX-2.6},${CY}`}
+            fill={activeDomain === null ? GOLD : DIM2}
+            opacity={activeDomain === null ? 1 : 0.6}/>
+          <polygon
+            points={`${CX-14},${CY} ${CX},${CY-2.6} ${CX+14},${CY} ${CX},${CY+2.6}`}
+            fill={activeDomain === null ? GOLD : DIM2}
+            opacity={activeDomain === null ? 1 : 0.6}/>
+        </g>
+      </svg>
+
+      {/* Tooltip */}
+      {tooltip && (
+        <div style={{
+          position: "absolute", bottom: -48, left: "50%",
+          transform: "translateX(-50%)",
+          background: BG2, border: "1px solid rgba(232,184,106,0.2)",
+          borderRadius: 8, padding: "7px 14px", textAlign: "center",
+          pointerEvents: "none", whiteSpace: "nowrap", zIndex: 10,
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: TEXT, fontFamily: FS }}>
+            {tooltip.label}
+          </div>
+          <div style={{ fontFamily: FM, fontSize: 10, color: tooltip.color, marginTop: 2 }}>
+            {tooltip.count} collisions
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
+// ─── MOBILE DOMAIN STRIP ──────────────────────────────────────────────────────
+function MobileDomainStrip({
+  activeDomain, allNodes, onSelect,
+}: {
+  activeDomain: string | null;
+  allNodes: VaultNode[];
+  onSelect: (d: string | null) => void;
+}) {
+  return (
+    <div style={{
+      display: "flex", gap: 6, alignItems: "center",
+      padding: "12px 20px", overflowX: "auto",
+      borderBottom: `1px solid ${BG3}`,
+      // hide scrollbar
+      msOverflowStyle: "none", scrollbarWidth: "none",
+    }}>
+      {/* All */}
+      <button
+        onClick={() => onSelect(null)}
+        style={{
+          display: "flex", alignItems: "center", gap: 6,
+          padding: "6px 12px", borderRadius: 999, border: "none",
+          background: activeDomain === null ? BG3 : "transparent",
+          cursor: "pointer", flexShrink: 0,
+        }}
+      >
+        <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0 }}>
+          <polygon points="5,0 5.9,5 10,5 5.9,5 5,10 4.1,5 0,5 4.1,5"
+            fill={GOLD} opacity={activeDomain === null ? 1 : 0.4}/>
+        </svg>
+        <span style={{ fontFamily: FS, fontSize: 12, color: activeDomain === null ? TEXT2 : DIM, whiteSpace: "nowrap" }}>
+          all
+        </span>
+      </button>
+
+      {DOMAINS.map(domainId => {
+        const color   = DOMAIN_COLOR[domainId];
+        const short   = DOMAIN_SHORT[domainId];
+        const isActive = activeDomain === domainId;
+        const s = 5, hw = s * 0.18;
+        return (
+          <button
+            key={domainId}
+            onClick={() => onSelect(isActive ? null : domainId)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "6px 12px", borderRadius: 999,
+              border: `1px solid ${isActive ? color + "55" : "rgba(255,255,255,0.07)"}`,
+              background: isActive ? color + "12" : "transparent",
+              cursor: "pointer", flexShrink: 0,
+            }}
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" style={{ flexShrink: 0 }}>
+              <polygon
+                points={`5,${5 - s} ${5 + hw},5 5,${5 + s} ${5 - hw},5`}
+                fill={color} opacity={isActive ? 1 : 0.6}/>
+              <polygon
+                points={`${5 - s},5 5,${5 - hw} ${5 + s},5 5,${5 + hw}`}
+                fill={color} opacity={isActive ? 1 : 0.6}/>
+            </svg>
+            <span style={{
+              fontFamily: FS, fontSize: 12,
+              color: isActive ? color : DIM,
+              whiteSpace: "nowrap",
+            }}>{short}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── CARD C — PULL QUOTE ──────────────────────────────────────────────────────
+function CollisionCard({
+  node, index, isMobile,
+}: {
+  node: VaultNode; index: number; isMobile: boolean;
+}) {
+  const col    = DOMAIN_COLOR[node.domain] || "#8b5cf6";
+  const score  = node.pressure_score ?? 0;
+  const isHigh = score >= 9;
+  const short  = DOMAIN_SHORT[node.domain] || node.domain;
+  const num    = String(index + 1).padStart(2, "0");
+
+  return (
+    <Link href={`/collision/${node.id}`} style={{ textDecoration: "none", display: "block" }}>
+      <div
+        style={{
+          background: BG2,
+          border: "1px solid rgba(255,255,255,0.06)",
+          borderLeft: `3px solid ${isHigh ? col : "rgba(255,255,255,0.08)"}`,
+          borderRadius: 10,
+          padding: isMobile ? "14px 16px" : "18px 22px",
+          position: "relative", overflow: "hidden",
+          cursor: "pointer",
+          transition: "border-color 0.18s, background 0.18s, transform 0.15s",
+        }}
+        onMouseEnter={e => {
+          const el = e.currentTarget as HTMLDivElement;
+          el.style.background = "#1a1825";
+          el.style.transform  = "translateX(2px)";
+          el.style.borderColor = "rgba(255,255,255,0.12)";
+        }}
+        onMouseLeave={e => {
+          const el = e.currentTarget as HTMLDivElement;
+          el.style.background  = BG2;
+          el.style.transform   = "translateX(0)";
+          el.style.borderColor = "rgba(255,255,255,0.06)";
+        }}
+      >
+        {/* Ghost number watermark */}
+        <div style={{
+          position: "absolute", right: 10, bottom: -8,
+          fontFamily: FF, fontStyle: "italic", fontWeight: 700,
+          fontSize: 72, color: "#fff", opacity: 0.04,
+          pointerEvents: "none", lineHeight: 1, userSelect: "none",
+        }}>{num}</div>
+
+        {/* Title — small, muted label */}
+        <div style={{
+          fontFamily: FS, fontSize: 11, fontWeight: 500,
+          color: DIM, letterSpacing: "0.01em", marginBottom: 10,
+        }}>{cleanTitle(node.title)}</div>
+
+        {/* Excerpt — Fraunces italic pull quote */}
+        {node.excerpt && (
+          <div style={{
+            fontFamily: FF, fontStyle: "italic", fontWeight: 300,
+            fontSize: isMobile ? 14 : 15, color: TEXT,
+            lineHeight: 1.7, marginBottom: 14,
+          }}>"{node.excerpt}"</div>
+        )}
+
+        {/* Footer: domain dot + label + pressure score */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 7, height: 7, borderRadius: "50%",
+            background: col, flexShrink: 0,
+          }}/>
+          <span style={{ fontFamily: FM, fontSize: 10, color: DIM2, letterSpacing: "0.06em" }}>
+            {short}
+          </span>
+          <span style={{
+            fontFamily: FM, fontSize: 12,
+            color: isHigh ? col : DIM2, marginLeft: "auto",
+          }}>
+            {score.toFixed(1)}
+          </span>
+          <span style={{ fontSize: 12, color: DIM2, opacity: 0.5 }}>→</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function CollisionsPage() {
-  const [allNodes, setAllNodes] = useState<VaultNode[]>([]);
-  const [search, setSearch] = useState("");
-  const [domainFilter, setDomainFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"pressure" | "date" | "alpha">("pressure");
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const listItemRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const router = useRouter();
-  const winWidth = useWindowWidth();
-  const isMobile = winWidth < 860;
+  const [allNodes, setAllNodes]       = useState<VaultNode[]>([]);
+  const [activeDomain, setActiveDomain] = useState<string | null>(null);
+  const [search, setSearch]           = useState("");
+  const [sortBy, setSortBy]           = useState<"pressure" | "date" | "alpha">("pressure");
+  const winWidth  = useWindowWidth();
+  const isMobile  = winWidth < 768;
+  const activeCol = activeDomain ? DOMAIN_COLOR[activeDomain] : GOLD;
 
   useEffect(() => {
     fetch("/data/collisions.json")
-      .then((r) => r.json())
-      .then((data: VaultNode[]) => {
-        setAllNodes(data.filter((n) => n.type === "collision"));
-      });
+      .then(r => r.json())
+      .then((data: VaultNode[]) =>
+        setAllNodes(data.filter(n => n.type === "collision"))
+      );
   }, []);
 
-  const domains = useMemo(() => {
-    const set = new Set(allNodes.map((n) => n.domain).filter(Boolean));
-    return Array.from(set).sort();
-  }, [allNodes]);
-
   const filtered = useMemo(() => {
-    let list = allNodes;
-    if (domainFilter !== "all") list = list.filter((n) => n.domain === domainFilter);
+    let list = [...allNodes];
+    if (activeDomain) list = list.filter(n => n.domain === activeDomain);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter((n) =>
+      list = list.filter(n =>
         n.title.toLowerCase().includes(q) ||
         (n.excerpt || "").toLowerCase().includes(q)
       );
     }
     if (sortBy === "pressure")
-      list = [...list].sort((a, b) => (b.pressure_score ?? 0) - (a.pressure_score ?? 0));
+      list.sort((a, b) => (b.pressure_score ?? 0) - (a.pressure_score ?? 0));
     else if (sortBy === "alpha")
-      list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+      list.sort((a, b) => a.title.localeCompare(b.title));
     else
-      list = [...list].sort((a, b) => (b.created || "").localeCompare(a.created || ""));
+      list.sort((a, b) => (b.created || "").localeCompare(a.created || ""));
     return list;
-  }, [allNodes, search, domainFilter, sortBy]);
-
-  function handleHover(id: string | null) {
-    setHoveredId(id);
-    if (id && listItemRefs.current[id]) {
-      listItemRefs.current[id]!.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  }
-
-  function handleSelect(id: string) {
-    router.push(`/collision/${id}`);
-  }
-
-  const activeFilterCount = domainFilter !== "all"
-    ? allNodes.filter((n) => n.domain === domainFilter).length
-    : allNodes.length;
+  }, [allNodes, activeDomain, search, sortBy]);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0e0d14", color: "#e8e3f0", fontFamily: FN }}>
+    <div style={{ minHeight: "100vh", background: BG, color: TEXT2, fontFamily: FS }}>
 
       {/* ── NAV ── */}
       <nav style={{
-        display: "flex", alignItems: "center",
-        gap: isMobile ? 12 : 20,
-        padding: `0 ${isMobile ? 20 : 48}px`,
-        height: NAV_H,
-        borderBottom: "1px solid #1c1828",
-        background: "linear-gradient(180deg, #0d0c18 0%, #0a0912 100%)",
         position: "sticky", top: 0, zIndex: 100,
-        flexShrink: 0,
+        height: NAV_H, display: "flex", alignItems: "center", gap: 4,
+        padding: `0 ${isMobile ? 20 : 40}px`,
+        background: "rgba(14,13,20,0.82)",
+        backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
-        {/* Brand */}
         <Link href="/" style={{
           fontFamily: FF, fontStyle: "italic", fontWeight: 200,
-          fontSize: isMobile ? 22 : 30, color: "#ffffff",
-          textDecoration: "none", letterSpacing: "-.02em", flexShrink: 0,
-        }}>NylusS</Link>
+          fontSize: 22, color: GOLD, textDecoration: "none",
+          marginRight: 10, flexShrink: 0,
+        }}>⊹</Link>
 
-        <span style={{ fontFamily: FM, fontSize: 18, color: "#2a2540", flexShrink: 0 }}>/</span>
+        {!isMobile && (
+          <>
+            {([
+              { href: "/essays",   label: "essays" },
+              { href: "/",         label: "domains" },
+              { href: "/sparks",   label: "sparks" },
+            ] as const).map(({ href, label }) => (
+              <Link key={href} href={href} style={{
+                fontFamily: FS, fontSize: 13, color: DIM,
+                padding: "5px 14px", borderRadius: 999,
+                textDecoration: "none",
+              }}
+              onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.color = TEXT2)}
+              onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.color = DIM)}
+              >{label}</Link>
+            ))}
+            <span style={{
+              fontFamily: FS, fontSize: 13, color: TEXT2,
+              padding: "5px 14px", borderRadius: 999, background: BG3,
+            }}>collisions</span>
+          </>
+        )}
 
+        {/* Count badge */}
         <span style={{
-          fontFamily: FF, fontStyle: "italic", fontWeight: 200,
-          fontSize: isMobile ? 20 : 26, color: "#8b5cf6",
-          letterSpacing: "-.01em", flexShrink: 0,
-        }}>Collisions</span>
-
-        <span style={{
-          fontFamily: FM, fontSize: 11, color: "#6c6490",
-          background: "#1c1828", border: "1px solid #2a2540",
-          borderRadius: 999, padding: "3px 10px", letterSpacing: ".06em",
-          flexShrink: 0,
+          fontFamily: FM, fontSize: 11, color: DIM2,
+          background: BG3, border: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: 999, padding: "3px 10px",
+          marginLeft: isMobile ? 0 : 6, flexShrink: 0,
         }}>
-          {allNodes.length > 0 ? `${allNodes.length} active` : "—"}
+          {allNodes.length > 0 ? `${filtered.length} / ${allNodes.length}` : "—"}
         </span>
 
-        {/* Site nav links */}
+        {/* Sort — desktop only */}
         {!isMobile && (
-          <div style={{ display: "flex", gap: 14, alignItems: "center", flexShrink: 0 }}>
-            {[
-              { href: "/", label: "Home" },
-              { href: "/essays", label: "Essays" },
-              { href: "/research", label: "Research" },
-              { href: "/sparks", label: "Sparks" },
-            ].map(({ href, label }) => (
-              <Link key={href} href={href} style={{
-                fontFamily: FM, fontSize: 11, color: "#3a3460",
-                letterSpacing: ".06em", textTransform: "uppercase",
-                textDecoration: "none", transition: "color 0.15s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#8b5cf6")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#3a3460")}
-              >{label}</Link>
+          <div style={{ display: "flex", gap: 3, marginLeft: 8 }}>
+            {(["pressure", "date", "alpha"] as const).map(s => (
+              <button key={s} onClick={() => setSortBy(s)} style={{
+                fontFamily: FM, fontSize: 10, letterSpacing: "0.1em",
+                textTransform: "uppercase", padding: "4px 10px", borderRadius: 4,
+                border: `1px solid ${sortBy === s ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)"}`,
+                background: sortBy === s ? BG3 : "transparent",
+                color: sortBy === s ? TEXT2 : DIM2,
+                cursor: "pointer", transition: "all 0.15s",
+              }}>
+                {s === "alpha" ? "a→z" : s}
+              </button>
             ))}
           </div>
         )}
 
-        {/* Domain filter dots */}
-        {!isMobile && (
-          <div style={{ display: "flex", gap: 9, alignItems: "center", flexShrink: 0 }}>
-            {domains.map((d) => {
-              const col = DOMAIN_COLOR[d] || "#8b5cf6";
-              const active = domainFilter === d;
-              return (
-                <button key={d}
-                  onClick={() => setDomainFilter(active ? "all" : d)}
-                  title={DOMAIN_LABEL[d] || d}
-                  style={{
-                    width: 13, height: 13, borderRadius: "50%",
-                    background: col,
-                    opacity: domainFilter === "all" ? 0.75 : active ? 1 : 0.2,
-                    border: "none", cursor: "pointer", padding: 0,
-                    boxShadow: active ? `0 0 12px ${col}cc, 0 0 4px ${col}` : "none",
-                    outline: active ? `2px solid ${col}50` : "none",
-                    outlineOffset: 2,
-                    transition: "all 0.15s",
-                    flexShrink: 0,
-                  }}
-                />
-              );
-            })}
-          </div>
-        )}
-
-        {/* Sort buttons */}
-        {!isMobile && (
-          <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
-            {(["pressure", "date", "alpha"] as const).map((s) => {
-              const label = s === "alpha" ? "A→Z" : s === "pressure" ? "PRESSURE" : "DATE";
-              const active = sortBy === s;
-              return (
-                <button key={s} onClick={() => setSortBy(s)}
-                  style={{
-                    fontFamily: FM, fontSize: 11, letterSpacing: ".08em",
-                    textTransform: "uppercase", padding: "5px 14px",
-                    background: active ? "#1c1828" : "transparent",
-                    border: `1px solid ${active ? "#3a3460" : "#1c1828"}`,
-                    borderRadius: 3,
-                    color: active ? "#ffffff" : "#4a4468",
-                    cursor: "pointer", transition: "all 0.15s", flexShrink: 0,
-                  }}
-                >{label}</button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Search */}
-        <div style={{ marginLeft: "auto", flexShrink: 0 }}>
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="search…"
-            style={{
-              background: "transparent",
-              border: "1px solid #1c1828",
-              borderRadius: 2,
-              padding: "6px 12px",
-              fontFamily: FM, fontSize: 11,
-              color: "#8c84b0", outline: "none",
-              width: isMobile ? 100 : 160,
-            }}
-          />
-        </div>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="search…"
+          style={{
+            marginLeft: "auto", fontFamily: FM, fontSize: 12,
+            background: "transparent", border: `1px solid ${BG3}`,
+            borderRadius: 6, padding: "6px 12px", color: DIM,
+            outline: "none", width: isMobile ? 110 : 180,
+          }}
+          onFocus={e => {
+            e.target.style.borderColor = "rgba(232,184,106,0.3)";
+            e.target.style.color = TEXT2;
+          }}
+          onBlur={e => {
+            e.target.style.borderColor = BG3;
+            e.target.style.color = DIM;
+          }}
+        />
       </nav>
 
-      {/* Mobile sort + filter strip */}
+      {/* ── MOBILE: sort strip ── */}
       {isMobile && (
         <div style={{
-          display: "flex", gap: 8, alignItems: "center",
-          padding: "12px 20px", borderBottom: "1px solid #1c1828",
-          overflowX: "auto",
+          display: "flex", gap: 4, padding: "10px 20px",
+          borderBottom: `1px solid ${BG3}`,
         }}>
-          {(["pressure", "date", "alpha"] as const).map((s) => {
-            const label = s === "alpha" ? "A→Z" : s === "pressure" ? "PRESSURE" : "DATE";
-            const active = sortBy === s;
-            return (
-              <button key={s} onClick={() => setSortBy(s)}
-                style={{
-                  fontFamily: FM, fontSize: 10, letterSpacing: ".08em",
-                  textTransform: "uppercase", padding: "4px 10px",
-                  background: active ? "#1c1828" : "transparent",
-                  border: `1px solid ${active ? "#3a3460" : "#1c1828"}`,
-                  borderRadius: 3, color: active ? "#ffffff" : "#4a4468",
-                  cursor: "pointer", flexShrink: 0,
-                }}
-              >{label}</button>
-            );
-          })}
-          <div style={{ display: "flex", gap: 7, marginLeft: 8 }}>
-            {domains.map((d) => {
-              const col = DOMAIN_COLOR[d] || "#8b5cf6";
-              const active = domainFilter === d;
-              return (
-                <button key={d}
-                  onClick={() => setDomainFilter(active ? "all" : d)}
-                  title={DOMAIN_LABEL[d]}
-                  style={{
-                    width: 11, height: 11, borderRadius: "50%",
-                    background: col,
-                    opacity: domainFilter === "all" ? 0.75 : active ? 1 : 0.2,
-                    border: "none", cursor: "pointer", padding: 0, flexShrink: 0,
-                    boxShadow: active ? `0 0 8px ${col}cc` : "none",
-                  }}
-                />
-              );
-            })}
-          </div>
+          {(["pressure", "date", "alpha"] as const).map(s => (
+            <button key={s} onClick={() => setSortBy(s)} style={{
+              fontFamily: FM, fontSize: 10, letterSpacing: "0.1em",
+              textTransform: "uppercase", padding: "4px 10px", borderRadius: 4,
+              border: `1px solid ${sortBy === s ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)"}`,
+              background: sortBy === s ? BG3 : "transparent",
+              color: sortBy === s ? TEXT2 : DIM2, cursor: "pointer",
+            }}>
+              {s === "alpha" ? "a→z" : s}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* ── BODY ── */}
-      <div style={{
-        display: "flex",
-        flexDirection: isMobile ? "column" : "row",
-        width: "100%",
-      }}>
+      {/* ── MOBILE: domain strip ── */}
+      {isMobile && (
+        <MobileDomainStrip
+          activeDomain={activeDomain}
+          allNodes={allNodes}
+          onSelect={setActiveDomain}
+        />
+      )}
 
-        {/* LEFT — Galaxy Map (68%) */}
-        <div style={{
-          width: isMobile ? "100%" : "68%",
-          flexShrink: 0,
-          padding: isMobile ? "20px 16px" : "28px 24px 24px 44px",
-          position: isMobile ? "relative" : "sticky",
-          top: isMobile ? undefined : NAV_H,
-          height: isMobile ? "55vw" : `calc(100vh - ${NAV_H}px)`,
-          minHeight: isMobile ? 300 : undefined,
-          overflow: "hidden",
-          borderRight: isMobile ? "none" : "1px solid #1c1828",
-          borderBottom: isMobile ? "1px solid #1c1828" : "none",
-          display: "flex",
-          flexDirection: "column",
+      {/* ── MOBILE: heading ── */}
+      {isMobile && (
+        <div style={{ padding: "20px 20px 8px" }}>
+          <h1 style={{
+            fontFamily: FF, fontStyle: "italic", fontWeight: 200,
+            fontSize: 26, color: TEXT, marginBottom: 2,
+          }}>Collisions</h1>
+          <p style={{ fontSize: 12, color: activeDomain ? activeCol : DIM2 }}>
+            {activeDomain
+              ? `${DOMAIN_LABEL[activeDomain]} · ${filtered.length}`
+              : `all domains · ${allNodes.length}`}
+          </p>
+        </div>
+      )}
+
+      {/* ── DESKTOP: arc section ── */}
+      {!isMobile && (
+        <section style={{
+          display: "flex", flexDirection: "column", alignItems: "center",
+          padding: "44px 40px 36px",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
         }}>
-          {/* Status line */}
           <div style={{
-            fontFamily: FM, fontSize: 10, color: "#2a2540",
-            letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 12,
+            fontFamily: FM, fontSize: 10, letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: activeDomain ? activeCol : DIM2,
+            marginBottom: 6, transition: "color 0.3s",
           }}>
-            {domainFilter !== "all"
-              ? `${DOMAIN_LABEL[domainFilter] || domainFilter} · ${activeFilterCount} collisions`
-              : `all domains · ${allNodes.length} collisions`}
+            {activeDomain
+              ? `⊹ ${DOMAIN_SHORT[activeDomain]} · ${filtered.length} collisions`
+              : "⊹ navigate by domain"}
           </div>
 
-          {/* SVG map */}
-          <div style={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
-            <GalaxyMap
-              allNodes={allNodes}
-              hoveredId={hoveredId}
-              domainFilter={domainFilter}
-              onHover={handleHover}
-              onSelect={handleSelect}
-            />
-          </div>
+          <h1 style={{
+            fontFamily: FF, fontStyle: "italic", fontWeight: 200,
+            fontSize: 30, color: TEXT, marginBottom: 4,
+          }}>Collisions</h1>
 
-          {/* Legend */}
-          {!isMobile && (
-            <div style={{
-              display: "flex", flexWrap: "wrap", gap: "4px 12px", marginTop: 12,
-            }}>
-              {Object.entries(DOMAIN_COLOR).map(([d, col]) => (
-                <button
-                  key={d}
-                  onClick={() => setDomainFilter(domainFilter === d ? "all" : d)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 5,
-                    background: "none", border: "none", cursor: "pointer", padding: 0,
-                    opacity: domainFilter === "all" || domainFilter === d ? 1 : 0.35,
-                    transition: "opacity 0.15s",
-                  }}
-                >
-                  <span style={{
-                    width: 6, height: 6, borderRadius: "50%",
-                    background: col, display: "inline-block",
-                    boxShadow: domainFilter === d ? `0 0 6px ${col}` : "none",
-                  }} />
-                  <span style={{
-                    fontFamily: FM, fontSize: 9, color: domainFilter === d ? col : "#3a3460",
-                    letterSpacing: ".06em", textTransform: "uppercase",
-                  }}>
-                    {DOMAIN_LABEL[d]}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+          <p style={{ fontSize: 12, color: DIM2, marginBottom: 36, textAlign: "center" }}>
+            ideas at the fault lines —{" "}
+            <span style={{ color: activeCol, fontWeight: 500, transition: "color 0.3s" }}>
+              {activeDomain ? DOMAIN_LABEL[activeDomain] : "view all"}
+            </span>
+          </p>
 
-        {/* RIGHT — Collision list (32%) */}
-        <div style={{
-          width: isMobile ? "100%" : "32%",
-          flexShrink: 0,
-          padding: isMobile ? "24px 20px 80px" : "24px 36px 80px 20px",
-          overflowY: "auto",
-          height: isMobile ? "auto" : `calc(100vh - ${NAV_H}px)`,
-          position: isMobile ? "relative" : "sticky",
-          top: isMobile ? undefined : NAV_H,
-        }}>
-          {filtered.length === 0 && (
-            <div style={{
-              fontFamily: FM, fontSize: 11, color: "#2a2540",
-              letterSpacing: ".08em", textTransform: "uppercase",
-              marginTop: 40, textAlign: "center",
-            }}>
-              no collisions found
-            </div>
-          )}
+          <ArcOrbital
+            allNodes={allNodes}
+            activeDomain={activeDomain}
+            onSelect={setActiveDomain}
+          />
 
-          {filtered.map((node) => {
-            const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
-            const score = node.pressure_score ?? 0;
-            const isHov = hoveredId === node.id;
-            return (
-              <div
-                key={node.id}
-                ref={(el) => { listItemRefs.current[node.id] = el; }}
-                onMouseEnter={() => setHoveredId(node.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                style={{
-                  borderBottom: "1px solid #1c1828",
-                  padding: "18px 0",
-                  background: isHov ? `rgba(${hexToRgb(col)},0.04)` : "transparent",
-                  paddingLeft: isHov ? 10 : 0,
-                  borderLeft: isHov ? `2px solid ${col}` : "2px solid transparent",
-                  transition: "background 0.15s, padding-left 0.15s",
-                }}
-              >
-                <Link href={`/collision/${node.id}`} style={{ textDecoration: "none", display: "block" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                    <span style={{
-                      width: 5, height: 5, borderRadius: "50%",
-                      background: col, display: "inline-block", flexShrink: 0,
-                    }} />
-                    <span style={{
-                      fontFamily: FM, fontSize: 9, color: col,
-                      letterSpacing: ".1em", textTransform: "uppercase",
-                    }}>{DOMAIN_LABEL[node.domain] || node.domain}</span>
-                    <span style={{ fontFamily: FM, fontSize: 9, color: "#2a2540", marginLeft: "auto" }}>
-                      {node.created}
-                    </span>
-                  </div>
-                  <h2 style={{
-                    fontFamily: FF, fontStyle: "italic", fontWeight: 200,
-                    fontSize: isMobile ? 17 : 20,
-                    color: isHov ? "#e8e3f0" : "#c9b8e8",
-                    letterSpacing: "-.01em", marginBottom: 5, lineHeight: 1.25,
-                    transition: "color 0.15s",
-                  }}>{cleanTitle(node.title)}</h2>
-                  {node.excerpt && (
-                    <p style={{
-                      fontFamily: FN, fontSize: 13, color: "#6c6490",
-                      lineHeight: 1.55, marginBottom: 8,
-                    }}>{node.excerpt}</p>
-                  )}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <Pips score={score} color={col} />
-                    <span style={{ fontFamily: FM, fontSize: 10, color: "#3a3460", letterSpacing: ".06em" }}>
-                      {score}
-                    </span>
-                    <span style={{
-                      fontFamily: FM, fontSize: 9, color: "#2a2540",
-                      letterSpacing: ".08em", textTransform: "uppercase", marginLeft: 6,
-                    }}>{node.status}</span>
-                  </div>
-                </Link>
-              </div>
-            );
-          })}
-        </div>
+          <p style={{ fontSize: 11, color: DIM2, marginTop: 36, textAlign: "center" }}>
+            click a domain star to filter · click center or active star to reset
+          </p>
+        </section>
+      )}
+
+      {/* ── RESULTS STRIP ── */}
+      <div style={{
+        fontFamily: FM, fontSize: 11, color: DIM2,
+        padding: isMobile ? "8px 20px 4px" : "14px 40px 4px",
+      }}>
+        <span style={{ color: GOLD }}>{filtered.length}</span>
+        {" collisions"}
+        {activeDomain && (
+          <span style={{ color: activeCol }}> · {DOMAIN_LABEL[activeDomain]}</span>
+        )}
+      </div>
+
+      {/* ── CARD LIST ── */}
+      <div style={{
+        padding: isMobile ? "12px 16px 80px" : "12px 40px 80px",
+        display: "flex", flexDirection: "column", gap: 10,
+      }}>
+        {filtered.length === 0 ? (
+          <div style={{
+            textAlign: "center", padding: "80px 0",
+            fontFamily: FF, fontStyle: "italic", fontSize: 18, color: DIM2,
+          }}>no collisions found</div>
+        ) : (
+          filtered.map((node, idx) => (
+            <CollisionCard key={node.id} node={node} index={idx} isMobile={isMobile} />
+          ))
+        )}
       </div>
     </div>
   );
