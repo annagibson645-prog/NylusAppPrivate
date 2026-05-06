@@ -57,9 +57,4 @@ export default function ThemeToggle() {
         </svg>
       ) : (
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.5 2C4.46 2 2 4.46 2 7.5C2 10.54 4.46 13 7.5 13C9.9 13 11.6 11.4 12.3 9.3C11.6 9.6 10.8 9.8 9.9 9.8C6.9 9.8 4.5 7.4 4.5 4.4C4.5 3.3 4.9 2.3 5.5 1.5C6.2 1.8 7 2 7.5 2Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" fill="none"/>
-        </svg>
-      )}
-    </button>
-  );
-}
+          <path d="M7.5 2C4.46 2 2 4.46 2 7.5C2 10.54 4.46 13 7.5 13C9.9 13 11.6 11.4 12.3 9.3C11.6 9.6 10.8 9.8
