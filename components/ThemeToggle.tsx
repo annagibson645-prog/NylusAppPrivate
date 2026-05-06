@@ -10,6 +10,10 @@ export default function ThemeToggle() {
     if (saved) {
       setTheme(saved);
       document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.innerWidth <= 1024) {
+      // No saved preference on mobile — default to parchment
+      setTheme('sepia');
+      document.documentElement.setAttribute('data-theme', 'sepia');
     }
   }, []);
 
