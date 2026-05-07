@@ -236,13 +236,17 @@ function C2LiveTicker({ P, setPage, setOpenConcept }: {
 
   uE(() => {
     const pool: TickerItem[] = [
-      ...C2_DATA.SPARKS.slice(0, 12).map((s, i) => {
+      ...C2_DATA.SPARKS.slice(0, 10).map((s, i) => {
         const d = C2_DATA.DOMAINS.find(x => x.id === s.domain);
         return { t: 'spark', c: d?.color ?? '#e8b86a', txt: s.text, sub: '', link: `/spark/${s.id}`, uid: i };
       }),
-      ...C2_DATA.COLLISIONS.slice(0, 12).map((c, i) => ({
+      ...C2_DATA.COLLISIONS.slice(0, 10).map((c, i) => ({
         t: 'collision', c: '#a78bfa', txt: `${c.a} × ${c.b}`, sub: '', link: `/collision/${c.id}`, uid: 100 + i,
       })),
+      ...C2_DATA.CONCEPTS.slice(0, 10).map((c, i) => {
+        const d = C2_DATA.DOMAINS.find(x => x.id === c.domain);
+        return { t: 'concept', c: d?.color ?? '#94a3b8', txt: c.title, sub: '', link: `/concept/${c.id}`, uid: 200 + i };
+      }),
     ];
     const initial = pool.slice(0, 4).map((x, i) => ({ ...x, sub: i === 0 ? 'just now' : `${i * 8}m ago` }));
     setItems(initial);
@@ -311,7 +315,9 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
     return { ...d, x: cx + Math.cos(angle) * d.orbitR, y: cy + Math.sin(angle) * d.orbitR, angle };
   });
 
-  const cod = C2_DATA.CONCEPTS[0];
+  const todaySeed = (() => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); })();
+  const codIdx = C2_DATA.CONCEPTS.length ? Math.abs(((todaySeed >> 16) ^ todaySeed) * 0x45d9f3b >> 16) % C2_DATA.CONCEPTS.length : 0;
+  const cod = C2_DATA.CONCEPTS[codIdx];
   const codDom = C2_DATA.DOMAINS.find(d => d.id === cod?.domain) ?? C2_DATA.DOMAINS[0];
 
   return (
