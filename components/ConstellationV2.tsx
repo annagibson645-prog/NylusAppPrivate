@@ -1830,3 +1830,7 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
         </div>
         {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
         {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}
+      </div>
+    </NylusDataCtx.Provider>
+  );
+}
