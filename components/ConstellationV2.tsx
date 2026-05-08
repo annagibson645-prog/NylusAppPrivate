@@ -9,7 +9,7 @@ import {
   type ReactNode, type CSSProperties,
 } from 'react';
 import { useRouter } from 'next/navigation';
-import type { NylusData, NylusDomain, NylusConcept, NylusEssay } from '@/lib/adapt-vault';
+import type { NylusData, NylusDomain, NylusConcept, NylusEssay, NylusHub } from '@/lib/adapt-vault';
 import ShootingStars from './ShootingStars';
 
 // ─── Aliases (match original JSX style) ────────────────────────────────────
