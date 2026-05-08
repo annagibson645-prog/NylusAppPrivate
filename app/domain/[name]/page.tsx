@@ -83,6 +83,10 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
   return (
     <div className="void-page" style={{ '--domain-color': domainColor } as React.CSSProperties}>
       <div className="void-ambient" />
+      {/* Domain atmospheric wash — radial bloom from top */}
+      <div className="void-domain-wash" />
+      {/* Thin domain color stripe across top */}
+      <div className="void-domain-stripe" />
 
       <NavG active="Domains" />
 
@@ -109,11 +113,12 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
           <>
             <div className="void-section-label">hubs — start here</div>
             <div className="void-hub-grid">
-              {domainHubs.map((hub: any) => (
+              {domainHubs.map((hub: any, index: number) => (
                 <Link
                   key={hub.id}
                   href={`/hub/${hub.id}`}
                   className="void-hub-card"
+                  style={{ '--i': index } as React.CSSProperties}
                 >
                   <div className="void-hub-card-accent" />
                   <div className="void-hub-card-inner">
@@ -141,8 +146,8 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
           <>
             <div className="void-section-label" style={{ marginTop: 48 }}>Ungrouped Concepts</div>
             <div className="void-compact-list">
-              {ungrouped.map((n: any) => (
-                <Link key={n.id} href={`/concept/${n.id}`} className="void-compact-item">
+              {ungrouped.map((n: any, index: number) => (
+                <Link key={n.id} href={`/concept/${n.id}`} className="void-compact-item" style={{ '--j': index } as React.CSSProperties}>
                   <span className="void-compact-status">{n.status}</span>
                   <span className="void-compact-title">{n.title}</span>
                   <span className="void-compact-arrow">→</span>

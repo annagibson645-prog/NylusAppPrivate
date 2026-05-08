@@ -1567,3 +1567,175 @@ html, body {
     gap: 4px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   DOMAIN PAGE — atmospheric wash, entrance animations,
+   enhanced hub card hover, compact list stagger
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Domain atmospheric elements ── */
+
+/* Thin domain-color stripe pinned to top of viewport */
+.void-domain-stripe {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--domain-color, #a78bfa),
+    color-mix(in srgb, var(--domain-color, #a78bfa) 40%, transparent) 70%,
+    transparent
+  );
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+/* Soft radial bloom from top — atmospheric domain color wash */
+.void-domain-wash {
+  position: fixed;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    color-mix(in srgb, var(--domain-color, #a78bfa) 14%, transparent) 0%,
+    color-mix(in srgb, var(--domain-color, #a78bfa) 5%, transparent) 40%,
+    transparent 68%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Hub card entrance animation — staggered rise ── */
+@keyframes void-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Override base hub-card with richer transition + entrance */
+.void-hub-card {
+  animation: void-card-rise 0.58s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 180ms);
+  transition:
+    background 0.3s,
+    transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.38s,
+    border-color 0.3s;
+}
+
+.void-hub-card:hover {
+  background: #0e0c1a;
+  transform: translateY(-5px) scale(1.012);
+  border-color: color-mix(in srgb, var(--domain-color, #a78bfa) 55%, transparent);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 0 1px color-mix(in srgb, var(--domain-color, #a78bfa) 30%, transparent),
+    0 0 36px color-mix(in srgb, var(--domain-color, #a78bfa) 7%, transparent);
+}
+
+/* Accent strip — glows on hover */
+.void-hub-card-accent {
+  transition: opacity 0.35s, box-shadow 0.35s;
+}
+.void-hub-card:hover .void-hub-card-accent {
+  opacity: 1;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--domain-color, #a78bfa) 70%, transparent);
+}
+
+/* Count — lights up to domain color on hover */
+.void-hub-card-count {
+  transition: color 0.3s;
+}
+.void-hub-card:hover .void-hub-card-count {
+  color: var(--domain-color, #a78bfa);
+}
+
+/* Title — brightens on hover */
+.void-hub-card-title {
+  transition: color 0.3s;
+}
+.void-hub-card:hover .void-hub-card-title {
+  color: #ece8f8;
+}
+
+/* Arrow — slides, brightens, and takes domain color on hover */
+.void-hub-card:hover .void-hub-card-arrow {
+  opacity: 0.9;
+  transform: translateX(0);
+  color: var(--domain-color, #a78bfa);
+  transition: opacity 0.25s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s;
+}
+
+/* ── Compact list — staggered slide-in ── */
+@keyframes void-item-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.void-compact-item {
+  animation: void-item-slide 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--j, 0) * 45ms + 350ms);
+}
+
+/* ── Ornament glyph — domain color pulse (domain page only) ── */
+@keyframes void-ornament-shimmer {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 0.65; color: var(--domain-color, #a78bfa); }
+}
+
+.void-content > .void-ornament {
+  animation: void-ornament-shimmer 4s ease-in-out infinite;
+}
+
+/* ── Light theme adjustments ── */
+[data-theme="light"] .void-domain-wash {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    color-mix(in srgb, var(--domain-color, #6b4fa8) 9%, transparent) 0%,
+    transparent 60%
+  );
+}
+[data-theme="light"] .void-hub-card:hover {
+  background: #eae5f8;
+  transform: translateY(-5px) scale(1.012);
+  border-color: color-mix(in srgb, var(--domain-color, #6b4fa8) 45%, transparent);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.1),
+    0 0 0 1px color-mix(in srgb, var(--domain-color, #6b4fa8) 30%, transparent);
+}
+[data-theme="light"] .void-hub-card:hover .void-hub-card-title {
+  color: #1a1230;
+}
+
+/* ── Sepia theme adjustments ── */
+[data-theme="sepia"] .void-domain-wash {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    color-mix(in srgb, var(--domain-color, #8b6914) 8%, transparent) 0%,
+    transparent 60%
+  );
+}
+[data-theme="sepia"] .void-hub-card:hover {
+  transform: translateY(-5px) scale(1.012);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.15),
+    0 0 0 1px color-mix(in srgb, var(--domain-color, #8b6914) 40%, transparent);
+}
+[data-theme="sepia"] .void-hub-card:hover .void-hub-card-title {
+  color: #0e0a04;
+}
