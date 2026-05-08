@@ -1496,6 +1496,7 @@ interface ConstellationV2Props {
 function C2Mobile({ data, page }: { data: NylusData; page: string }) {
   const router = useRouter();
   const [theme, setTheme] = uS<'void' | 'sepia'>('void');
+  const [selectedHubDomain, setSelectedHubDomain] = uS<string | null>(null);
 
   uE(() => {
     const sync = () => {
@@ -1649,46 +1650,131 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
       )}
 
       {/* ── HUBS ──────────────────────────────────────────────────────── */}
-      {page === 'hubs' && (
-        <div>
-          {(() => {
-            const domainOrder = ['psychology','history','cross-domain','behavioral-mechanics','eastern-spirituality','creative-practice','ai-collaboration','african-spirituality'];
-            const domainLabels: Record<string,string> = {
-              'psychology': 'Psychology', 'history': 'History', 'cross-domain': 'Cross-Domain',
-              'behavioral-mechanics': 'Behavioral', 'eastern-spirituality': 'Eastern',
-              'creative-practice': 'Creative', 'ai-collaboration': 'AI', 'african-spirituality': 'African'
-            };
-            const grouped = domainOrder.map(domain => ({
-              domain,
-              label: domainLabels[domain] ?? domain,
-              hubs: data.HUBS.filter((h: NylusHub) => h.domain === domain),
-            })).filter(g => g.hubs.length > 0);
-            return grouped.map(g => (
-              <div key={g.domain}>
-                <div style={{ padding: '12px 18px 6px', background: bg2, borderBottom: `1px solid ${border}`, position: 'sticky', top: 49, zIndex: 10 }}>
-                  <span style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: dim2 }}>
-                    {g.label} · {g.hubs.length}
+      {page === 'hubs' && (() => {
+        const domainOrder = ['psychology','history','cross-domain','behavioral-mechanics','eastern-spirituality','creative-practice','ai-collaboration','african-spirituality'];
+        const domainLabels: Record<string,string> = {
+          'psychology': 'Psychology', 'history': 'History', 'cross-domain': 'Cross-Domain',
+          'behavioral-mechanics': 'Behavioral', 'eastern-spirituality': 'Eastern',
+          'creative-practice': 'Creative', 'ai-collaboration': 'AI', 'african-spirituality': 'African'
+        };
+        const grouped = domainOrder.map(domain => ({
+          domain,
+          label: domainLabels[domain] ?? domain,
+          color: data.HUBS.find((h: NylusHub) => h.domain === domain)?.color ?? '#888',
+          hubs: data.HUBS.filter((h: NylusHub) => h.domain === domain),
+        })).filter(g => g.hubs.length > 0);
+
+        const visibleHubs = selectedHubDomain
+          ? data.HUBS.filter((h: NylusHub) => h.domain === selectedHubDomain)
+          : data.HUBS;
+
+        return (
+          <div style={{ display: 'flex', height: 'calc(100dvh - 72px)', overflow: 'hidden' }}>
+
+            {/* ── Left domain sidebar ── */}
+            <div style={{
+              width: 72, flexShrink: 0,
+              borderRight: `1px solid ${border}`,
+              overflowY: 'auto', overflowX: 'hidden',
+              background: bg2,
+              paddingTop: 8, paddingBottom: 80,
+            }}>
+              {/* All pill */}
+              <button
+                onClick={() => setSelectedHubDomain(null)}
+                style={{
+                  width: '100%', display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', gap: 4, padding: '10px 4px',
+                  background: selectedHubDomain === null ? (isVoid ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)') : 'transparent',
+                  border: 'none', cursor: 'pointer',
+                  borderLeft: selectedHubDomain === null ? `2px solid ${accent}` : '2px solid transparent',
+                }}
+              >
+                <span style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  background: isVoid ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, color: text,
+                }}>✦</span>
+                <span style={{ fontFamily: mono, fontSize: 8, letterSpacing: '0.06em', color: selectedHubDomain === null ? text : dim, textAlign: 'center', lineHeight: 1.2 }}>
+                  All
+                </span>
+                <span style={{ fontFamily: mono, fontSize: 9, color: selectedHubDomain === null ? accent : dim2 }}>
+                  {data.HUBS.length}
+                </span>
+              </button>
+
+              {grouped.map(g => (
+                <button
+                  key={g.domain}
+                  onClick={() => setSelectedHubDomain(g.domain === selectedHubDomain ? null : g.domain)}
+                  style={{
+                    width: '100%', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 4, padding: '10px 4px',
+                    background: selectedHubDomain === g.domain ? (isVoid ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)') : 'transparent',
+                    border: 'none', cursor: 'pointer',
+                    borderLeft: selectedHubDomain === g.domain ? `2px solid ${g.color}` : '2px solid transparent',
+                  }}
+                >
+                  <span style={{
+                    width: 28, height: 28, borderRadius: 8,
+                    background: g.color + '22',
+                    border: `1px solid ${g.color}44`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: g.color, display: 'block' }} />
                   </span>
-                </div>
-                {g.hubs.map((h: NylusHub) => (
-                  <div key={h.id}
-                    onClick={() => router.push(`/hub/${h.id}`)}
-                    style={{ ...itemStyle, display: 'flex', gap: 12, padding: '12px 18px', alignItems: 'flex-start' }}
-                  >
-                    <div style={{ width: 3, minHeight: 32, background: h.color, borderRadius: 2, flexShrink: 0 }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 14, color: text, lineHeight: 1.3, marginBottom: 2 }}>
-                        {h.title.replace(/ Hub$/, '').replace(/ — Map of Content$/, '')}
-                      </div>
-                      <div style={{ fontFamily: mono, fontSize: 10, color: dim }}>{h.covers} concepts</div>
-                    </div>
-                  </div>
-                ))}
+                  <span style={{ fontFamily: mono, fontSize: 8, letterSpacing: '0.06em', color: selectedHubDomain === g.domain ? text : dim, textAlign: 'center', lineHeight: 1.2, padding: '0 2px' }}>
+                    {g.label}
+                  </span>
+                  <span style={{ fontFamily: mono, fontSize: 9, color: selectedHubDomain === g.domain ? g.color : dim2 }}>
+                    {g.hubs.length}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* ── Right hub list ── */}
+            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 80 }}>
+              {/* count header */}
+              <div style={{
+                padding: '10px 16px 8px',
+                borderBottom: `1px solid ${border}`,
+                position: 'sticky', top: 0, zIndex: 5,
+                background: isVoid ? 'rgba(21,19,28,0.95)' : 'rgba(237,230,212,0.95)',
+                backdropFilter: 'blur(10px)',
+              }}>
+                <span style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: dim2 }}>
+                  {selectedHubDomain ? (domainLabels[selectedHubDomain] ?? selectedHubDomain) : 'All Domains'} · {visibleHubs.length} hubs
+                </span>
               </div>
-            ));
-          })()}
-        </div>
-      )}
+
+              {visibleHubs.map((h: NylusHub) => (
+                <div key={h.id}
+                  onClick={() => router.push(`/hub/${h.id}`)}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 12,
+                    padding: '14px 16px',
+                    borderBottom: `1px solid ${border}`,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ width: 3, alignSelf: 'stretch', minHeight: 36, background: h.color, borderRadius: 2, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 15, color: text, lineHeight: 1.3, marginBottom: 3 }}>
+                      {h.title.replace(/ Hub$/, '').replace(/ — Map of Content$/, '')}
+                    </div>
+                    <div style={{ fontFamily: mono, fontSize: 10, color: dim }}>{h.covers} concepts</div>
+                  </div>
+                  <svg width="12" height="12" viewBox="0 0 12 12" style={{ flexShrink: 0, marginTop: 4, opacity: 0.3 }}>
+                    <path d="M4 2l4 4-4 4" stroke={text} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
 
     </div>
@@ -1744,7 +1830,3 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
         </div>
         {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
         {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}
-      </div>
-    </NylusDataCtx.Provider>
-  );
-}
