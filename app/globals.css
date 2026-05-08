@@ -1306,3 +1306,115 @@ html, body {
   }
 
 }
+
+/* ══════════════════════════════════════════════
+   MOBILE CONCEPT HERO HEADER
+   Hidden on desktop, shown on mobile only
+   ══════════════════════════════════════════════ */
+
+.void-mobile-hero {
+  display: none;
+}
+
+.void-complexity-desktop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+
+  .void-mobile-hero {
+    display: block;
+    padding: 12px 18px 14px;
+  }
+
+  .vmh-breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .vmh-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .vmh-status {
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 9px;
+    color: #3a3450;
+    letter-spacing: 0.06em;
+  }
+
+  [data-theme="sepia"] .vmh-status {
+    color: #b8a080;
+  }
+
+  .vmh-title {
+    font-family: var(--font-newsreader), Georgia, serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.2;
+    color: #eae6f5;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  [data-theme="sepia"] .vmh-title {
+    color: #1e1408;
+  }
+
+  .vmh-desc {
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 9px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .vmh-dots {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .vmh-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    transition: opacity 0.2s;
+  }
+
+  .vmh-complexity-label {
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    margin-left: 4px;
+  }
+
+  /* Hide the desktop domain chip and title on mobile — hero replaces them */
+  .void-domain-chip,
+  .void-title,
+  .void-lede {
+    display: none;
+  }
+
+  /* Show inline complexity dots in meta line on mobile too */
+  .void-complexity-desktop {
+    display: inline-flex !important;
+  }
+
+  /* Tighten layout padding on mobile */
+  .void-layout-main {
+    padding-top: 0 !important;
+  }
+}

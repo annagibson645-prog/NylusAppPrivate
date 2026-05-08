@@ -8,7 +8,7 @@ const TABS = [
   { href: '/domains',    label: 'Domains'    },
   { href: '/sparks',     label: 'Sparks'     },
   { href: '/collisions', label: 'Collisions' },
-  { href: '/essays',     label: 'Essays'     },
+  { href: '/hubs',       label: 'Hubs'       },
 ] as const;
 
 // ─── SVG icons ────────────────────────────────────────────────────────────────
@@ -53,18 +53,28 @@ function IconCollisions({ active }: { active: boolean }) {
   );
 }
 
-function IconEssays({ active }: { active: boolean }) {
+function IconHubs({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <rect x="3" y="2" width="12" height="14" rx="2"
+      <circle cx="9" cy="9" r="2.5"
         fill={active ? 'currentColor' : 'none'}
         stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7}/>
-      <line x1="6" y1="7" x2="12" y2="7" stroke={active ? 'var(--mnav-bg)' : 'currentColor'}
-        strokeWidth="1.2" strokeLinecap="round" opacity={active ? 1 : 0.5}/>
-      <line x1="6" y1="10" x2="12" y2="10" stroke={active ? 'var(--mnav-bg)' : 'currentColor'}
-        strokeWidth="1.2" strokeLinecap="round" opacity={active ? 1 : 0.5}/>
-      <line x1="6" y1="13" x2="10" y2="13" stroke={active ? 'var(--mnav-bg)' : 'currentColor'}
-        strokeWidth="1.2" strokeLinecap="round" opacity={active ? 1 : 0.5}/>
+      <circle cx="3.5" cy="5" r="1.5"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.2" opacity={active ? 1 : 0.6}/>
+      <circle cx="14.5" cy="5" r="1.5"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.2" opacity={active ? 1 : 0.6}/>
+      <circle cx="3.5" cy="13" r="1.5"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.2" opacity={active ? 1 : 0.6}/>
+      <circle cx="14.5" cy="13" r="1.5"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.2" opacity={active ? 1 : 0.6}/>
+      <line x1="6.8" y1="7.5" x2="4.8" y2="6.2" stroke="currentColor" strokeWidth="1.1" opacity={active ? 0.8 : 0.5}/>
+      <line x1="11.2" y1="7.5" x2="13.2" y2="6.2" stroke="currentColor" strokeWidth="1.1" opacity={active ? 0.8 : 0.5}/>
+      <line x1="6.8" y1="10.5" x2="4.8" y2="11.8" stroke="currentColor" strokeWidth="1.1" opacity={active ? 0.8 : 0.5}/>
+      <line x1="11.2" y1="10.5" x2="13.2" y2="11.8" stroke="currentColor" strokeWidth="1.1" opacity={active ? 0.8 : 0.5}/>
     </svg>
   );
 }
@@ -129,7 +139,7 @@ export default function MobileNav() {
               {label === 'Domains'    && <IconDomains    active={isActive} />}
               {label === 'Sparks'     && <IconSparks     active={isActive} />}
               {label === 'Collisions' && <IconCollisions active={isActive} />}
-              {label === 'Essays'     && <IconEssays     active={isActive} />}
+              {label === 'Hubs'       && <IconHubs       active={isActive} />}
             </span>
             <span className="mnav-label">{label}</span>
           </Link>

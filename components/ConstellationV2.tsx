@@ -1478,6 +1478,8 @@ function C2ConceptPage({ P, tweaks, concept, close, setOpenEssay }: {
           </button>
         </div>
       </div>
+
+
     </div>
   );
 }
@@ -1528,6 +1530,7 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
     research:  ['Research','deep dives'],
     workshop:  ['Workshop','in progress'],
     galaxy:    ['Galaxy',  'concept map'],
+    hubs:      ['Hubs',    'maps of content'],
   };
   const [pageTitle, pageSub] = labels[page] ?? ['Vault', 'nylus'];
 
@@ -1595,26 +1598,6 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
             </div>
           ))}
 
-          {/* Hubs section */}
-          <div style={{ padding: '14px 18px 6px', borderBottom: `1px solid ${border}` }}>
-            <span style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: dim2 }}>
-              Hubs · {data.HUBS.length}
-            </span>
-          </div>
-          {data.HUBS.slice(0, 6).map(h => (
-            <div key={h.id}
-              onClick={() => router.push(`/hub/${h.id}`)}
-              style={{ ...itemStyle, display: 'flex', gap: 12, padding: '12px 18px', alignItems: 'flex-start' }}
-            >
-              <div style={{ width: 3, minHeight: 36, background: h.color, borderRadius: 2, flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 14, color: text, lineHeight: 1.3, marginBottom: 2 }}>
-                  {h.title.replace(/ Hub$/, '').replace(/ — Map of Content$/, '')}
-                </div>
-                <div style={{ fontFamily: mono, fontSize: 10, color: dim }}>{h.covers} concepts</div>
-              </div>
-            </div>
-          ))}
         </div>
       )}
 
@@ -1664,6 +1647,49 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
           ))}
         </div>
       )}
+
+      {/* ── HUBS ──────────────────────────────────────────────────────── */}
+      {page === 'hubs' && (
+        <div>
+          {(() => {
+            const domainOrder = ['psychology','history','cross-domain','behavioral-mechanics','eastern-spirituality','creative-practice','ai-collaboration','african-spirituality'];
+            const domainLabels: Record<string,string> = {
+              'psychology': 'Psychology', 'history': 'History', 'cross-domain': 'Cross-Domain',
+              'behavioral-mechanics': 'Behavioral', 'eastern-spirituality': 'Eastern',
+              'creative-practice': 'Creative', 'ai-collaboration': 'AI', 'african-spirituality': 'African'
+            };
+            const grouped = domainOrder.map(domain => ({
+              domain,
+              label: domainLabels[domain] ?? domain,
+              hubs: data.HUBS.filter((h: NylusHub) => h.domain === domain),
+            })).filter(g => g.hubs.length > 0);
+            return grouped.map(g => (
+              <div key={g.domain}>
+                <div style={{ padding: '12px 18px 6px', background: bg2, borderBottom: `1px solid ${border}`, position: 'sticky', top: 49, zIndex: 10 }}>
+                  <span style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: dim2 }}>
+                    {g.label} · {g.hubs.length}
+                  </span>
+                </div>
+                {g.hubs.map((h: NylusHub) => (
+                  <div key={h.id}
+                    onClick={() => router.push(`/hub/${h.id}`)}
+                    style={{ ...itemStyle, display: 'flex', gap: 12, padding: '12px 18px', alignItems: 'flex-start' }}
+                  >
+                    <div style={{ width: 3, minHeight: 32, background: h.color, borderRadius: 2, flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 14, color: text, lineHeight: 1.3, marginBottom: 2 }}>
+                        {h.title.replace(/ Hub$/, '').replace(/ — Map of Content$/, '')}
+                      </div>
+                      <div style={{ fontFamily: mono, fontSize: 10, color: dim }}>{h.covers} concepts</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ));
+          })()}
+        </div>
+      )}
+
 
     </div>
   );

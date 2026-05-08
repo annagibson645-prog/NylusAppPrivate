@@ -73,6 +73,11 @@ const DOMAIN_BACK: Record<string, string> = {
   unknown: "Other",
 };
 
+// Complexity 1–5 from sources + backlink density
+function complexityScore(sources: number, backlinks: number): number {
+  return Math.min(5, Math.max(1, sources + Math.floor(backlinks / 4)));
+}
+
 export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSiblings = [] }: Props) {
   const [progress, setProgress] = useState(0);
 
@@ -90,6 +95,14 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
   const html = renderContent(node.content, nodeTypes);
   const hasConnections = backlinkedNodes.length > 0 || node.links.length > 0;
   const typeRoute = (n: VaultNode) => routeForType(n.type, n.id);
+  const complexity = complexityScore(node.sources, backlinkedNodes.length);
+  const domainLabel = DOMAIN_FULL[node.domain] || node.domain;
+
+  // Dark tint derived from domain color for mobile hero
+  const heroStyle: React.CSSProperties = {
+    background: `linear-gradient(160deg, ${node.color}1f, ${node.color}0b)`,
+    borderBottom: `1px solid ${node.color}28`,
+  };
 
   return (
     <div className="void-page" style={{ "--domain-color": node.color } as React.CSSProperties}>
@@ -99,15 +112,59 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
       </div>
       <div className="void-ambient" />
 
+      {/* ── MOBILE HERO HEADER ──────────────────────────────────────── */}
+      <div className="void-mobile-hero" style={heroStyle}>
+        {/* breadcrumb back */}
+        <div className="vmh-breadcrumb">
+          <Link href="/domains" className="vmh-back" style={{ color: node.color }}>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M6.5 2L3.5 5l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            </svg>
+            {DOMAIN_BACK[node.domain] || node.domain}
+          </Link>
+          <span className="vmh-status">{node.status}</span>
+        </div>
+
+        {/* title */}
+        <h1 className="vmh-title">{node.title}</h1>
+
+        {/* descriptor */}
+        {node.excerpt && (
+          <div className="vmh-desc" style={{ color: node.color + "99" }}>
+            {node.excerpt.slice(0, 80)}
+            {node.excerpt.length > 80 ? "…" : ""}
+            {node.sources > 0 && ` · ${node.sources} source${node.sources !== 1 ? "s" : ""}`}
+          </div>
+        )}
+
+        {/* complexity dots */}
+        <div className="vmh-dots">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <span
+              key={i}
+              className="vmh-dot"
+              style={{
+                background: i <= complexity ? node.color : "transparent",
+                border: `1.5px solid ${i <= complexity ? node.color : node.color + "44"}`,
+                opacity: i <= complexity ? 1 : 0.4,
+              }}
+            />
+          ))}
+          <span className="vmh-complexity-label" style={{ color: node.color + "88" }}>
+            complexity
+          </span>
+        </div>
+      </div>
+
       {/* Layout: main content + right nav */}
       <div className="void-layout">
 
         {/* ── Main content ─────────────────────────────────────────── */}
         <div className="void-layout-main">
 
-          {/* Domain chip */}
+          {/* Domain chip — desktop only */}
           <div className="void-domain-chip">
-            {DOMAIN_FULL[node.domain] || node.domain}
+            {domainLabel}
           </div>
 
           {/* Title */}
@@ -129,6 +186,20 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
                 <span className="void-meta-type">{node.sources} {node.sources === 1 ? "source" : "sources"}</span>
               </>
             )}
+            {/* complexity dots — desktop inline */}
+            <span className="void-meta-dot void-complexity-desktop">·</span>
+            <span className="void-complexity-desktop" style={{ display: "inline-flex", gap: 3, alignItems: "center", verticalAlign: "middle" }}>
+              {[1,2,3,4,5].map(i => (
+                <span key={i} style={{
+                  display: "inline-block",
+                  width: 5, height: 5,
+                  borderRadius: "50%",
+                  background: i <= complexity ? node.color : "transparent",
+                  border: `1px solid ${i <= complexity ? node.color : node.color + "55"}`,
+                  opacity: i <= complexity ? 0.9 : 0.3,
+                }} />
+              ))}
+            </span>
             {node.updated && (
               <>
                 <span className="void-meta-dot">·</span>
@@ -204,7 +275,7 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
           <div className="void-meta-strip">
             <div className="void-meta-item">
               <span className="void-meta-k">domain</span>
-              <span className="void-meta-v">{DOMAIN_FULL[node.domain] || node.domain}</span>
+              <span className="void-meta-v">{domainLabel}</span>
             </div>
             <div className="void-meta-item">
               <span className="void-meta-k">status</span>
@@ -216,6 +287,21 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
                 <span className="void-meta-v">{node.sources}</span>
               </div>
             )}
+            <div className="void-meta-item">
+              <span className="void-meta-k">complexity</span>
+              <span className="void-meta-v" style={{ display: "flex", gap: 3, alignItems: "center" }}>
+                {[1,2,3,4,5].map(i => (
+                  <span key={i} style={{
+                    display: "inline-block",
+                    width: 6, height: 6,
+                    borderRadius: "50%",
+                    background: i <= complexity ? node.color : "transparent",
+                    border: `1px solid ${i <= complexity ? node.color : node.color + "55"}`,
+                    opacity: i <= complexity ? 0.9 : 0.3,
+                  }} />
+                ))}
+              </span>
+            </div>
             {node.created && (
               <div className="void-meta-item">
                 <span className="void-meta-k">created</span>
@@ -254,7 +340,7 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
             <>
               <div className="vrn-sep" />
               <span className="vrn-domain-label">
-                {DOMAIN_FULL[node.domain] || node.domain}
+                {domainLabel}
               </span>
               {domainSiblings.map((s) => (
                 <Link
