@@ -1425,3 +1425,145 @@ html, body {
     margin-left: 4px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   GHOST HERO — mobile concept page layout
+   Spine: fixed left strip with fading glow line + hollow outline
+   Hero: domain color fading to transparent over dark body
+   ═══════════════════════════════════════════════════════════ */
+
+/* Hidden on desktop by default */
+.void-ghost-spine {
+  display: none;
+}
+
+.void-ghost-hero {
+  display: none;
+}
+
+@media (max-width: 767px) {
+
+  /* Kill old mobile hero — replaced by ghost hero */
+  .void-mobile-hero {
+    display: none !important;
+  }
+
+  /* ── Spine: fixed left strip ── */
+  .void-ghost-spine {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 44px;
+    z-index: 20;
+    pointer-events: none;
+    border-right: 0.5px solid rgba(255, 255, 255, 0.04);
+  }
+
+  /* ── Ghost hero: fading gradient header ── */
+  .void-ghost-hero {
+    display: block;
+    padding: 28px 20px 36px 60px;
+    position: relative;
+  }
+
+  .void-ghost-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    margin-bottom: 16px;
+  }
+
+  .void-ghost-title {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 30px;
+    color: #ffffff;
+    line-height: 1;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+    margin: 0 0 14px;
+  }
+
+  .void-ghost-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .void-ghost-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Push layout content right to clear spine ── */
+  .void-domain-chip,
+  .void-title,
+  .void-lede {
+    display: none !important;
+  }
+
+  .void-layout-main {
+    padding-top: 8px !important;
+    padding-left: 60px !important;
+    padding-right: 18px !important;
+  }
+
+  /* ── Section headers in prose — Fraunces italic, domain color ── */
+  .void-prose h2 {
+    font-family: var(--font-fraunces), Georgia, serif !important;
+    font-style: italic !important;
+    font-weight: 700 !important;
+    font-size: 17px !important;
+    color: var(--domain-color, #a78bfa) !important;
+    letter-spacing: -0.01em !important;
+    text-transform: none !important;
+    margin: 32px 0 10px !important;
+    display: block !important;
+  }
+
+  .void-prose h2::after {
+    display: none !important;
+  }
+
+  .void-prose h3 {
+    font-size: 18px !important;
+    margin: 24px 0 10px !important;
+  }
+
+  /* ── Section labels (tensions, live edge, connected) ── */
+  .void-section-label {
+    font-size: 17px !important;
+    color: var(--domain-color, #a78bfa) !important;
+    border-bottom-color: transparent !important;
+    margin-top: 28px !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* ── Ornament ── */
+  .void-ornament {
+    margin: 16px 0 20px !important;
+  }
+
+  /* ── Meta row ── */
+  .void-meta-inline {
+    padding-left: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .void-complexity-desktop {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
