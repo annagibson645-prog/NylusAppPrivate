@@ -33,6 +33,19 @@ export const metadata: Metadata = {
   description: "Intelligence layer for the NylusS knowledge vault",
 };
 
+// Runs before React hydration — sets data-theme from localStorage to prevent flash.
+// Defaults to 'void' (dark) if no preference saved.
+const themeInitScript = `
+(function(){
+  try {
+    var t = localStorage.getItem('nylus-theme');
+    if (t === 'sepia' || t === 'void') {
+      document.documentElement.setAttribute('data-theme', t);
+    }
+  } catch(e) {}
+})();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const fontVars = [
     spaceGrotesk.variable,
@@ -43,7 +56,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" className={fontVars} style={{ height: "100%" }}>
-      <body style={{ margin: 0, padding: 0, height: "100%", background: "#0e0d14" }}>
+      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+      <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      <body style={{ margin: 0, padding: 0, height: "100%" }}>
         {children}
       </body>
     </html>

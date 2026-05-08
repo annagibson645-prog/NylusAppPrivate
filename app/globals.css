@@ -17,6 +17,18 @@ html, body {
   --font-jetbrains: var(--font-jetbrains, "JetBrains Mono", monospace);
   --font-fraunces: var(--font-fraunces, "Fraunces", serif);
   --font-newsreader: var(--font-newsreader, "Newsreader", serif);
+
+  /* NavG theme variables — void (dark) defaults */
+  --navg-bg:           #15131c;
+  --navg-text:         #eae6f5;
+  --navg-dim:          #494456;
+  --navg-border:       rgba(255,255,255,0.07);
+  --navg-item-hover:   rgba(255,255,255,0.025);
+  --navg-lbl:          #8a849a;
+  --navg-lbl-hover:    #cdc8dd;
+  --navg-lbl-active:   #eae6f5;
+  --navg-ghost-color:  #eae6f5;
+  --navg-ghost-opacity: 0.03;
 }
 
 /* ══════════════════════════════════════════════
@@ -1029,6 +1041,18 @@ html, body {
   --text:      #1e1408;
   --text-muted: #5c4228;
   --text-dim:  #8b7355;
+
+  /* NavG sepia overrides */
+  --navg-bg:           #ede6d4;
+  --navg-text:         #1e1408;
+  --navg-dim:          #8b7355;
+  --navg-border:       rgba(139,105,20,0.15);
+  --navg-item-hover:   rgba(139,105,20,0.04);
+  --navg-lbl:          #8b7355;
+  --navg-lbl-hover:    #3c2010;
+  --navg-lbl-active:   #1e1408;
+  --navg-ghost-color:  #1e1408;
+  --navg-ghost-opacity: 0.04;
 }
 
 /* prose (marked-generated HTML in essay pages) */

@@ -6,16 +6,16 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<'void' | 'sepia'>('void');
 
   useEffect(() => {
-    if (window.innerWidth <= 1024) {
-      // Mobile: always parchment — toggle is hidden so no way to override
-      setTheme('sepia');
-      document.documentElement.setAttribute('data-theme', 'sepia');
-      return;
-    }
-    const saved = localStorage.getItem('nylus-theme') as 'void' | 'sepia' | null;
-    if (saved) {
-      setTheme(saved);
-      document.documentElement.setAttribute('data-theme', saved);
+    // Sync with whatever data-theme is already set (no-flash script or NavG set it)
+    const current = document.documentElement.getAttribute('data-theme');
+    if (current === 'sepia' || current === 'void') {
+      setTheme(current);
+    } else {
+      const saved = localStorage.getItem('nylus-theme') as 'void' | 'sepia' | null;
+      if (saved) {
+        setTheme(saved);
+        document.documentElement.setAttribute('data-theme', saved);
+      }
     }
   }, []);
 
