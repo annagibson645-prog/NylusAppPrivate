@@ -1632,53 +1632,44 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
               <span style={{
                 display: 'inline-block',
                 fontFamily: mono, fontSize: 9,
-                letterSpacing: '0.1em', textTransform: 'uppercase',
-                padding: '2px 7px', borderRadius: 4,
+                letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', borderRadius: 12,
                 ...subtypeStyle(s.subtype),
               }}>
-                {s.subtype || 'spark'}
+                {s.subtype ?? 'spark'}
               </span>
             </div>
           ))}
         </div>
       )}
 
-      {/* ── ESSAYS ───────────────────────────────────────────────────── */}
+      {/* ── ESSAYS ─────────────────────────────────────── */}
       {(page === 'essays' || page === 'workshop' || page === 'research') && (
         <div>
-          {data.ESSAYS.map(e => (
+          {data.ESSAYS.slice(0, 30).map(e => (
             <div key={e.id}
               onClick={() => router.push(`/essay/${e.id}`)}
-              style={{ ...itemStyle, padding: '14px 18px', cursor: 'pointer' }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <span style={{ fontFamily: mono, fontSize: 10, color: accent, letterSpacing: '0.08em' }}>
-                  {e.date ? new Date(e.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}
-                </span>
-                <span style={{ fontFamily: mono, fontSize: 9, color: dim2 }}>·</span>
-                <span style={{ fontFamily: mono, fontSize: 9, color: dim2 }}>{e.mins} min</span>
+              style={{ ...itemStyle, padding: '14px 18px' }}>
+              <div style={{ fontFamily: mono, fontSize: 9, color: dim2, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 5 }}>
+                {(e as { domain?: string }).domain ?? 'essay'}
               </div>
-              <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 15, color: text, lineHeight: 1.35, marginBottom: 5 }}>
+              <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 14, color: text, lineHeight: 1.4, marginBottom: 6 }}>
                 {e.title}
               </div>
               {e.excerpt && (
-                <div style={{ fontSize: 12, color: dim, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                <div style={{ fontFamily: sans, fontSize: 12, color: dim, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>
                   {e.excerpt}
                 </div>
               )}
             </div>
           ))}
-          {data.ESSAYS.length === 0 && (
-            <div style={{ padding: '60px 24px', textAlign: 'center', fontFamily: serif, fontStyle: 'italic', fontSize: 16, color: dim }}>
-              no essays yet
-            </div>
-          )}
         </div>
       )}
+
     </div>
   );
 }
 
+// ─── MAIN CONSTELLATION V2 ──────────────────────────────────────────────────
 export default function ConstellationV2({ data, initialPage }: ConstellationV2Props) {
   const [isMobile, setIsMobile] = uS(false);
   const [page, setPage] = uS(initialPage ?? 'dashboard');
@@ -1706,7 +1697,7 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  if (isMobile) return <C2Mobile data={data} P={P} />;
+  if (isMobile) return <C2Mobile data={data} page={page} />;
 
   return (
     <NylusDataCtx.Provider value={data}>
@@ -1723,7 +1714,6 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
           {page === 'collisions' && <C2Collisions P={P} tweaks={tweaks} />}
           {page === 'sparks'     && <C2Sparks P={P} />}
           {page === 'tensions'   && <C2Tensions P={P} />}
-
           {page === 'workshop'   && <C2Workshop P={P} />}
         </div>
         {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}

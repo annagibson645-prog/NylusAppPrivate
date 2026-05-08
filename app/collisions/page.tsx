@@ -578,7 +578,7 @@ export default function CollisionsPage() {
         .nav-freq-bars { display: flex; align-items: flex-end; gap: 2px; height: 10px; opacity: 0; transition: opacity 0.25s; position: relative; z-index: 1; }
         .nav-item-g.active-nav .nav-freq-bars { opacity: 1; }
       ` }} />
-      <nav style={{
+      <nav className="desktop-nav-only" style={{
         position: "sticky", top: 0, zIndex: 100,
         height: NAV_H, display: "flex", alignItems: "stretch",
         background: BG2,

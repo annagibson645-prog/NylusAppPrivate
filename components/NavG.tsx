@@ -107,7 +107,7 @@ export default function NavG({ active, right, count }: NavGProps) {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
-      <nav style={{
+      <nav className="navg-root" style={{
         position: "sticky", top: 0, zIndex: 100,
         height: 80, display: "flex", alignItems: "stretch",
         background: "var(--navg-bg, #15131c)",
