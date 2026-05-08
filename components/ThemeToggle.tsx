@@ -6,14 +6,16 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<'void' | 'sepia'>('void');
 
   useEffect(() => {
+    if (window.innerWidth <= 1024) {
+      // Mobile: always parchment — toggle is hidden so no way to override
+      setTheme('sepia');
+      document.documentElement.setAttribute('data-theme', 'sepia');
+      return;
+    }
     const saved = localStorage.getItem('nylus-theme') as 'void' | 'sepia' | null;
     if (saved) {
       setTheme(saved);
       document.documentElement.setAttribute('data-theme', saved);
-    } else if (window.innerWidth <= 1024) {
-      // No saved preference on mobile — default to parchment
-      setTheme('sepia');
-      document.documentElement.setAttribute('data-theme', 'sepia');
     }
   }, []);
 

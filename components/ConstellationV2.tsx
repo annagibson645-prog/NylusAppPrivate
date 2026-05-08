@@ -1537,7 +1537,7 @@ function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
 
       {tab === 'Hubs' && (
         <div style={{ padding: '16px 16px 60px' }}>
-          {data.HUBS.slice(0, 30).map(h => (
+          {data.HUBS.map(h => (
             <div key={h.id} onClick={() => router.push(`/hub/${h.id}`)}
               style={{ display: 'flex', alignItems: 'flex-start', gap: 14,
                 padding: '16px 0', borderBottom: `1px solid ${P.border}`, cursor: 'pointer' }}>
