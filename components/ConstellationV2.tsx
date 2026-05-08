@@ -1489,100 +1489,190 @@ interface ConstellationV2Props {
 }
 
 // ─── MOBILE VIEW ─────────────────────────────────────────────────────────────────────────────
-function C2Mobile({ data, P }: { data: NylusData; P: Palette }) {
+// Driven by the global MobileNav (layout.tsx) — no internal tab strip here.
+// Reads data-theme for void/sepia colors; `page` prop comes from the route.
+function C2Mobile({ data, page }: { data: NylusData; page: string }) {
   const router = useRouter();
-  const [tab, setTab] = uS<'Domains' | 'Hubs' | 'Sparks' | 'Collisions'>('Domains');
-  const tabs: Array<'Domains' | 'Hubs' | 'Sparks' | 'Collisions'> = ['Domains', 'Hubs', 'Sparks', 'Collisions'];
+  const [theme, setTheme] = uS<'void' | 'sepia'>('void');
+
+  uE(() => {
+    const sync = () => {
+      const t = document.documentElement.getAttribute('data-theme') as 'void' | 'sepia' | null;
+      if (t === 'void' || t === 'sepia') setTheme(t);
+    };
+    sync();
+    const obs = new MutationObserver(sync);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
+  }, []);
+
+  const isVoid = theme === 'void';
+  const bg      = isVoid ? '#0e0d14'                        : '#faf6ed';
+  const bg2     = isVoid ? '#15131c'                        : '#ede6d4';
+  const text    = isVoid ? '#eae6f5'                        : '#1e1408';
+  const dim     = isVoid ? '#8a849a'                        : '#8b7355';
+  const dim2    = isVoid ? '#494456'                        : '#b8a085';
+  const accent  = isVoid ? '#60a5fa'                        : '#b8905a';
+  const border  = isVoid ? 'rgba(255,255,255,0.07)'         : 'rgba(139,105,20,0.15)';
+  const hdrBg   = isVoid ? 'rgba(21,19,28,0.96)'            : 'rgba(237,230,212,0.96)';
+  const serif   = c2Style.serif;
+  const mono    = c2Style.mono;
+  const sans    = c2Style.font;
+
+  // Normalise page → display label
+  const labels: Record<string, [string, string]> = {
+    dashboard: ['Domains', 'knowledge map'],
+    domains:   ['Domains', 'knowledge map'],
+    sparks:    ['Sparks',  'generative tail'],
+    essays:    ['Essays',  'the platform'],
+    research:  ['Research','deep dives'],
+    workshop:  ['Workshop','in progress'],
+    galaxy:    ['Galaxy',  'concept map'],
+  };
+  const [pageTitle, pageSub] = labels[page] ?? ['Vault', 'nylus'];
+
+  // ── Subtype pill colour ───────────────────────────────────────────────────
+  function subtypeStyle(subtype: string): React.CSSProperties {
+    if (subtype === 'resonance')   return { background: isVoid ? 'rgba(96,165,250,0.12)'  : 'rgba(184,144,90,0.14)',  color: accent };
+    if (subtype === 'essay-seed')  return { background: isVoid ? 'rgba(134,239,172,0.1)'  : 'rgba(60,130,60,0.1)',    color: isVoid ? '#86efac' : '#3a8a3a' };
+    if (subtype === 'question')    return { background: isVoid ? 'rgba(196,181,253,0.1)'  : 'rgba(130,90,180,0.1)',   color: isVoid ? '#c4b5fd' : '#7a4a9a' };
+    return { background: isVoid ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: dim };
+  }
+
+  const itemStyle: React.CSSProperties = {
+    borderBottom: `1px solid ${border}`,
+    cursor: 'pointer',
+  };
 
   return (
-    <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
-      fontFamily: c2Style.font, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-      <div style={{ padding: '20px 20px 0', borderBottom: `1px solid ${P.border}`,
-        background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <C2Logo P={P} />
-          <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Nylus</span>
-          <span style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.15em', textTransform: 'uppercase', marginLeft: 4 }}>vault</span>
+    <div style={{ width: '100%', minHeight: '100%', background: bg, color: text, fontFamily: sans, paddingBottom: 80 }}>
+
+      {/* ── Sticky page header ───────────────────────────────────────── */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 20,
+        padding: '14px 18px 12px',
+        background: hdrBg,
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: `1px solid ${border}`,
+      }}>
+        <div style={{ fontFamily: serif, fontStyle: 'italic', fontWeight: 700, fontSize: 22, color: text, lineHeight: 1 }}>
+          {pageTitle}
         </div>
-        <div style={{ display: 'flex', gap: 0, marginBottom: -1, overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {tabs.map(t => (
-            <button key={t} onClick={() => setTab(t)}
-              style={{ flex: '0 0 auto', padding: '10px 18px', background: 'transparent', border: 'none',
-                borderBottom: tab === t ? `2px solid ${P.hub}` : '2px solid transparent',
-                color: tab === t ? P.text : P.dim, fontFamily: c2Style.font,
-                fontSize: 12, cursor: 'pointer', letterSpacing: '0.02em',
-                textTransform: 'capitalize', transition: 'color 0.2s', whiteSpace: 'nowrap' }}>
-              {t}
-            </button>
-          ))}
+        <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: dim, marginTop: 3 }}>
+          {pageSub}
         </div>
       </div>
 
-      {tab === 'Domains' && (
-        <div style={{ padding: '16px 16px 60px' }}>
+      {/* ── DOMAINS ──────────────────────────────────────────────────── */}
+      {(page === 'domains' || page === 'dashboard' || page === 'galaxy') && (
+        <div>
           {data.DOMAINS.map(d => (
-            <div key={d.id} onClick={() => router.push(`/domain/${d.key}`)}
-              style={{ display: 'flex', alignItems: 'center', gap: 14,
-                padding: '16px 0', borderBottom: `1px solid ${P.border}`, cursor: 'pointer' }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 3 }}>{d.name}</div>
-                <div style={{ fontSize: 12, color: P.dim, lineHeight: 1.4 }}>{d.desc.slice(0, 80)}…</div>
+            <div key={d.id}
+              onClick={() => router.push(`/domain/${d.key}`)}
+              style={{ ...itemStyle, display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px' }}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                background: d.color + '18',
+                border: `1px solid ${d.color}30`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color }} />
               </div>
-              <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2, flexShrink: 0 }}>{d.concepts} ★</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 15, fontWeight: 600, color: text, marginBottom: 2 }}>
+                  {d.name}
+                </div>
+                <div style={{ fontSize: 11, color: dim, lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {d.desc.slice(0, 70)}…
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, flexShrink: 0 }}>
+                <span style={{ fontFamily: mono, fontSize: 12, fontWeight: 600, color: text }}>{d.concepts}</span>
+                <span style={{ fontFamily: mono, fontSize: 9, color: dim2, letterSpacing: '0.06em' }}>concepts</span>
+              </div>
             </div>
           ))}
-        </div>
-      )}
 
-      {tab === 'Hubs' && (
-        <div style={{ padding: '16px 16px 60px' }}>
-          {data.HUBS.map(h => (
-            <div key={h.id} onClick={() => router.push(`/hub/${h.id}`)}
-              style={{ display: 'flex', alignItems: 'flex-start', gap: 14,
-                padding: '16px 0', borderBottom: `1px solid ${P.border}`, cursor: 'pointer' }}>
-              <div style={{ width: 3, height: 44, background: h.color, flexShrink: 0, marginTop: 2 }} />
+          {/* Hubs section */}
+          <div style={{ padding: '14px 18px 6px', borderBottom: `1px solid ${border}` }}>
+            <span style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: dim2 }}>
+              Hubs · {data.HUBS.length}
+            </span>
+          </div>
+          {data.HUBS.slice(0, 6).map(h => (
+            <div key={h.id}
+              onClick={() => router.push(`/hub/${h.id}`)}
+              style={{ ...itemStyle, display: 'flex', gap: 12, padding: '12px 18px', alignItems: 'flex-start' }}
+            >
+              <div style={{ width: 3, minHeight: 36, background: h.color, borderRadius: 2, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: c2Style.serif, fontSize: 16, fontStyle: 'italic', marginBottom: 4, lineHeight: 1.2 }}>{h.title.replace(/ Hub$/, '').replace(/ — Map of Content$/, '')}</div>
-                <div style={{ fontSize: 12, color: P.dim }}>{h.covers} concepts · {h.excerpt?.slice(0, 60)}…</div>
+                <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 14, color: text, lineHeight: 1.3, marginBottom: 2 }}>
+                  {h.title.replace(/ Hub$/, '').replace(/ — Map of Content$/, '')}
+                </div>
+                <div style={{ fontFamily: mono, fontSize: 10, color: dim }}>{h.covers} concepts</div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {tab === 'Sparks' && (
-        <div style={{ padding: '16px 16px 60px' }}>
-          {data.SPARKS.slice(0, 40).map(s => (
-            <div key={s.id} style={{ padding: '14px 0', borderBottom: `1px solid ${P.border}` }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.color, display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }} />
-              <span style={{ fontSize: 13, lineHeight: 1.5 }}>{s.text}</span>
+      {/* ── SPARKS ───────────────────────────────────────────────────── */}
+      {page === 'sparks' && (
+        <div>
+          {data.SPARKS.slice(0, 50).map(s => (
+            <div key={s.id} style={{ ...itemStyle, padding: '14px 18px' }}>
+              <div style={{ fontFamily: mono, fontSize: 10, color: accent, letterSpacing: '0.08em', marginBottom: 5 }}>
+                {s.domainName}
+              </div>
+              <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 14, color: text, lineHeight: 1.45, marginBottom: 8 }}>
+                {s.text}
+              </div>
+              <span style={{
+                display: 'inline-block',
+                fontFamily: mono, fontSize: 9,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                padding: '2px 7px', borderRadius: 4,
+                ...subtypeStyle(s.subtype),
+              }}>
+                {s.subtype || 'spark'}
+              </span>
             </div>
           ))}
         </div>
       )}
 
-      {tab === 'Collisions' && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '60px 24px' }}>
-          <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim2, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>⚡ Collisions</div>
-          <div style={{ fontFamily: c2Style.serif, fontSize: 22, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, marginBottom: 10, color: P.text }}>
-            Ideas in tension
-          </div>
-          <div style={{ fontSize: 13, color: P.dim, textAlign: 'center', marginBottom: 32, maxWidth: 260, lineHeight: 1.6 }}>
-            Speculative collisions generated from source tensions across the vault.
-          </div>
-          <button
-            onClick={() => router.push('/collisions')}
-            style={{
-              fontFamily: c2Style.font, fontSize: 13, fontWeight: 600,
-              color: P.bg, background: P.hub,
-              border: 'none', borderRadius: 999,
-              padding: '12px 28px', cursor: 'pointer',
-              letterSpacing: '0.01em',
-            }}
-          >
-            View all collisions →
-          </button>
+      {/* ── ESSAYS ───────────────────────────────────────────────────── */}
+      {(page === 'essays' || page === 'workshop' || page === 'research') && (
+        <div>
+          {data.ESSAYS.map(e => (
+            <div key={e.id}
+              onClick={() => router.push(`/essay/${e.id}`)}
+              style={{ ...itemStyle, padding: '14px 18px', cursor: 'pointer' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <span style={{ fontFamily: mono, fontSize: 10, color: accent, letterSpacing: '0.08em' }}>
+                  {e.date ? new Date(e.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}
+                </span>
+                <span style={{ fontFamily: mono, fontSize: 9, color: dim2 }}>·</span>
+                <span style={{ fontFamily: mono, fontSize: 9, color: dim2 }}>{e.mins} min</span>
+              </div>
+              <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 15, color: text, lineHeight: 1.35, marginBottom: 5 }}>
+                {e.title}
+              </div>
+              {e.excerpt && (
+                <div style={{ fontSize: 12, color: dim, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                  {e.excerpt}
+                </div>
+              )}
+            </div>
+          ))}
+          {data.ESSAYS.length === 0 && (
+            <div style={{ padding: '60px 24px', textAlign: 'center', fontFamily: serif, fontStyle: 'italic', fontSize: 16, color: dim }}>
+              no essays yet
+            </div>
+          )}
         </div>
       )}
     </div>

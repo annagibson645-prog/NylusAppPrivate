@@ -29,6 +29,13 @@ html, body {
   --navg-lbl-active:   #eae6f5;
   --navg-ghost-color:  #eae6f5;
   --navg-ghost-opacity: 0.03;
+
+  /* Mobile nav */
+  --mnav-bg:           #15131c;
+  --mnav-border:       rgba(255,255,255,0.07);
+  --mnav-text:         #494456;
+  --mnav-active:       #60a5fa;
+  --mnav-active-bg:    rgba(96,165,250,0.08);
 }
 
 /* ══════════════════════════════════════════════
@@ -1053,6 +1060,13 @@ html, body {
   --navg-lbl-active:   #1e1408;
   --navg-ghost-color:  #1e1408;
   --navg-ghost-opacity: 0.04;
+
+  /* Mobile nav — parchment */
+  --mnav-bg:           #ede6d4;
+  --mnav-border:       rgba(139,105,20,0.15);
+  --mnav-text:         #b8a085;
+  --mnav-active:       #b8905a;
+  --mnav-active-bg:    rgba(184,144,90,0.1);
 }
 
 /* prose (marked-generated HTML in essay pages) */
@@ -1197,3 +1211,98 @@ html, body {
 [data-theme="sepia"] .vrn-sibling { color: #2a1a08; font-family: var(--font-newsreader), serif; font-style: italic; }
 [data-theme="sepia"] .vrn-sibling:hover { color: #3c2010; }
 [data-theme="sepia"] .vrn-domain-label { opacity: 0.9; }
+
+/* ══════════════════════════════════════════════
+   MOBILE NAV BAR  (hidden on desktop)
+   ══════════════════════════════════════════════ */
+
+.mnav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+
+  /* ── Show the bottom tab bar ── */
+  .mnav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 68px;
+    background: var(--mnav-bg);
+    border-top: 1px solid var(--mnav-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 200;
+    align-items: stretch;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mnav-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--mnav-text);
+    padding: 6px 0 10px;
+    transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mnav-tab.mnav-active {
+    color: var(--mnav-active);
+    background: var(--mnav-active-bg);
+  }
+
+  .mnav-toggle-btn {
+    font-family: inherit;
+  }
+
+  .mnav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+  }
+
+  .mnav-label {
+    font-family: var(--font-jetbrains, monospace);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  /* ── Hide desktop NavG on mobile ── */
+  nav.navg-root,
+  .navg-root {
+    display: none !important;
+  }
+
+  /* ── Hide inline desktop navs on standalone pages ── */
+  .desktop-nav-only {
+    display: none !important;
+  }
+
+  /* ── Add bottom padding so content clears the tab bar ── */
+  .void-page,
+  .void-layout,
+  .hub-page-outer,
+  .concept-outer {
+    padding-bottom: 80px !important;
+  }
+
+  /* ── Content areas inside ConstellationApp need bottom clearance ── */
+  .constellation-scroll {
+    padding-bottom: 80px !important;
+  }
+
+}

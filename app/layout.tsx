@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono, Fraunces, Newsreader } from "next/font/google";
+import MobileNav from "@/components/MobileNav";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       <body style={{ margin: 0, padding: 0, height: "100%" }}>
         {children}
+        <MobileNav />
       </body>
     </html>
   );
