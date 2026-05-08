@@ -122,7 +122,7 @@ export default function MobileNav() {
       {TABS.map(({ href, label }) => {
         const isActive =
           pathname === href ||
-          (href !== '/' && pathname != null && pathname.startsWith(href + '/'));
+          (pathname != null && pathname.startsWith(href + '/'));
         return (
           <Link key={href} href={href} className={`mnav-tab${isActive ? ' mnav-active' : ''}`}>
             <span className="mnav-icon">
