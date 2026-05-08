@@ -1312,6 +1312,12 @@ html, body {
    Hidden on desktop, shown on mobile only
    ══════════════════════════════════════════════ */
 
+
+/* ══════════════════════════════════════════════
+   MOBILE CONCEPT HERO HEADER
+   Hidden on desktop, shown on mobile only
+   ══════════════════════════════════════════════ */
+
 .void-mobile-hero {
   display: none;
 }
@@ -1322,11 +1328,29 @@ html, body {
 
 @media (max-width: 767px) {
 
+  /* Show the hero, hide the desktop elements it replaces */
   .void-mobile-hero {
     display: block;
     padding: 12px 18px 14px;
   }
 
+  .void-domain-chip,
+  .void-title,
+  .void-lede {
+    display: none !important;
+  }
+
+  .void-layout-main {
+    padding-top: 0 !important;
+  }
+
+  .void-complexity-desktop {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ── Hero breadcrumb row ── */
   .vmh-breadcrumb {
     display: flex;
     align-items: center;
@@ -1339,50 +1363,50 @@ html, body {
     align-items: center;
     gap: 4px;
     font-family: var(--font-geist-mono), monospace;
-    font-size: 9px;
+    font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     text-decoration: none;
+    opacity: 0.85;
+  }
+
+  .vmh-back:hover {
+    opacity: 1;
   }
 
   .vmh-status {
     font-family: var(--font-geist-mono), monospace;
     font-size: 9px;
-    color: #3a3450;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.45;
   }
 
-  [data-theme="sepia"] .vmh-status {
-    color: #b8a080;
-  }
-
+  /* ── Hero title ── */
   .vmh-title {
-    font-family: var(--font-newsreader), Georgia, serif;
+    font-family: var(--font-newsreader), var(--font-fraunces), Georgia, serif;
     font-style: italic;
     font-weight: 700;
     font-size: 22px;
-    line-height: 1.2;
-    color: #eae6f5;
+    line-height: 1.25;
     margin: 0 0 6px;
-    letter-spacing: -0.01em;
   }
 
-  [data-theme="sepia"] .vmh-title {
-    color: #1e1408;
-  }
-
+  /* ── Hero description / excerpt ── */
   .vmh-desc {
     font-family: var(--font-geist-mono), monospace;
-    font-size: 9px;
-    line-height: 1.4;
+    font-size: 11px;
+    line-height: 1.5;
+    opacity: 0.75;
     margin-bottom: 10px;
-    letter-spacing: 0.02em;
   }
 
+  /* ── Complexity dots row ── */
   .vmh-dots {
     display: flex;
     align-items: center;
     gap: 5px;
+    margin-top: 4px;
   }
 
   .vmh-dot {
@@ -1390,31 +1414,14 @@ html, body {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    transition: opacity 0.2s;
+    flex-shrink: 0;
   }
 
   .vmh-complexity-label {
     font-family: var(--font-geist-mono), monospace;
-    font-size: 8px;
-    letter-spacing: 0.08em;
-    text-transform: lowercase;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     margin-left: 4px;
-  }
-
-  /* Hide the desktop domain chip and title on mobile — hero replaces them */
-  .void-domain-chip,
-  .void-title,
-  .void-lede {
-    display: none;
-  }
-
-  /* Show inline complexity dots in meta line on mobile too */
-  .void-complexity-desktop {
-    display: inline-flex !important;
-  }
-
-  /* Tighten layout padding on mobile */
-  .void-layout-main {
-    padding-top: 0 !important;
   }
 }

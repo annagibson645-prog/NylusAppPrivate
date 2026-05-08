@@ -1548,7 +1548,7 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
   };
 
   return (
-    <div style={{ width: '100%', minHeight: '100%', background: bg, color: text, fontFamily: sans, paddingBottom: 80 }}>
+    <div style={{ width: '100%', height: '100dvh', overflowY: 'auto', overflowX: 'hidden', background: bg, color: text, fontFamily: sans, paddingBottom: 80 }}>
 
       {/* ── Sticky page header ───────────────────────────────────────── */}
       <div style={{
