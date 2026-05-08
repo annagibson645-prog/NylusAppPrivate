@@ -46,6 +46,84 @@ const DOMAIN_COLORS: Record<string, string> = {
   'african-spirituality': '#34d399',
 };
 
+/* ── Sri Yantra background — two-layer glow + crisp geometry ── */
+function YantraBg({ color, uid }: { color: string; uid: string }) {
+  const cx = 200, cy = 200;
+
+  // Equilateral triangles — tip pointing up
+  const up = (r: number) => {
+    const h = +(r * 0.866).toFixed(2);
+    return `${cx},${cy - r} ${cx - h},${+(cy + r * 0.5).toFixed(2)} ${cx + h},${+(cy + r * 0.5).toFixed(2)}`;
+  };
+  // Equilateral triangles — tip pointing down
+  const dn = (r: number) => {
+    const h = +(r * 0.866).toFixed(2);
+    return `${cx},${cy + r} ${cx - h},${+(cy - r * 0.5).toFixed(2)} ${cx + h},${+(cy - r * 0.5).toFixed(2)}`;
+  };
+
+  const filterId = `yg-${uid}`;
+  const upRadii  = [140, 108, 80, 52];
+  const dnRadii  = [134, 102, 74, 46, 22];
+
+  const geometry = (
+    <>
+      {/* Outer sacred circles */}
+      <circle cx={cx} cy={cy} r={162} />
+      <circle cx={cx} cy={cy} r={150} />
+      {/* Inner bindu ring */}
+      <circle cx={cx} cy={cy} r={18} />
+      {/* 4 upward triangles */}
+      {upRadii.map(r => <polygon key={`u${r}`} points={up(r)} />)}
+      {/* 5 downward triangles */}
+      {dnRadii.map(r => <polygon key={`d${r}`} points={dn(r)} />)}
+      {/* Central bindu */}
+      <circle cx={cx} cy={cy} r={5} fill={color} stroke="none" />
+    </>
+  );
+
+  return (
+    <div className="void-yantra-bg" aria-hidden="true">
+      <svg
+        viewBox="0 0 400 400"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ width: '100%', height: '100%' }}
+      >
+        <defs>
+          <filter id={filterId} x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="10" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Glow layer — blurred, domain color luminance */}
+        <g
+          stroke={color}
+          strokeWidth="1.5"
+          opacity="0.26"
+          fill="none"
+          filter={`url(#${filterId})`}
+        >
+          {geometry}
+        </g>
+
+        {/* Crisp layer — thin lines, very low opacity */}
+        <g
+          stroke={color}
+          strokeWidth="0.6"
+          opacity="0.07"
+          fill="none"
+        >
+          {geometry}
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 export default async function DomainPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
   const safeName = name.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
@@ -73,8 +151,6 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
   const concepts = nodes.filter((n) => n.type === 'concept' || n.type === 'thread');
   const stableCount = concepts.filter((n) => n.status === 'stable').length;
 
-  // Ungrouped concepts — not in any hub (any domain's hub counts; cross-domain absorption is real).
-  // Exclude threads: they live in LAB/Threads/ as developing research lines and aren't expected to be in hubs.
   const ungrouped = concepts
     .filter((n) => n.type === 'concept' && !n.hub)
     .sort((a, b) => new Date(b.updated || 0).getTime() - new Date(a.updated || 0).getTime())
@@ -83,8 +159,10 @@ export default async function DomainPage({ params }: { params: Promise<{ name: s
   return (
     <div className="void-page" style={{ '--domain-color': domainColor } as React.CSSProperties}>
       <div className="void-ambient" />
-      {/* Domain atmospheric wash — radial bloom from top */}
+      {/* Atmospheric radial wash */}
       <div className="void-domain-wash" />
+      {/* Sri Yantra — glowing sacred geometry background */}
+      <YantraBg color={domainColor} uid={safeName} />
       {/* Thin domain color stripe across top */}
       <div className="void-domain-stripe" />
 

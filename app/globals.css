@@ -1739,3 +1739,45 @@ html, body {
 [data-theme="sepia"] .void-hub-card:hover .void-hub-card-title {
   color: #0e0a04;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   SRI YANTRA — fixed sacred geometry background
+   Two layers: blurred glow halo + crisp geometry
+   Sits behind all content (z-index: 1), pointer-events: none
+   ═══════════════════════════════════════════════════════════ */
+
+.void-yantra-bg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Mobile — scale to near-full viewport width */
+@media (max-width: 767px) {
+  .void-yantra-bg {
+    width: min(92vw, 420px);
+    height: min(92vw, 420px);
+    top: 48%;
+  }
+}
+
+/* Light theme — slightly more visible glow to show through pale bg */
+[data-theme="light"] .void-yantra-bg svg g:first-of-type {
+  opacity: 0.14 !important;
+}
+[data-theme="light"] .void-yantra-bg svg g:last-of-type {
+  opacity: 0.05 !important;
+}
+
+/* Sepia theme */
+[data-theme="sepia"] .void-yantra-bg svg g:first-of-type {
+  opacity: 0.12 !important;
+}
+[data-theme="sepia"] .void-yantra-bg svg g:last-of-type {
+  opacity: 0.04 !important;
+}
