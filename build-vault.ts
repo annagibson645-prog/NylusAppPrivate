@@ -22,14 +22,14 @@ const INCLUDED_DIRS = [
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
-  history: "#f59e0b",
-  "eastern-spirituality": "#8b5cf6",
-  psychology: "#3b82f6",
-  "behavioral-mechanics": "#f97316",
-  "cross-domain": "#14b8a6",
-  "creative-practice": "#f43f5e",
-  "african-spirituality": "#10b981",
-  "ai-collaboration": "#64748b",
+  history: "#e6c068",
+  "eastern-spirituality": "#7c8df0",
+  psychology: "#f59e0b",
+  "behavioral-mechanics": "#a78bfa",
+  "cross-domain": "#5fc9a8",
+  "creative-practice": "#ef5a6f",
+  "african-spirituality": "#34d399",
+  "ai-collaboration": "#9ca3af",
   unknown: "#6b7280",
 };
 
