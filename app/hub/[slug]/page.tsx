@@ -117,6 +117,63 @@ function routeForType(type: string, id: string) {
   return `/concept/${id}`;
 }
 
+/* ─── Sri Yantra background ──────────────────────────────────── */
+function HubYantra({ color }: { color: string }) {
+  const cx = 200, cy = 200;
+  const up = (r: number) => {
+    const h = +(r * 0.866).toFixed(2);
+    return `${cx},${cy - r} ${cx - h},${+(cy + r * 0.5).toFixed(2)} ${cx + h},${+(cy + r * 0.5).toFixed(2)}`;
+  };
+  const dn = (r: number) => {
+    const h = +(r * 0.866).toFixed(2);
+    return `${cx},${cy + r} ${cx - h},${+(cy - r * 0.5).toFixed(2)} ${cx + h},${+(cy - r * 0.5).toFixed(2)}`;
+  };
+  const upR = [140, 108, 80, 52];
+  const dnR = [134, 102, 74, 46, 22];
+
+  return (
+    <svg
+      viewBox="0 0 400 400"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%,-50%)',
+        width: 'min(680px,90vw)',
+        height: 'min(680px,90vw)',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }}
+    >
+      <defs>
+        <filter id="hyg" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="10" />
+        </filter>
+      </defs>
+      {/* glow layer */}
+      <g filter="url(#hyg)" opacity="0.22">
+        {upR.map(r => <polygon key={`ug${r}`} points={up(r)} fill="none" stroke={color} strokeWidth="1.2" />)}
+        {dnR.map(r => <polygon key={`dg${r}`} points={dn(r)} fill="none" stroke={color} strokeWidth="1.2" />)}
+        <circle cx={cx} cy={cy} r="156" fill="none" stroke={color} strokeWidth="1.2" />
+        <circle cx={cx} cy={cy} r="116" fill="none" stroke={color} strokeWidth="0.8" />
+      </g>
+      {/* crisp layer */}
+      <g opacity="0.065">
+        {upR.map(r => <polygon key={`uc${r}`} points={up(r)} fill="none" stroke={color} strokeWidth="0.55" />)}
+        {dnR.map(r => <polygon key={`dc${r}`} points={dn(r)} fill="none" stroke={color} strokeWidth="0.55" />)}
+        <circle cx={cx} cy={cy} r="156" fill="none" stroke={color} strokeWidth="0.55" />
+        <circle cx={cx} cy={cy} r="116" fill="none" stroke={color} strokeWidth="0.4" />
+        <circle cx={cx} cy={cy} r="16" fill="none" stroke={color} strokeWidth="0.55" />
+        <circle cx={cx} cy={cy} r="4" fill={color} opacity="0.5" />
+      </g>
+    </svg>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+
 export default async function HubPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const hubs  = loadJSON<any[]>('hubs.json');
@@ -178,6 +235,15 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
   return (
     <div className="void-page" style={{ '--domain-color': color } as React.CSSProperties}>
       <div className="void-ambient" />
+
+      {/* ── Sri Yantra background ── */}
+      <HubYantra color={color} />
+
+      {/* ── Domain colour wash ── */}
+      <div className="hub-domain-wash" />
+
+      {/* ── Top stripe ── */}
+      <div className="hub-top-stripe" />
 
       {/* Right-side nav */}
       <aside className="void-right-nav hub-right-nav">
@@ -265,6 +331,29 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
           <HubSearch concepts={allConceptNodes} domainColor={color} />
 
+          {/* ── Mobile level-band navigation (4.4) ── */}
+          {hasLevels && (
+            <div className="hub-level-bands">
+              {sections.map(s => {
+                const lc = LEVEL_COLOR[s.level];
+                const badge = LEVEL_BADGE[s.level];
+                if (!badge) return null;
+                return (
+                  <a
+                    key={s.title}
+                    href={`#sec-${encodeURIComponent(s.title)}`}
+                    className="hub-level-band"
+                    style={{ '--lc': lc } as React.CSSProperties}
+                  >
+                    <span className="hlb-dot" />
+                    <span className="hlb-label">{badge}</span>
+                    <span className="hlb-count">{s.conceptIds.length}</span>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
           <div className="hub-sections">
             {sections.map((sec, si) => {
               const nodes = sec.conceptIds
@@ -285,6 +374,8 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                     className="hub-summary"
                     style={{ '--lc': lc } as React.CSSProperties}
                   >
+                    {/* ── constellation node indicator ── */}
+                    <span className="hub-node-dot" />
                     <span className="hub-summary-inner">
                       {badge && (
                         <span className="hub-level-badge" style={{ color: lc, borderColor: lc }}>
@@ -298,8 +389,15 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                   </summary>
 
                   <div className="hub-section-body">
-                    {nodes.map((n: any) => (
-                      <Link key={n.id} href={`/concept/${n.id}`} className="hub-concept-row">
+                    {nodes.map((n: any, ni: number) => (
+                      <Link
+                        key={n.id}
+                        href={`/concept/${n.id}`}
+                        className="hub-concept-row"
+                        style={{ '--level-color': lc, '--ni': ni } as React.CSSProperties}
+                      >
+                        {/* ── level colour dot ── */}
+                        <span className="hcr-level-dot" />
                         <div className="hcr-left">
                           <div className="hcr-title">{n.title}</div>
                           {n.excerpt && (
@@ -329,6 +427,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                   className="hub-summary"
                   style={{ '--lc': '#3a3450' } as React.CSSProperties}
                 >
+                  <span className="hub-node-dot" />
                   <span className="hub-summary-inner">
                     <span className="hub-section-title" style={{ color: '#9890b0' }}>Not yet grouped</span>
                     <span className="hub-section-count" style={{ color: '#9890b0' }}>{unplaced.length}</span>
@@ -336,8 +435,14 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
                   <span className="hub-chevron">v</span>
                 </summary>
                 <div className="hub-section-body">
-                  {unplaced.map((n: any) => (
-                    <Link key={n.id} href={`/concept/${n.id}`} className="hub-concept-row">
+                  {unplaced.map((n: any, ni: number) => (
+                    <Link
+                      key={n.id}
+                      href={`/concept/${n.id}`}
+                      className="hub-concept-row"
+                      style={{ '--level-color': '#4a4468', '--ni': ni } as React.CSSProperties}
+                    >
+                      <span className="hcr-level-dot" />
                       <div className="hcr-left">
                         <div className="hcr-title">{n.title}</div>
                         {n.excerpt && (
@@ -365,6 +470,40 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
       </div>
 
       <style>{`
+
+        /* ── Atmospheric layers ──────────────────────────── */
+
+        .hub-domain-wash {
+          position: fixed;
+          top: 0; left: 0; right: 0;
+          height: 520px;
+          background: radial-gradient(
+            ellipse 70% 360px at 50% -30px,
+            color-mix(in srgb, var(--domain-color, #a78bfa) 16%, transparent) 0%,
+            transparent 100%
+          );
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .hub-top-stripe {
+          position: fixed;
+          top: 0; left: 0; right: 0;
+          height: 1.5px;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            var(--domain-color, #a78bfa) 40%,
+            var(--domain-color, #a78bfa) 60%,
+            transparent 100%
+          );
+          opacity: 0.65;
+          pointer-events: none;
+          z-index: 8;
+        }
+
+        /* ── Layout ──────────────────────────────────────── */
+
         .hub-outer {
           display: flex;
           gap: 72px;
@@ -372,7 +511,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           max-width: 1100px;
           margin: 0 auto;
           padding: 0 56px 160px;
-          padding-right: calc(56px + 196px); /* clear fixed right nav (176px + 20px gap) */
+          padding-right: calc(56px + 196px);
           position: relative;
           z-index: 2;
         }
@@ -430,6 +569,9 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           color: #4a4468;
           font-size: 11px;
         }
+
+        /* ── Hub main ────────────────────────────────────── */
+
         .hub-main { flex: 1; min-width: 0; }
         .hub-domain-chip {
           font-family: var(--font-jetbrains), monospace;
@@ -473,9 +615,17 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           opacity: 0.25;
           font-style: italic;
         }
+
+        /* ── Mobile level bands (4.4) ────────────────────── */
+
+        .hub-level-bands { display: none; }
+
+        /* ── Sections / accordion ────────────────────────── */
+
         .hub-sections { display: flex; flex-direction: column; gap: 0; }
         .hub-details { border-bottom: 1px solid #16141f; }
         .hub-details:first-child { border-top: 1px solid #1c1828; }
+
         .hub-summary {
           list-style: none;
           cursor: pointer;
@@ -484,11 +634,29 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
+          gap: 14px;
           transition: opacity 0.15s;
         }
         .hub-summary::-webkit-details-marker { display: none; }
         .hub-summary:hover { opacity: 0.8; }
+
+        /* --- Constellation node dot (6.5) --- */
+
+        .hub-node-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          border: 1.5px solid var(--lc, #4a4468);
+          background: transparent;
+          flex-shrink: 0;
+          transition: background 0.28s cubic-bezier(0.16,1,0.3,1),
+                      box-shadow 0.28s cubic-bezier(0.16,1,0.3,1);
+        }
+        details[open] > .hub-summary .hub-node-dot {
+          background: var(--lc, #4a4468);
+          box-shadow: 0 0 10px var(--lc, #4a4468), 0 0 2px var(--lc, #4a4468);
+        }
+
         .hub-summary-inner {
           display: flex;
           align-items: center;
@@ -528,16 +696,33 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
         .hub-chevron {
           font-size: 9px;
           color: #6a6488;
-          transition: transform 0.2s;
+          transition: transform 0.22s cubic-bezier(0.16,1,0.3,1);
           flex-shrink: 0;
         }
         details[open] > .hub-summary .hub-chevron { transform: rotate(180deg); }
+
+        /* --- Concept card grid --- */
+
         .hub-section-body {
           padding-bottom: 2px;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 1px;
         }
+
+        /* --- Card entrance stagger (6.5) --- */
+
+        @keyframes hcr-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        details[open] .hub-concept-row {
+          animation: hcr-in 0.38s cubic-bezier(0.16,1,0.3,1) both;
+          animation-delay: calc(var(--ni, 0) * 45ms + 55ms);
+        }
+
+        /* --- Concept card --- */
+
         .hub-concept-row {
           display: flex;
           flex-direction: column;
@@ -546,13 +731,29 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           margin: 0;
           text-decoration: none;
           border: none;
-          border-bottom: none;
           background: #0d0b18;
-          transition: background 0.15s;
+          transition: background 0.18s;
           min-height: 140px;
+          position: relative;
         }
-        .hub-concept-row:last-child { border-bottom: none; }
         .hub-concept-row:hover { background: #13101e; }
+
+        /* --- Level colour dot (6.5) --- */
+
+        .hcr-level-dot {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: var(--level-color, var(--domain-color, #a78bfa));
+          opacity: 0.5;
+          pointer-events: none;
+          transition: opacity 0.18s;
+        }
+        .hub-concept-row:hover .hcr-level-dot { opacity: 0.9; }
+
         .hcr-left {
           flex: 1;
           min-width: 0;
@@ -596,11 +797,13 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           white-space: nowrap;
         }
         .hub-concept-row:hover .hcr-meta { color: #9090b8; }
+
+        /* --- Breakpoints --- */
+
         @media (max-width: 1100px) {
           .hub-section-body { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* Right nav disappears at 900px — remove padding compensation */
         @media (max-width: 900px) {
           .hub-outer {
             gap: 48px;
@@ -610,7 +813,8 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           .hub-section-body { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* Both sidebars hidden on mobile */
+        /* --- Mobile (4.4) --- */
+
         @media (max-width: 768px) {
           .hub-outer {
             padding: 0 20px 100px !important;
@@ -620,12 +824,60 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
           .hub-title { font-size: clamp(36px, 9vw, 56px) !important; }
           .hub-lede { font-size: 17px !important; }
           .hub-section-body { grid-template-columns: 1fr; }
-          .hub-concept-row { padding: 18px 16px; }
-          .hcr-title { font-size: 17px !important; }
           .hub-summary { padding: 18px 0; }
+
+          .hub-level-bands {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 0 -20px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #09080f;
+            border-bottom: 1px solid #1c1828;
+          }
+          .hub-level-band {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 20px;
+            border-left: 3px solid var(--lc, #4a4468);
+            border-bottom: 1px solid #13111e;
+            text-decoration: none;
+            transition: background 0.15s;
+          }
+          .hub-level-band:last-child { border-bottom: none; }
+          .hub-level-band:hover { background: rgba(255,255,255,0.03); }
+          .hlb-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--lc, #4a4468);
+            flex-shrink: 0;
+          }
+          .hlb-label {
+            font-family: var(--font-jetbrains), monospace;
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--lc, #9890b0);
+            flex: 1;
+          }
+          .hlb-count {
+            font-family: var(--font-jetbrains), monospace;
+            font-size: 11px;
+            color: #6a6488;
+          }
+
+          .hub-concept-row {
+            border-left: 2.5px solid var(--level-color, var(--domain-color, #a78bfa)) !important;
+            padding: 18px 16px 18px 20px !important;
+          }
+          .hcr-title { font-size: 17px !important; }
         }
 
-        /* Hub right nav — fixed to right edge */
+        /* --- Right nav --- */
+
         .hub-right-nav {
           position: fixed !important;
           right: 0;
