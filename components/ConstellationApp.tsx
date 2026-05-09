@@ -19,7 +19,7 @@ const ConstellationV2 = dynamic(() => import('./ConstellationV2'), {
 
 export default function ConstellationApp({ data, initialPage }: { data: NylusData; initialPage?: string }) {
   return (
-    <div style={{ width: '100vw', height: '100dvh', overflow: 'hidden', background: '#0e0d14' }}>
+    <div style={{ width: '100vw', height: '100dvh', overflow: 'hidden', background: '#0e0d14' }} className="constellation-root">
       <ConstellationV2 data={data} initialPage={initialPage} />
     </div>
   );

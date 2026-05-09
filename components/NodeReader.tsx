@@ -77,6 +77,49 @@ function complexityScore(sources: number, backlinks: number): number {
   return Math.min(5, Math.max(1, sources + Math.floor(backlinks / 4)));
 }
 
+function ConceptLotus({ color }: { color: string }) {
+  const outerAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+  const innerAngles = [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5];
+  const Petal = ({ l, w, a }: { l: number; w: number; a: number }) => (
+    <path
+      d={`M 200 200 Q ${200 - w} ${200 - l / 2} 200 ${200 - l} Q ${200 + w} ${200 - l / 2} 200 200 Z`}
+      transform={`rotate(${a}, 200, 200)`}
+    />
+  );
+  return (
+    <svg
+      style={{
+        position: "fixed", top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "min(640px, 82vw)", height: "min(640px, 82vw)",
+        pointerEvents: "none", zIndex: 0,
+      }}
+      viewBox="0 0 400 400"
+    >
+      <defs>
+        <filter id="lotus-glow"><feGaussianBlur stdDeviation="9" /></filter>
+      </defs>
+      {/* Glow layer */}
+      <g filter="url(#lotus-glow)" opacity="0.18" fill="none" stroke={color} strokeWidth="0.9">
+        {outerAngles.map(a => <Petal key={`og${a}`} l={90} w={28} a={a} />)}
+        {innerAngles.map(a => <Petal key={`ig${a}`} l={58} w={18} a={a} />)}
+        <circle cx="200" cy="200" r="96" strokeWidth="0.6" />
+        <circle cx="200" cy="200" r="63" strokeWidth="0.6" />
+        <circle cx="200" cy="200" r="28" strokeWidth="0.6" />
+      </g>
+      {/* Crisp layer */}
+      <g opacity="0.065" fill="none" stroke={color} strokeWidth="0.8">
+        {outerAngles.map(a => <Petal key={`oc${a}`} l={90} w={28} a={a} />)}
+        {innerAngles.map(a => <Petal key={`ic${a}`} l={58} w={18} a={a} />)}
+        <circle cx="200" cy="200" r="96" strokeWidth="0.5" />
+        <circle cx="200" cy="200" r="63" strokeWidth="0.5" />
+        <circle cx="200" cy="200" r="28" strokeWidth="0.5" />
+        <circle cx="200" cy="200" r="8" fill={color} stroke="none" opacity="0.55" />
+      </g>
+    </svg>
+  );
+}
+
 export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSiblings = [] }: Props) {
   const [progress, setProgress] = useState(0);
 
@@ -102,11 +145,70 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
 
   return (
     <div className="void-page" style={{ "--domain-color": c } as React.CSSProperties}>
-      {/* Reading progress */}
+      <style>{`
+        .void-spine-track {
+          position: fixed;
+          left: 0; top: 0;
+          width: 2px; height: 100vh;
+          z-index: 20;
+          pointer-events: none;
+        }
+        .void-spine-fill {
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          transition: height 0.07s linear;
+        }
+        .void-spine-tip {
+          position: absolute;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 7px; height: 7px;
+          border-radius: 50%;
+          transition: top 0.07s linear;
+        }
+        @media (max-width: 768px) {
+          .void-spine-track { display: none; }
+        }
+      `}</style>
+
+      {/* Reading progress bar — top */}
       <div className="void-progress-track">
         <div className="void-progress-bar" style={{ width: `${progress}%` }} />
       </div>
+
+      {/* Reading spine — left edge, gradient fills with scroll */}
+      <div
+        className="void-spine-track"
+        style={{ background: `${c}10` }}
+      >
+        <div
+          className="void-spine-fill"
+          style={{
+            height: `${progress}%`,
+            background: `linear-gradient(to bottom,
+              transparent 0%,
+              ${c}28 15%,
+              ${c}66 55%,
+              ${c}cc 85%,
+              ${c} 100%)`,
+          }}
+        />
+        {progress > 0.5 && (
+          <div
+            className="void-spine-tip"
+            style={{
+              top: `${progress}%`,
+              background: c,
+              boxShadow: `0 0 10px ${c}, 0 0 22px ${c}77`,
+            }}
+          />
+        )}
+      </div>
+
       <div className="void-ambient" />
+
+      {/* Lotus background — fixed center, domain color */}
+      <ConceptLotus color={c} />
 
       {/* ── GHOST HERO: fixed left spine (mobile only) ─────────────── */}
       <div className="void-ghost-spine">
@@ -293,7 +395,6 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
               <span className="void-meta-v">{domainLabel}</span>
             </div>
             <div className="void-meta-item">
-              <span className="void-meta-k">status</span>
               <span className="void-meta-v" style={{ color: c }}>{node.status}</span>
             </div>
             {node.sources > 0 && (
