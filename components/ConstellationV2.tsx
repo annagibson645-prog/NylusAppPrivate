@@ -169,12 +169,10 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   const router = useRouter();
   const items: { n: string; idx: string; route?: string }[] = [
     { n: 'Dashboard', idx: '01' },
-    { n: 'Domains',   idx: '02' },
-    { n: 'Hubs',      idx: '03', route: '/hubs' },
-    { n: 'Essays',    idx: '04', route: '/essays' },
-    { n: 'Workshop',  idx: '05' },
-    { n: 'Collisions',idx: '06', route: '/collisions' },
-    { n: 'Sparks',    idx: '07', route: '/sparks' },
+    { n: 'Hubs',      idx: '02', route: '/hubs' },
+    { n: 'Essays',    idx: '03', route: '/essays' },
+    { n: 'Collisions',idx: '04', route: '/collisions' },
+    { n: 'Sparks',    idx: '05', route: '/sparks' },
   ];
   return (
     <>
@@ -1524,13 +1522,11 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
 
   // Normalise page → display label
   const labels: Record<string, [string, string]> = {
-    dashboard: ['Domains', 'knowledge map'],
-    domains:   ['Domains', 'knowledge map'],
-    sparks:    ['Sparks',  'generative tail'],
-    essays:    ['Essays',  'the platform'],
-    workshop:  ['Workshop','in progress'],
-    galaxy:    ['Galaxy',  'concept map'],
-    hubs:      ['Hubs',    'maps of content'],
+    dashboard: ['Dashboard', 'constellation'],
+    sparks:    ['Sparks',   'generative tail'],
+    essays:    ['Essays',   'the platform'],
+    galaxy:    ['Galaxy',   'concept map'],
+    hubs:      ['Hubs',     'maps of content'],
   };
   const [pageTitle, pageSub] = labels[page] ?? ['Vault', 'nylus'];
 
@@ -1568,7 +1564,7 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
       </div>
 
       {/* ── DOMAINS ──────────────────────────────────────────────────── */}
-      {(page === 'domains' || page === 'dashboard' || page === 'galaxy') && (
+      {(page === 'dashboard' || page === 'galaxy') && (
         <div>
           {data.DOMAINS.map(d => (
             <div key={d.id}
@@ -1626,7 +1622,7 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
       )}
 
       {/* ── ESSAYS ─────────────────────────────────────── */}
-      {(page === 'essays' || page === 'workshop' || page === 'research') && (
+      {(page === 'essays' || page === 'research') && (
         <div>
           {data.ESSAYS.slice(0, 30).map(e => (
             <div key={e.id}
@@ -1820,12 +1816,10 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
         <div style={{ flex: 1, display: 'flex', minHeight: 0, position: 'relative', zIndex: 1 }}>
           {page === 'dashboard'  && <C2Dashboard P={P} tweaks={tweaks} setPage={setPage} setOpenEssay={setOpenEssay} setOpenConcept={setOpenConcept} zoomedDomain={zoomedDomain} setZoomedDomain={setZoomedDomain} />}
           {page === 'galaxy'     && <C2Galaxy P={P} tweaks={tweaks} setOpenConcept={setOpenConcept} />}
-          {page === 'domains'    && <C2Domains P={P} setZoomedDomain={(d) => { setPage('dashboard'); setZoomedDomain(d); }} />}
           {page === 'essays'     && <C2Essays P={P} setOpenEssay={setOpenEssay} />}
           {page === 'collisions' && <C2Collisions P={P} tweaks={tweaks} />}
           {page === 'sparks'     && <C2Sparks P={P} />}
           {page === 'tensions'   && <C2Tensions P={P} />}
-          {page === 'workshop'   && <C2Workshop P={P} />}
         </div>
         {openEssay   && <C2Reader P={P} essay={openEssay} close={() => setOpenEssay(null)} />}
         {openConcept && <C2ConceptPage P={P} tweaks={tweaks} concept={openConcept} close={() => setOpenConcept(null)} setOpenEssay={setOpenEssay} />}

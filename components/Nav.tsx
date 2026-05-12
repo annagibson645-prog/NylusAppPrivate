@@ -68,24 +68,18 @@ export default function Nav() {
           </Link>
           <div className="w-px h-4 flex-shrink-0 hidden sm:block" style={{ background: "var(--border)" }} />
           <div className="hidden sm:flex items-center gap-5">
-            {[{ href: "/", label: "Dashboard" }, { href: "/workshop", label: "Workshop" }].map(({ href, label }) => (
+            {[
+              { href: "/",           label: "Dashboard"  },
+              { href: "/hubs",       label: "Hubs"       },
+              { href: "/essays",     label: "Essays"     },
+              { href: "/collisions", label: "Collisions" },
+              { href: "/sparks",     label: "Sparks"     },
+            ].map(({ href, label }) => (
               <Link key={href} href={href} className="text-sm transition-colors"
-                style={{ color: isActive(href) ? "var(--text)" : "var(--text-muted)" }}>
+                style={{ color: (href === "/" ? isActive(href) : pathname.startsWith(href)) ? "var(--text)" : "var(--text-muted)" }}>
                 {label}
               </Link>
             ))}
-            <Link href="/domains" className="text-sm transition-colors"
-              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}>
-              Domains
-            </Link>
-            <Link href="/essays" className="text-sm transition-colors"
-              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}>
-              Essays
-            </Link>
-            <Link href="/research" className="text-sm transition-colors"
-              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}>
-              Research
-            </Link>
           </div>
           <div className="flex-1" />
           <button onClick={toggleTheme} className="transition-colors p-1.5 rounded"
@@ -120,24 +114,18 @@ export default function Nav() {
         {menuOpen && (
           <div className="sm:hidden border-t px-4 py-3 space-y-1"
             style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
-            {[{ href: "/", label: "Dashboard" }, { href: "/workshop", label: "Workshop" }].map(({ href, label }) => (
+            {[
+              { href: "/",           label: "Dashboard"  },
+              { href: "/hubs",       label: "Hubs"       },
+              { href: "/essays",     label: "Essays"     },
+              { href: "/collisions", label: "Collisions" },
+              { href: "/sparks",     label: "Sparks"     },
+            ].map(({ href, label }) => (
               <Link key={href} href={href} className="block py-2 text-sm transition-colors"
-                style={{ color: isActive(href) ? "var(--text)" : "var(--text-muted)" }}>
+                style={{ color: (href === "/" ? isActive(href) : pathname.startsWith(href)) ? "var(--text)" : "var(--text-muted)" }}>
                 {label}
               </Link>
             ))}
-            <Link href="/domains" className="block py-2 text-sm transition-colors"
-              style={{ color: pathname.startsWith("/domain") ? "var(--text)" : "var(--text-muted)" }}>
-              Domains
-            </Link>
-            <Link href="/essays" className="block py-2 text-sm transition-colors"
-              style={{ color: pathname.startsWith("/essay") ? "var(--text)" : "var(--text-muted)" }}>
-              Essays
-            </Link>
-            <Link href="/research" className="block py-2 text-sm transition-colors"
-              style={{ color: pathname.startsWith("/research") ? "var(--text)" : "var(--text-muted)" }}>
-              Research
-            </Link>
           </div>
         )}
       </nav>

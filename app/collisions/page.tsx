@@ -605,13 +605,11 @@ export default function CollisionsPage() {
         {!isMobile && (
           <>
             {([
-              { href: "/",          label: "Dashboard", idx: "01" },
-              { href: "/",          label: "Domains",   idx: "02" },
-              { href: "/essays",    label: "Essays",    idx: "03" },
-              { href: "/workshop",  label: "Workshop",  idx: "04" },
-              { href: "/collisions",label: "Collisions",idx: "05" },
-              { href: "/sparks",    label: "Sparks",    idx: "06" },
-              { href: "/research",  label: "Research",  idx: "07" },
+              { href: "/",          label: "Dashboard",  idx: "01" },
+              { href: "/hubs",      label: "Hubs",       idx: "02" },
+              { href: "/essays",    label: "Essays",     idx: "03" },
+              { href: "/collisions",label: "Collisions", idx: "04" },
+              { href: "/sparks",    label: "Sparks",     idx: "05" },
             ] as const).map(({ href, label, idx }) => {
               const isActive = label === "Collisions";
               return (
