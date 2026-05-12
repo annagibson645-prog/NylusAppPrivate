@@ -90,9 +90,9 @@ const STYLES = `
     border-top:    1px solid var(--h-border);
     border-right:  1px solid var(--h-border);
     border-bottom: 1px solid var(--h-border);
-    border-left-width: 2px;
+    border-left-width: 3px;
     border-left-style: solid;
-    padding: 18px 20px;
+    padding: 28px 28px;
     transition: background 0.2s;
     text-decoration: none;
     display: block;
@@ -101,7 +101,7 @@ const STYLES = `
   .h-card:hover  { background: var(--h-bg3); }
   .h-card:active { background: var(--h-bg3); }
   @media (max-width: 600px) {
-    .h-card { padding: 14px 16px; }
+    .h-card { padding: 20px 20px; }
     .h-hub-grid { grid-template-columns: 1fr !important; }
   }
 `;
@@ -182,17 +182,17 @@ function DharmaBackground({ activeColor }: { activeColor: string | null }) {
 function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: string }) {
   return (
     <Link href={`/hub/${hub.id}`} className="h-card" style={{ borderLeftColor: color }}>
-      <div style={{ display: "flex", gap: 12, alignItems: "baseline", marginBottom: 8 }}>
+      <div style={{ display: "flex", gap: 14, alignItems: "baseline", marginBottom: 12 }}>
         <span style={{
           fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 11, color, opacity: 0.6,
-          minWidth: 24, flexShrink: 0, fontVariantNumeric: "tabular-nums",
+          fontSize: 14, color, opacity: 0.6,
+          minWidth: 28, flexShrink: 0, fontVariantNumeric: "tabular-nums",
         }}>
           {toRoman(index + 1)}.
         </span>
         <span style={{
           fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 18, color: "var(--h-text)", lineHeight: 1.3,
+          fontSize: 24, color: "var(--h-text)", lineHeight: 1.25, fontWeight: 400,
         }}>
           {hub.title}
         </span>
@@ -200,16 +200,16 @@ function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: st
       {hub.excerpt && (
         <p style={{
           fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 13, color: "var(--h-text2)", lineHeight: 1.6,
-          fontStyle: "italic", margin: "0 0 8px",
+          fontSize: 16, color: "var(--h-text2)", lineHeight: 1.65,
+          fontStyle: "italic", margin: "0 0 14px",
         }}>
-          {hub.excerpt.length > 100 ? hub.excerpt.slice(0, 100) + "\u2026" : hub.excerpt}
+          {hub.excerpt.length > 140 ? hub.excerpt.slice(0, 140) + "\u2026" : hub.excerpt}
         </p>
       )}
       {hub.covers > 0 && (
         <div style={{
           fontFamily: "var(--font-jetbrains, 'JetBrains Mono', monospace)",
-          fontSize: 9, color: "var(--h-text3)", letterSpacing: "0.12em",
+          fontSize: 10, color: "var(--h-text3)", letterSpacing: "0.14em",
         }}>
           {hub.covers} concepts
         </div>
@@ -356,7 +356,7 @@ export default function HubsCompassRose({ hubs }: { hubs: SlimHub[] }) {
                 </span>
               </div>
               <div className="h-hub-grid" style={{ display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+                gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 20 }}>
                 {activeHubs.map((h, i) => (
                   <HubCard key={h.id} hub={h} index={i} color={listDomain.color} />
                 ))}
