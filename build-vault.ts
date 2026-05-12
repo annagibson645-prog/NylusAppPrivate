@@ -492,6 +492,26 @@ async function buildVault() {
     console.log(`   Domain index files written`);
   }
 
+  // hubs.json — all active hub nodes, slim shape for the hubs page
+  const hubs = nodeArray
+    .filter((n) => n.type === "hub" && n.status === "active")
+    .sort((a, b) => a.domain.localeCompare(b.domain) || a.id.localeCompare(b.id))
+    .map((n) => ({
+      id: n.id,
+      title: n.title,
+      domain: n.domain,
+      color: DOMAIN_COLORS[n.domain] || DOMAIN_COLORS.unknown,
+      excerpt: n.excerpt,
+      status: n.status,
+      covers: (n.concepts || []).length,
+      concepts: n.concepts || [],
+      content: n.content || "",
+    }));
+  fs.writeFileSync(
+    path.join(OUT_DIR, "hubs.json"),
+    JSON.stringify(hubs, null, 0)
+  );
+
   // essays.json
   const essays = nodeArray
     .filter((n) => n.type === "essay")
