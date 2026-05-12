@@ -185,14 +185,14 @@ function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: st
       <div style={{ display: "flex", gap: 14, alignItems: "baseline", marginBottom: 12 }}>
         <span style={{
           fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 14, color, opacity: 0.6,
-          minWidth: 28, flexShrink: 0, fontVariantNumeric: "tabular-nums",
+          fontSize: 18, color, opacity: 0.6,
+          minWidth: 32, flexShrink: 0, fontVariantNumeric: "tabular-nums",
         }}>
           {toRoman(index + 1)}.
         </span>
         <span style={{
           fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 24, color: "var(--h-text)", lineHeight: 1.25, fontWeight: 400,
+          fontSize: 32, color: "var(--h-text)", lineHeight: 1.2, fontWeight: 400,
         }}>
           {hub.title}
         </span>
@@ -200,16 +200,16 @@ function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: st
       {hub.excerpt && (
         <p style={{
           fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 16, color: "var(--h-text2)", lineHeight: 1.65,
-          fontStyle: "italic", margin: "0 0 14px",
+          fontSize: 20, color: "var(--h-text2)", lineHeight: 1.65,
+          fontStyle: "italic", margin: "0 0 16px",
         }}>
-          {hub.excerpt.length > 140 ? hub.excerpt.slice(0, 140) + "\u2026" : hub.excerpt}
+          {hub.excerpt.length > 160 ? hub.excerpt.slice(0, 160) + "\u2026" : hub.excerpt}
         </p>
       )}
       {hub.covers > 0 && (
         <div style={{
           fontFamily: "var(--font-jetbrains, 'JetBrains Mono', monospace)",
-          fontSize: 10, color: "var(--h-text3)", letterSpacing: "0.14em",
+          fontSize: 12, color: "var(--h-text3)", letterSpacing: "0.14em",
         }}>
           {hub.covers} concepts
         </div>
