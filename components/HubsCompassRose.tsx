@@ -4,6 +4,40 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import NavG from "./NavG";
 
+// ─── Palettes (mirrors ConstellationV2) ──────────────────────────────────────
+const HUB_PALETTES = {
+  ember: {
+    name:    "ember",
+    bg:      "#0e0c09", bg2: "#1a1510", bg3: "#221d15",
+    border:  "#2e2818",
+    text:    "#f0e8d4", text2: "#9a8a78", text3: "#6a5e50",
+    gold:    "#c8a040",
+    rake:    "#191410",
+    centerRing: "#231e15", stoneBg: "#1a1510", arm: "#2e2818",
+  },
+  aurora: {
+    name:    "aurora",
+    bg:      "#0a0e1a", bg2: "#101626", bg3: "#161e30",
+    border:  "rgba(160,200,255,0.12)",
+    text:    "#e8f0ff", text2: "#8898b8", text3: "#3a4a68",
+    gold:    "#7dd3fc",
+    rake:    "#0d1525",
+    centerRing: "#1a2640", stoneBg: "#101626", arm: "#1e2e48",
+  },
+  monochrome: {
+    name:    "monochrome",
+    bg:      "#0a0a0a", bg2: "#111111", bg3: "#1a1a1a",
+    border:  "rgba(255,255,255,0.08)",
+    text:    "#f5f5f5", text2: "#888888", text3: "#444444",
+    gold:    "#cccccc",
+    rake:    "#0f0f0f",
+    centerRing: "#222222", stoneBg: "#111111", arm: "#2a2a2a",
+  },
+} as const;
+
+type PaletteKey = keyof typeof HUB_PALETTES;
+const PALETTE_ORDER: PaletteKey[] = ["ember", "aurora", "monochrome"];
+
 interface SlimHub {
   id: string;
   title: string;
@@ -415,7 +449,22 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
   const [selected,      setSelected]      = useState<string | null>(null);
   const [hovered,       setHovered]       = useState<string | null>(null);
   const [drawerOpen,    setDrawerOpen]    = useState(false);
+  const [paletteKey,    setPaletteKey]    = useState<PaletteKey>("ember");
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
+  // Sync palette from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("nylus-hub-palette") as PaletteKey | null;
+    if (saved && saved in HUB_PALETTES) setPaletteKey(saved);
+  }, []);
+
+  function cyclePalette() {
+    const next = PALETTE_ORDER[(PALETTE_ORDER.indexOf(paletteKey) + 1) % PALETTE_ORDER.length];
+    setPaletteKey(next);
+    localStorage.setItem("nylus-hub-palette", next);
+  }
+
+  const P = HUB_PALETTES[paletteKey];
 
   // Pre-select domain from ?domain= URL param on mount
   useEffect(() => {
@@ -449,12 +498,28 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
   const activeUngrouped  = selected ? (ungroupedByDomain[selected] ?? []) : [];
 
   return (
-    <div className="hubs-page" style={{ minHeight: "100vh", background: "var(--h-bg)", display: "flex", flexDirection: "column" }}>
+    <div className="hubs-page" style={{
+      minHeight: "100vh", background: P.bg, display: "flex", flexDirection: "column",
+      // Inject palette as CSS vars so all children using var(--h-*) pick them up
+      ["--h-bg" as string]:          P.bg,
+      ["--h-bg2" as string]:         P.bg2,
+      ["--h-bg3" as string]:         P.bg3,
+      ["--h-border" as string]:      P.border,
+      ["--h-text" as string]:        P.text,
+      ["--h-text2" as string]:       P.text2,
+      ["--h-text3" as string]:       P.text3,
+      ["--h-gold" as string]:        P.gold,
+      ["--h-rake" as string]:        P.rake,
+      ["--h-arm" as string]:         P.arm,
+      ["--h-stone-bg" as string]:    P.stoneBg,
+      ["--h-center-ring" as string]: P.centerRing,
+      ["--h-label" as string]:       P.text2,
+    }}>
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
       <NavG active="Hubs" />
       <main style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
 
-        <header style={{ padding: "32px 0 4px", textAlign: "center" }}>
+        <header style={{ padding: "32px 0 4px", textAlign: "center", position: "relative", width: "100%", maxWidth: 720 }}>
           <p style={{
             fontFamily: "var(--font-jetbrains, 'JetBrains Mono', monospace)",
             fontSize: 9, letterSpacing: "0.3em", color: "var(--h-text3)",
@@ -465,6 +530,26 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
             fontSize: 28, fontWeight: 300, fontStyle: "italic",
             color: "var(--h-text)", letterSpacing: "0.08em", margin: 0,
           }}>The Hubs</h1>
+
+          {/* Palette cycle button */}
+          <button
+            onClick={cyclePalette}
+            style={{
+              position: "absolute", top: 28, right: 24,
+              fontFamily: "var(--font-jetbrains, 'JetBrains Mono', monospace)",
+              fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
+              color: P.gold, background: "transparent",
+              border: `0.5px solid ${P.gold}44`,
+              borderRadius: 4, padding: "5px 10px",
+              cursor: "pointer", transition: "border-color 0.2s, color 0.2s",
+              opacity: 0.7,
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
+            title="Cycle palette"
+          >
+            {P.name}
+          </button>
         </header>
 
         <svg viewBox="0 0 640 520" style={{ width: "100%", maxWidth: 720, display: "block" }}

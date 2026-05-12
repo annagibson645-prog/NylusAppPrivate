@@ -11,8 +11,9 @@ import { useRouter } from "next/navigation";
 const NAV_ITEMS = [
   { label: "Dashboard",  idx: "01", href: "/"           },
   { label: "Hubs",       idx: "02", href: "/hubs"       },
-  { label: "Collisions", idx: "03", href: "/collisions" },
-  { label: "Sparks",     idx: "04", href: "/sparks"     },
+  { label: "Essays",     idx: "03", href: "/essays"     },
+  { label: "Collisions", idx: "04", href: "/collisions" },
+  { label: "Sparks",     idx: "05", href: "/sparks"     },
 ] as const;
 
 const STYLES = `
