@@ -26,8 +26,8 @@ const DOMAIN_META = [
 const CX      = 320;
 const CY      = 260;
 const ARM     = 175;
-const STONE_R = 13;
-const LABEL_R = ARM + 32;
+const STONE_R = 18;
+const LABEL_R = ARM + 36;
 
 function polar(cx: number, cy: number, r: number, angleDeg: number) {
   const rad = (angleDeg * Math.PI) / 180;
@@ -112,7 +112,7 @@ function DharmaBackground({ activeColor }: { activeColor: string | null }) {
   const INNER_SPOKE = 44;
   const HUB_R       = 44;
   const HUB_INNER   = 30;
-  const opacity     = activeColor ? 0.52 : 0.22;
+  const opacity     = activeColor ? 0.45 : 0.14;
   const wheelColor  = activeColor ?? "var(--h-gold)";
 
   return (
@@ -284,30 +284,49 @@ export default function HubsCompassRose({ hubs }: { hubs: SlimHub[] }) {
                 onClick={() => setSelected(prev => prev === d.key ? null : d.key)}
                 onMouseEnter={() => setHovered(d.key)}
                 onMouseLeave={() => setHovered(null)}
-                style={{ cursor: "pointer", opacity: isDimmed ? 0.12 : 1,
+                style={{ cursor: "pointer", opacity: isDimmed ? 0.25 : 1,
                   transition: "opacity 0.35s cubic-bezier(0.65,0,0.35,1)", touchAction: "manipulation" }}
                 role="button" aria-label={`${d.label} — ${domHubs.length} hubs`} aria-pressed={isOn}>
+
+                {/* Arm line — always visible in domain color */}
                 <line x1={CX} y1={CY} x2={tip.x} y2={tip.y}
-                  stroke={isOn ? d.color : "var(--h-arm)"}
-                  strokeWidth={isOn ? 1.2 : 0.7}
-                  style={{ transition: "stroke 0.3s, stroke-width 0.3s" }} />
+                  stroke={d.color}
+                  strokeOpacity={isOn ? 1 : 0.4}
+                  strokeWidth={isOn ? 1.8 : 1.1}
+                  style={{ transition: "stroke-opacity 0.3s, stroke-width 0.3s" }} />
+
+                {/* Hub dots along the arm when selected */}
                 {isOn && domHubs.map((h, i) => {
                   const frac = (i + 1) / (domHubs.length + 1);
                   const pos  = polar(CX, CY, 38 + frac * (ARM - 55), d.angle);
-                  return <circle key={h.id} cx={pos.x} cy={pos.y} r={3} fill={d.color} opacity={0.65} />;
+                  return <circle key={h.id} cx={pos.x} cy={pos.y} r={3.5} fill={d.color} opacity={0.75} />;
                 })}
-                <circle cx={tip.x} cy={tip.y} r={isOn ? 15 : STONE_R}
-                  fill={isOn ? d.color : "var(--h-stone-bg)"} stroke={d.color}
-                  strokeWidth={isOn ? 0 : 1.3} style={{ transition: "r 0.25s, fill 0.25s" }} />
-                {!isOn && (
-                  <text x={tip.x} y={tip.y + 4} textAnchor="middle"
-                    fontFamily="var(--font-jetbrains,'JetBrains Mono',monospace)"
-                    fontSize={8} fill={d.color} opacity={0.85}>{domHubs.length}</text>
-                )}
+
+                {/* Orb — always filled with domain color */}
+                <circle cx={tip.x} cy={tip.y} r={STONE_R}
+                  fill={d.color}
+                  fillOpacity={isOn ? 1 : 0.28}
+                  stroke={d.color}
+                  strokeOpacity={isOn ? 0 : 0.9}
+                  strokeWidth={1.6}
+                  style={{ transition: "fill-opacity 0.25s, stroke-opacity 0.25s" }} />
+
+                {/* Hub count inside orb */}
+                <text x={tip.x} y={tip.y + 4} textAnchor="middle"
+                  fontFamily="var(--font-jetbrains,'JetBrains Mono',monospace)"
+                  fontSize={9} fontWeight="600"
+                  fill={isOn ? "#0e0c09" : d.color}
+                  fillOpacity={isOn ? 1 : 1}
+                  style={{ transition: "fill 0.25s" }}>{domHubs.length}</text>
+
+                {/* Domain label outside orb — always bright */}
                 <text x={labelPos.x} y={labelPos.y + 4} textAnchor={anchor}
                   fontFamily="var(--font-cormorant,'Cormorant Garamond',Georgia,serif)"
-                  fontSize={13} fill={isOn ? d.color : "var(--h-label)"}
-                  letterSpacing="0.06em" style={{ transition: "fill 0.25s" }}>{d.short}</text>
+                  fontSize={14} fontWeight={isOn ? "600" : "400"}
+                  fill={d.color}
+                  fillOpacity={isOn ? 1 : 0.75}
+                  letterSpacing="0.04em"
+                  style={{ transition: "fill-opacity 0.25s, font-weight 0.25s" }}>{d.short}</text>
               </g>
             );
           })}
