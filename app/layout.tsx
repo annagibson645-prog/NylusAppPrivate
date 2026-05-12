@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Fraunces, Newsreader } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono, Fraunces, Newsreader, Cormorant_Garamond } from "next/font/google";
 import MobileNav from "@/components/MobileNav";
 import "./globals.css";
 
@@ -29,6 +29,13 @@ const newsreader = Newsreader({
   style: ["normal", "italic"],
 });
 
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "NylusS",
   description: "Intelligence layer for the NylusS knowledge vault",
@@ -53,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     jetbrainsMono.variable,
     fraunces.variable,
     newsreader.variable,
+    cormorantGaramond.variable,
   ].join(" ");
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 // ─── Proto G nav — Fraunces italic + blue frequency bars ─────────────────────
 // Drop into any page: <NavG active="collisions" />
@@ -66,6 +67,26 @@ const STYLES = `
   .navg-bars span:nth-child(3) { animation: navGBar 0.9s ease-in-out infinite 0.3s; }
   .navg-bars span:nth-child(4) { animation: navGBar 0.9s ease-in-out infinite 0.1s; }
   .navg-bars span:nth-child(5) { animation: navGBar 0.9s ease-in-out infinite 0.25s; }
+  .navg-search {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--navg-lbl, #8a849a);
+    width: 148px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, width 0.25s cubic-bezier(0.16,1,0.3,1);
+    letter-spacing: 0.06em;
+  }
+  .navg-search::placeholder { color: var(--navg-dim, #494456); }
+  .navg-search:focus {
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.055);
+    width: 200px;
+    color: var(--navg-lbl-hover, #cdc8dd);
+  }
   .navg-theme-btn {
     background: none; border: none; border-radius: 4px;
     padding: 6px; cursor: pointer;
@@ -84,6 +105,19 @@ interface NavGProps {
 
 export default function NavG({ active, right, count }: NavGProps) {
   const [theme, setTheme] = useState<'void' | 'sepia'>('void');
+  const router = useRouter();
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  function handleSearchKey(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      const q = (e.currentTarget.value ?? '').trim();
+      if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
+    }
+    if (e.key === 'Escape') {
+      e.currentTarget.value = '';
+      e.currentTarget.blur();
+    }
+  }
 
   useEffect(() => {
     // Sync React state with whatever the no-flash script already applied
@@ -160,6 +194,18 @@ export default function NavG({ active, right, count }: NavGProps) {
           borderLeft: "1px solid var(--navg-border, rgba(255,255,255,0.07))",
           flexShrink: 0,
         }}>
+          {/* Search */}
+          <input
+            ref={searchRef}
+            className="navg-search"
+            type="search"
+            placeholder="search..."
+            onKeyDown={handleSearchKey}
+            aria-label="Search the vault"
+            autoComplete="off"
+            spellCheck={false}
+          />
+
           {right}
           {count && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
