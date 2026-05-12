@@ -170,11 +170,12 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   const items: { n: string; idx: string; route?: string }[] = [
     { n: 'Dashboard', idx: '01' },
     { n: 'Domains',   idx: '02' },
-    { n: 'Essays',    idx: '03', route: '/essays' },
-    { n: 'Workshop',  idx: '04' },
-    { n: 'Collisions',idx: '05', route: '/collisions' },
-    { n: 'Sparks',    idx: '06', route: '/sparks' },
-    { n: 'Research',  idx: '07' },
+    { n: 'Hubs',      idx: '03', route: '/hubs' },
+    { n: 'Essays',    idx: '04', route: '/essays' },
+    { n: 'Workshop',  idx: '05' },
+    { n: 'Collisions',idx: '06', route: '/collisions' },
+    { n: 'Sparks',    idx: '07', route: '/sparks' },
+    { n: 'Research',  idx: '08' },
   ];
   return (
     <>

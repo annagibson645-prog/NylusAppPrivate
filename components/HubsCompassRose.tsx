@@ -5,7 +5,7 @@ import NavG from "./NavG";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface SlimHub {
+interface SlimHub {
   id: string;
   title: string;
   domain: string;

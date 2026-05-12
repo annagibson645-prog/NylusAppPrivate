@@ -1,8 +1,8 @@
 import { readFileSync } from "fs";
 import path from "path";
-import HubsCompassRose, { type SlimHub } from "@/components/HubsCompassRose";
+import HubsCompassRose from "@/components/HubsCompassRose";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 interface HubRaw {
   id: string;
@@ -13,6 +13,15 @@ interface HubRaw {
   covers?: number;
 }
 
+interface SlimHub {
+  id: string;
+  title: string;
+  domain: string;
+  color: string;
+  excerpt: string;
+  covers: number;
+}
+
 export default function Page() {
   const raw = readFileSync(
     path.join(process.cwd(), "public/data/hubs.json"),
@@ -20,7 +29,6 @@ export default function Page() {
   );
   const rawHubs: HubRaw[] = JSON.parse(raw);
 
-  // Strip heavy content/concepts fields — only pass what the UI needs
   const hubs: SlimHub[] = rawHubs.map((h) => ({
     id: h.id,
     title: h.title
