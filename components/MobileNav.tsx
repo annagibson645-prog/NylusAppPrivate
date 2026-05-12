@@ -136,7 +136,7 @@ export default function MobileNav() {
         return (
           <Link key={href} href={href} className={`mnav-tab${isActive ? ' mnav-active' : ''}`}>
             <span className="mnav-icon">
-              {label === 'Domains'    && <IconDomains    active={isActive} />}
+              {label === 'Dashboard'  && <IconDomains    active={isActive} />}
               {label === 'Sparks'     && <IconSparks     active={isActive} />}
               {label === 'Collisions' && <IconCollisions active={isActive} />}
               {label === 'Hubs'       && <IconHubs       active={isActive} />}
