@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { marked } from "marked";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { VaultNode } from "@/lib/types";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -78,45 +78,120 @@ function complexityScore(sources: number, backlinks: number): number {
 }
 
 function ConceptLotus({ color }: { color: string }) {
-  const outerAngles = [0, 45, 90, 135, 180, 225, 270, 315];
-  const innerAngles = [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5];
-  const Petal = ({ l, w, a }: { l: number; w: number; a: number }) => (
-    <path
-      d={`M 200 200 Q ${200 - w} ${200 - l / 2} 200 ${200 - l} Q ${200 + w} ${200 - l / 2} 200 200 Z`}
-      transform={`rotate(${a}, 200, 200)`}
-    />
-  );
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Parse hex → rgb components
+    const hex = color.startsWith("#") ? color : "#a78bfa";
+    const cr = parseInt(hex.slice(1, 3), 16);
+    const cg = parseInt(hex.slice(3, 5), 16);
+    const cb = parseInt(hex.slice(5, 7), 16);
+    // Lighter tint for center glow and petal veins
+    const lr = Math.min(255, cr + 80);
+    const lg = Math.min(255, cg + 80);
+    const lb = Math.min(255, cb + 80);
+
+    const W = 640, H = 640;
+    let t = 0;
+    let bloom = 0;
+    let raf: number;
+
+    const drawPetal = (cx: number, cy: number, r: number, angle: number, openAngle: number, alpha: number) => {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      const g = ctx.createRadialGradient(0, -r * 0.3, 0, 0, -r * 0.5, r * 0.8);
+      g.addColorStop(0, `rgba(${cr},${cg},${cb},${alpha * 0.72})`);
+      g.addColorStop(0.5, `rgba(${Math.max(0, cr - 30)},${Math.max(0, cg - 30)},${Math.max(0, cb - 30)},${alpha * 0.42})`);
+      g.addColorStop(1, "transparent");
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(-r * 0.4 * Math.cos(openAngle), -r * 0.6, -r * 0.5, -r * 0.9, 0, -r);
+      ctx.bezierCurveTo(r * 0.5, -r * 0.9, r * 0.4 * Math.cos(openAngle), -r * 0.6, 0, 0);
+      ctx.fillStyle = g;
+      ctx.fill();
+      // Petal vein
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -r * 0.85);
+      ctx.strokeStyle = `rgba(${lr},${lg},${lb},${alpha * 0.28})`;
+      ctx.lineWidth = 0.7;
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      bloom = Math.min(1, bloom + 0.004);
+      t += 0.01;
+
+      const cx = W / 2, cy = H / 2, base = W * 0.4;
+      const oa = bloom * Math.PI * 0.38;
+
+      // Water ripple rings
+      for (let i = 1; i <= 5; i++) {
+        const rr = base * (0.9 + i * 0.18) + Math.sin(t * 0.8 + i) * 3;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${Math.max(0, 0.04 - i * 0.006)})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Outer petals (16)
+      for (let i = 0; i < 16; i++) {
+        const a = (i / 16) * Math.PI * 2 + t * 0.003;
+        drawPetal(cx, cy, base * (0.75 + Math.sin(t * 0.5 + i) * 0.02), a, oa, 0.32 * bloom);
+      }
+      // Middle petals (8)
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2 + Math.PI / 8 + t * 0.005;
+        drawPetal(cx, cy, base * (0.52 + Math.sin(t * 0.6 + i) * 0.015), a, oa * 0.85, 0.5 * bloom);
+      }
+      // Inner petals (4)
+      for (let i = 0; i < 4; i++) {
+        const a = (i / 4) * Math.PI * 2 + t * 0.008;
+        drawPetal(cx, cy, base * 0.32, a, oa * 0.6, 0.65 * bloom);
+      }
+
+      // Center bindu glow
+      const cGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, base * 0.1);
+      cGrad.addColorStop(0, `rgba(${lr},${lg},${lb},0.48)`);
+      cGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = cGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, base * 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      raf = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => cancelAnimationFrame(raf);
+  }, [color]);
+
   return (
-    <svg
+    <canvas
+      ref={canvasRef}
+      width={640}
+      height={640}
       style={{
-        position: "fixed", top: "50%", left: "50%",
+        position: "fixed",
+        top: "50%",
+        left: "50%",
         transform: "translate(-50%, -50%)",
-        width: "min(640px, 82vw)", height: "min(640px, 82vw)",
-        pointerEvents: "none", zIndex: 0,
+        width: "min(640px, 82vw)",
+        height: "min(640px, 82vw)",
+        pointerEvents: "none",
+        zIndex: 0,
+        opacity: 0.9,
       }}
-      viewBox="0 0 400 400"
-    >
-      <defs>
-        <filter id="lotus-glow"><feGaussianBlur stdDeviation="9" /></filter>
-      </defs>
-      {/* Glow layer */}
-      <g filter="url(#lotus-glow)" opacity="0.18" fill="none" stroke={color} strokeWidth="0.9">
-        {outerAngles.map(a => <Petal key={`og${a}`} l={90} w={28} a={a} />)}
-        {innerAngles.map(a => <Petal key={`ig${a}`} l={58} w={18} a={a} />)}
-        <circle cx="200" cy="200" r="96" strokeWidth="0.6" />
-        <circle cx="200" cy="200" r="63" strokeWidth="0.6" />
-        <circle cx="200" cy="200" r="28" strokeWidth="0.6" />
-      </g>
-      {/* Crisp layer */}
-      <g opacity="0.065" fill="none" stroke={color} strokeWidth="0.8">
-        {outerAngles.map(a => <Petal key={`oc${a}`} l={90} w={28} a={a} />)}
-        {innerAngles.map(a => <Petal key={`ic${a}`} l={58} w={18} a={a} />)}
-        <circle cx="200" cy="200" r="96" strokeWidth="0.5" />
-        <circle cx="200" cy="200" r="63" strokeWidth="0.5" />
-        <circle cx="200" cy="200" r="28" strokeWidth="0.5" />
-        <circle cx="200" cy="200" r="8" fill={color} stroke="none" opacity="0.55" />
-      </g>
-    </svg>
+    />
   );
 }
 

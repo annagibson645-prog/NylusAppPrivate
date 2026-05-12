@@ -304,7 +304,7 @@ html, body {
   font-family: var(--font-newsreader), serif;
   font-size: 23px;
   line-height: 1.7;
-  color: #a8a0c0;
+  color: #ccc4dc;
   font-weight: 300;
   font-style: italic;
   font-optical-sizing: auto;
@@ -326,8 +326,8 @@ html, body {
 }
 
 .void-meta-status { text-transform: lowercase; letter-spacing: 0.05em; }
-.void-meta-type { color: #4a4468; text-transform: lowercase; letter-spacing: 0.05em; }
-.void-meta-dot { color: #2a2535; }
+.void-meta-type { color: #7a7490; text-transform: lowercase; letter-spacing: 0.05em; }
+.void-meta-dot { color: #5a5470; }
 
 /* Ornament */
 .void-ornament {
@@ -341,7 +341,7 @@ html, body {
   font-family: var(--font-fraunces), serif;
   font-size: 18px;
   color: var(--domain-color, #a78bfa);
-  opacity: 0.3;
+  opacity: 0.55;
   font-style: italic;
 }
 
@@ -364,7 +364,7 @@ html, body {
 
 /* ── Prose ── */
 .void-prose {
-  color: #bbb6cc;
+  color: #ccc8dc;
   font-family: var(--font-newsreader), serif;
   font-optical-sizing: auto;
 }
@@ -372,24 +372,24 @@ html, body {
 .void-prose p {
   font-size: 17px;
   line-height: 1.92;
-  color: #bbb6cc;
+  color: #ccc8dc;
   margin-bottom: 22px;
   max-width: 640px;
   font-weight: 300;
 }
 
 .void-prose strong {
-  color: #ddd8ea;
+  color: #eee8f8;
   font-weight: 500;
 }
 
-.void-prose em { color: #a89ec0; }
+.void-prose em { color: #c4b8d8; }
 
 .void-prose h2 {
   font-family: var(--font-jetbrains), monospace;
   font-size: 8px;
   letter-spacing: 0.3em;
-  color: #4a4468;
+  color: #9088a8;
   text-transform: uppercase;
   margin: 48px 0 18px;
   font-weight: 400;
@@ -401,7 +401,7 @@ html, body {
   content: '';
   flex: 1;
   height: 1px;
-  background: #1c1828;
+  background: #2e2840;
 }
 
 .void-prose h3 {
@@ -409,7 +409,7 @@ html, body {
   font-size: 22px;
   font-weight: 600;
   font-style: italic;
-  color: #ccc8dc;
+  color: #ddd8ec;
   margin: 36px 0 14px;
   font-optical-sizing: auto;
 }
@@ -426,7 +426,7 @@ html, body {
   font-size: 18px;
   font-style: italic;
   font-weight: 300;
-  color: #c4bcd8;
+  color: #d4cce8;
   margin: 0;
 }
 
@@ -442,9 +442,9 @@ html, body {
 .void-prose ol li {
   font-size: 16px;
   line-height: 1.8;
-  color: #a8a0bc;
+  color: #c0b8d0;
   padding: 10px 0;
-  border-bottom: 1px solid #1c1828;
+  border-bottom: 1px solid #2e2840;
   padding-left: 20px;
   position: relative;
   font-weight: 300;
@@ -482,7 +482,7 @@ html, body {
 .void-prose sup {
   font-family: var(--font-jetbrains), monospace;
   font-size: 8px;
-  color: #6b6480;
+  color: #8880a0;
   margin-left: 2px;
 }
 
@@ -504,8 +504,8 @@ html, body {
 .void-link:hover { color: #c4b0fc; border-color: var(--domain-color, #a78bfa); }
 
 .void-link-broken {
-  color: #4a4468;
-  border-bottom: 1px dashed #2a2535;
+  color: #706880;
+  border-bottom: 1px dashed #3a3450;
   cursor: default;
 }
 
