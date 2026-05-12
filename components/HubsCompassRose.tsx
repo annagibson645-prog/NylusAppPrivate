@@ -100,7 +100,7 @@ const STYLES = `
   }
   .h-card:hover  { background: var(--h-bg3); }
   .h-card:active { background: var(--h-bg3); }
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     .h-card { padding: 20px 20px; }
     .h-hub-grid { grid-template-columns: 1fr !important; }
   }
@@ -356,7 +356,7 @@ export default function HubsCompassRose({ hubs }: { hubs: SlimHub[] }) {
                 </span>
               </div>
               <div className="h-hub-grid" style={{ display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 20 }}>
+                gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
                 {activeHubs.map((h, i) => (
                   <HubCard key={h.id} hub={h} index={i} color={listDomain.color} />
                 ))}
