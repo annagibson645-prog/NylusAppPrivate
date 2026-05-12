@@ -1,5 +1,6 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import NavG from "./NavG";
 
@@ -10,6 +11,14 @@ interface SlimHub {
   color: string;
   excerpt: string;
   covers: number;
+}
+
+interface UngroupedConcept {
+  id: string;
+  title: string;
+  domain: string;
+  excerpt: string;
+  status: string;
 }
 
 const DOMAIN_META = [
@@ -43,6 +52,189 @@ function toRoman(n: number): string {
   ];
   for (const [v, s] of table) { if (n >= v) return s; }
   return String(n);
+}
+
+/* ─── Orphan Drawer ──────────────────────────────────────────────────────── */
+function OrphanDrawer({
+  open,
+  onClose,
+  domain,
+  concepts,
+}: {
+  open: boolean;
+  onClose: () => void;
+  domain: typeof DOMAIN_META[number] | null;
+  concepts: UngroupedConcept[];
+}) {
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  const statusColor: Record<string, string> = {
+    stub:       "#6a5e50",
+    developing: "#c8a040",
+    stable:     "#34d399",
+    archived:   "#4a4468",
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{
+          position: "fixed", inset: 0, zIndex: 40,
+          background: "rgba(0,0,0,0.55)",
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transition: "opacity 0.3s ease",
+        }}
+      />
+
+      {/* Drawer panel */}
+      <aside
+        style={{
+          position: "fixed", top: 0, right: 0, bottom: 0,
+          width: "min(440px, 92vw)", zIndex: 50,
+          background: "var(--h-bg)",
+          borderLeft: `1px solid ${domain?.color ?? "var(--h-border)"}33`,
+          display: "flex", flexDirection: "column",
+          transform: open ? "translateX(0)" : "translateX(100%)",
+          transition: "transform 0.38s cubic-bezier(0.65,0,0.35,1)",
+          boxShadow: open ? "-24px 0 80px rgba(0,0,0,0.5)" : "none",
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: "28px 28px 20px",
+          borderBottom: `0.5px solid var(--h-border)`,
+          flexShrink: 0,
+        }}>
+          {/* Domain label */}
+          <div style={{
+            fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+            fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase",
+            color: domain?.color ?? "var(--h-text3)",
+            marginBottom: 8,
+          }}>
+            {domain?.label ?? "Domain"} — ungrouped
+          </div>
+
+          {/* Title */}
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16 }}>
+            <h2 style={{
+              fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)",
+              fontSize: 26, fontWeight: 300, fontStyle: "italic",
+              color: "var(--h-text)", margin: 0, letterSpacing: "0.04em",
+            }}>
+              {concepts.length} concept{concepts.length !== 1 ? "s" : ""} without a hub
+            </h2>
+            <button
+              onClick={onClose}
+              style={{
+                fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+                fontSize: 10, letterSpacing: "0.12em", color: "var(--h-text3)",
+                background: "none", border: "none", cursor: "pointer",
+                padding: "4px 0", flexShrink: 0, transition: "color 0.2s",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--h-text2)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--h-text3)")}
+            >
+              esc ✕
+            </button>
+          </div>
+
+          {/* Subtext */}
+          <p style={{
+            fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)",
+            fontSize: 15, fontStyle: "italic", color: "var(--h-text3)",
+            margin: "10px 0 0", lineHeight: 1.5,
+          }}>
+            These live in the vault but haven't been claimed by any hub yet.
+          </p>
+        </div>
+
+        {/* List */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
+          {concepts.length === 0 ? (
+            <div style={{
+              padding: "48px 28px", textAlign: "center",
+              fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)",
+              fontSize: 19, fontStyle: "italic", color: "var(--h-text3)",
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 16, opacity: 0.35 }}>✦</div>
+              All concepts in this domain are assigned to a hub.
+            </div>
+          ) : (
+            concepts.map((c) => (
+              <Link
+                key={c.id}
+                href={`/concept/${c.id}`}
+                onClick={onClose}
+                style={{ display: "block", textDecoration: "none", padding: "18px 28px",
+                  borderBottom: `0.5px solid var(--h-border)`,
+                  borderLeft: `3px solid ${domain?.color ?? "var(--h-border)"}30`,
+                  transition: "background 0.15s, border-left-color 0.15s",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "var(--h-bg2)";
+                  (e.currentTarget as HTMLAnchorElement).style.borderLeftColor = domain?.color ?? "var(--h-gold)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                  (e.currentTarget as HTMLAnchorElement).style.borderLeftColor = `${domain?.color ?? "var(--h-border)"}30`;
+                }}
+              >
+                {/* Concept title — large and clear */}
+                <div style={{
+                  fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)",
+                  fontSize: 22, fontWeight: 400, fontStyle: "italic",
+                  color: "var(--h-text)", lineHeight: 1.25, marginBottom: 8,
+                }}>
+                  {c.title}
+                </div>
+
+                {/* Excerpt — readable body size */}
+                {c.excerpt && (
+                  <p style={{
+                    fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)",
+                    fontSize: 16, color: "var(--h-text2)", lineHeight: 1.55,
+                    margin: "0 0 10px", fontStyle: "italic",
+                  }}>
+                    {c.excerpt}
+                  </p>
+                )}
+
+                {/* Status badge */}
+                <span style={{
+                  fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+                  fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase",
+                  color: statusColor[c.status] ?? "var(--h-text3)",
+                }}>
+                  {c.status}
+                </span>
+              </Link>
+            ))
+          )}
+        </div>
+
+        {/* Footer note */}
+        <div style={{
+          padding: "16px 28px",
+          borderTop: `0.5px solid var(--h-border)`,
+          fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+          fontSize: 9, color: "var(--h-text3)", letterSpacing: "0.18em",
+          textTransform: "uppercase", flexShrink: 0,
+        }}>
+          assign via build-vault.ts → hub field
+        </div>
+      </aside>
+    </>
+  );
 }
 
 const STYLES = `
@@ -218,9 +410,20 @@ function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: st
   );
 }
 
-export default function HubsCompassRose({ hubs }: { hubs: SlimHub[] }) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [hovered,  setHovered]  = useState<string | null>(null);
+export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHub[]; ungrouped?: UngroupedConcept[] }) {
+  const searchParams = useSearchParams();
+  const [selected,      setSelected]      = useState<string | null>(null);
+  const [hovered,       setHovered]       = useState<string | null>(null);
+  const [drawerOpen,    setDrawerOpen]    = useState(false);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
+  // Pre-select domain from ?domain= URL param on mount
+  useEffect(() => {
+    const domainParam = searchParams.get("domain");
+    if (domainParam && DOMAIN_META.some(d => d.key === domainParam)) {
+      setSelected(domainParam);
+    }
+  }, [searchParams]);
 
   const byDomain = useMemo(() => {
     const map: Record<string, SlimHub[]> = {};
@@ -229,11 +432,21 @@ export default function HubsCompassRose({ hubs }: { hubs: SlimHub[] }) {
     return map;
   }, [hubs]);
 
-  const activeKey    = hovered ?? selected;
-  const activeDomain = DOMAIN_META.find(d => d.key === activeKey) ?? null;
-  const activeColor  = activeDomain?.color ?? null;
-  const listDomain   = DOMAIN_META.find(d => d.key === selected) ?? null;
-  const activeHubs   = selected ? (byDomain[selected] ?? []) : [];
+  const ungroupedByDomain = useMemo(() => {
+    const map: Record<string, UngroupedConcept[]> = {};
+    for (const c of ungrouped) {
+      if (!map[c.domain]) map[c.domain] = [];
+      map[c.domain].push(c);
+    }
+    return map;
+  }, [ungrouped]);
+
+  const activeKey        = hovered ?? selected;
+  const activeDomain     = DOMAIN_META.find(d => d.key === activeKey) ?? null;
+  const activeColor      = activeDomain?.color ?? null;
+  const listDomain       = DOMAIN_META.find(d => d.key === selected) ?? null;
+  const activeHubs       = selected ? (byDomain[selected] ?? []) : [];
+  const activeUngrouped  = selected ? (ungroupedByDomain[selected] ?? []) : [];
 
   return (
     <div className="hubs-page" style={{ minHeight: "100vh", background: "var(--h-bg)", display: "flex", flexDirection: "column" }}>
@@ -281,7 +494,7 @@ export default function HubsCompassRose({ hubs }: { hubs: SlimHub[] }) {
             const domHubs  = byDomain[d.key] ?? [];
             return (
               <g key={d.key}
-                onClick={() => setSelected(prev => prev === d.key ? null : d.key)}
+                onClick={() => { setSelected(prev => prev === d.key ? null : d.key); setDrawerOpen(false); }}
                 onMouseEnter={() => setHovered(d.key)}
                 onMouseLeave={() => setHovered(null)}
                 style={{ cursor: "pointer", opacity: isDimmed ? 0.25 : 1,
@@ -363,8 +576,66 @@ export default function HubsCompassRose({ hubs }: { hubs: SlimHub[] }) {
               </div>
             </div>
           )}
+
+          {/* Ungrouped concepts — safety-net link */}
+          {listDomain && (
+            <div style={{
+              marginTop: 28,
+              paddingTop: 18,
+              borderTop: `0.5px solid var(--h-border)`,
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <button
+                onClick={() => setDrawerOpen(true)}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 10,
+                  background: "none", border: "none", cursor: activeUngrouped.length > 0 ? "pointer" : "default",
+                  padding: 0, textDecoration: "none",
+                }}
+              >
+                <span style={{
+                  fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+                  fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+                  color: activeUngrouped.length > 0 ? "var(--h-text3)" : "var(--h-text3)",
+                  opacity: activeUngrouped.length > 0 ? 1 : 0.4,
+                  transition: "color 0.2s",
+                }}>
+                  {activeUngrouped.length > 0
+                    ? `${activeUngrouped.length} ungrouped concept${activeUngrouped.length !== 1 ? "s" : ""}`
+                    : "no ungrouped concepts"}
+                </span>
+                {activeUngrouped.length > 0 && (
+                  <span style={{
+                    fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+                    fontSize: 13, color: listDomain.color, opacity: 0.7,
+                    transition: "transform 0.2s, opacity 0.2s",
+                  }}>
+                    →
+                  </span>
+                )}
+              </button>
+
+              {activeUngrouped.length === 0 && (
+                <span style={{
+                  fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
+                  fontSize: 9, color: listDomain.color, opacity: 0.5,
+                  letterSpacing: "0.18em", textTransform: "uppercase",
+                }}>
+                  ✓ all assigned
+                </span>
+              )}
+            </div>
+          )}
         </section>
       </main>
+
+      {/* Orphan drawer */}
+      <OrphanDrawer
+        open={drawerOpen}
+        onClose={closeDrawer}
+        domain={listDomain}
+        concepts={activeUngrouped}
+      />
     </div>
   );
 }

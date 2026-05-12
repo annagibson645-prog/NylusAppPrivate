@@ -358,7 +358,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
               <g key={d.id}
                 onMouseEnter={() => setHover(d.id)}
                 onMouseLeave={() => setHover(null)}
-                onClick={() => { const orig = C2_DATA.DOMAINS.find(x => x.id === d.id); router.push(`/domain/${orig?.key ?? d.id}`); }}
+                onClick={() => { const orig = C2_DATA.DOMAINS.find(x => x.id === d.id); router.push(`/hubs?domain=${orig?.key ?? d.id}`); }}
                 style={{ cursor: 'pointer', transition: 'opacity 0.3s' }}>
                 <circle cx={d.x} cy={d.y} r={Math.min(d.radius * 2.5, 18)} fill={`url(#g-${d.id})`} opacity={isHover ? 1 : 0.7} />
                 <circle cx={d.x} cy={d.y} r={d.radius + 4} fill={d.color} opacity={isHover ? 0.4 : 0.2} />
@@ -557,7 +557,7 @@ function C2Domains({ P, setZoomedDomain }: { P: Palette; setZoomedDomain: (d: Ny
           return (
             <div
               key={d.id}
-              onClick={() => router.push(`/domain/${d.key}`)}
+              onClick={() => router.push(`/hubs?domain=${d.key}`)}
               onMouseEnter={() => setHovered(d.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
@@ -1186,7 +1186,7 @@ function C2Workshop({ P }: { P: Palette }) {
           <div style={{ background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 14, padding: '20px 22px', marginBottom: 16 }}>
             <div style={{ fontFamily: c2Style.mono, fontSize: 9, color: P.dim, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 16 }}>Domain Density</div>
             {C2_DATA.DOMAINS.slice(0, 8).map(d => (
-              <div key={d.id} style={{ marginBottom: 12 }} onClick={() => router.push(`/domain/${d.key}`)} className="cursor-pointer">
+              <div key={d.id} style={{ marginBottom: 12 }} onClick={() => router.push(`/hubs?domain=${d.key}`)} className="cursor-pointer">
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                   <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: d.color, letterSpacing: '0.05em' }}>{d.name.length > 18 ? d.name.slice(0, 16) + '…' : d.name}</span>
                   <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim2 }}>{d.concepts}</span>
@@ -1572,7 +1572,7 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
         <div>
           {data.DOMAINS.map(d => (
             <div key={d.id}
-              onClick={() => router.push(`/domain/${d.key}`)}
+              onClick={() => router.push(`/hubs?domain=${d.key}`)}
               style={{ ...itemStyle, display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px' }}
             >
               <div style={{

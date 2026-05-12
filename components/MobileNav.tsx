@@ -5,10 +5,10 @@ import { useState, useEffect } from 'react';
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 const TABS = [
-  { href: '/domains',    label: 'Domains'    },
-  { href: '/sparks',     label: 'Sparks'     },
-  { href: '/collisions', label: 'Collisions' },
+  { href: '/',           label: 'Dashboard'  },
   { href: '/hubs',       label: 'Hubs'       },
+  { href: '/collisions', label: 'Collisions' },
+  { href: '/sparks',     label: 'Sparks'     },
 ] as const;
 
 // ─── SVG icons ────────────────────────────────────────────────────────────────

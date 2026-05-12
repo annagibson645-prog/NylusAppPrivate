@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import path from "path";
+import { Suspense } from "react";
 import HubsCompassRose from "@/components/HubsCompassRose";
 
 export const dynamic = "force-dynamic";
@@ -13,23 +14,25 @@ interface HubRaw {
   covers?: number;
 }
 
-interface SlimHub {
+interface GraphNode {
   id: string;
   title: string;
+  type: string;
   domain: string;
-  color: string;
-  excerpt: string;
-  covers: number;
+  status: string;
+  excerpt?: string;
+  hub?: string;
+}
+
+function loadJSON<T>(file: string): T {
+  return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
 }
 
 export default function Page() {
-  const raw = readFileSync(
-    path.join(process.cwd(), "public/data/hubs.json"),
-    "utf-8"
-  );
-  const rawHubs: HubRaw[] = JSON.parse(raw);
+  const rawHubs = loadJSON<HubRaw[]>("hubs.json");
+  const graph   = loadJSON<{ nodes: GraphNode[] }>("graph.json");
 
-  const hubs: SlimHub[] = rawHubs.map((h) => ({
+  const hubs = rawHubs.map((h) => ({
     id: h.id,
     title: h.title
       .replace(" — Map of Content", "")
@@ -41,5 +44,20 @@ export default function Page() {
     covers: h.covers ?? 0,
   }));
 
-  return <HubsCompassRose hubs={hubs} />;
+  // Concepts with no hub assignment — the live catch-all
+  const ungrouped = graph.nodes
+    .filter((n) => n.type === "concept" && !n.hub && n.status !== "archived")
+    .map((n) => ({
+      id: n.id,
+      title: n.title,
+      domain: n.domain,
+      excerpt: (n.excerpt ?? "").slice(0, 100),
+      status: n.status,
+    }));
+
+  return (
+    <Suspense>
+      <HubsCompassRose hubs={hubs} ungrouped={ungrouped} />
+    </Suspense>
+  );
 }

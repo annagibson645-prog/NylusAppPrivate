@@ -10,11 +10,9 @@ import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   { label: "Dashboard",  idx: "01", href: "/"           },
-  { label: "Domains",    idx: "02", href: "/"           },
-  { label: "Hubs",       idx: "03", href: "/hubs"       },
-  { label: "Workshop",   idx: "04", href: "/workshop"   },
-  { label: "Collisions", idx: "05", href: "/collisions" },
-  { label: "Sparks",     idx: "06", href: "/sparks"     },
+  { label: "Hubs",       idx: "02", href: "/hubs"       },
+  { label: "Collisions", idx: "03", href: "/collisions" },
+  { label: "Sparks",     idx: "04", href: "/sparks"     },
 ] as const;
 
 const STYLES = `
