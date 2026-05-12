@@ -15,7 +15,6 @@ const NAV_ITEMS = [
   { label: "Workshop",   idx: "04", href: "/workshop"   },
   { label: "Collisions", idx: "05", href: "/collisions" },
   { label: "Sparks",     idx: "06", href: "/sparks"     },
-  { label: "Research",   idx: "07", href: "/research"   },
 ] as const;
 
 const STYLES = `

@@ -175,7 +175,6 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
     { n: 'Workshop',  idx: '05' },
     { n: 'Collisions',idx: '06', route: '/collisions' },
     { n: 'Sparks',    idx: '07', route: '/sparks' },
-    { n: 'Research',  idx: '08' },
   ];
   return (
     <>
@@ -1529,7 +1528,6 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
     domains:   ['Domains', 'knowledge map'],
     sparks:    ['Sparks',  'generative tail'],
     essays:    ['Essays',  'the platform'],
-    research:  ['Research','deep dives'],
     workshop:  ['Workshop','in progress'],
     galaxy:    ['Galaxy',  'concept map'],
     hubs:      ['Hubs',    'maps of content'],
