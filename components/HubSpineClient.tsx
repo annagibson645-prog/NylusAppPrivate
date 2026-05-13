@@ -570,7 +570,15 @@ export default function HubSpineClient({
         {/* Body */}
         <div className="hs-dp-body">
           <div className="hs-dp-main">
-            <div className="hs-dp-title">{activeC?.title}</div>
+            {activeC && (
+              <Link
+                href={`/concept/${activeC.id}`}
+                className="hs-dp-title"
+                onClick={closePanel}
+              >
+                {activeC.title}
+              </Link>
+            )}
             {activeC?.excerpt && (
               <div className="hs-dp-exc">{activeC.excerpt}</div>
             )}
@@ -816,12 +824,15 @@ export default function HubSpineClient({
 
         /* ── Section header ──────────────────────────────────── */
         .hs-sec-header {
-          display: flex; align-items: center; justify-content: center;
-          gap: 12px; padding: 14px 0 20px;
+          display: flex; align-items: center; justify-content: flex-start;
+          gap: 12px; padding: 14px 0 20px 32px;
           min-height: 64px;
           cursor: pointer; position: relative; z-index: 3;
           user-select: none; background: none; border: none;
           width: 100%; color: inherit;
+        }
+        @media (max-width: 680px) {
+          .hs-sec-header { padding-left: 16px; }
         }
         .hs-sec-name {
           font-family: var(--font-fraunces, serif); font-style: italic; font-weight: 900;
@@ -1013,7 +1024,10 @@ export default function HubSpineClient({
           letter-spacing: -.03em;
           color: var(--domain-color, #ef5a6f);
           margin-bottom: 14px; text-wrap: balance;
+          text-decoration: none; display: block; cursor: pointer;
+          transition: opacity .15s;
         }
+        .hs-dp-title:hover { opacity: .75; text-decoration: underline; text-underline-offset: 4px; }
         .hs-dp-exc {
           font-family: var(--font-newsreader, serif); font-style: italic;
           font-size: clamp(14px, 1.6vw, 17px); line-height: 1.8;
