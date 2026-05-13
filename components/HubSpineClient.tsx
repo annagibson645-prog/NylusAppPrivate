@@ -30,6 +30,9 @@ type PaletteKey = keyof typeof PALETTES;
 const PALETTE_ACCENT: Record<PaletteKey, string> = {
   ember:'#c8733a', aurora:'#3a78c8', monochrome:'#888888', sepia:'#7a5c3a',
 };
+const DEVANAGARI_NUMS = ['१','२','३','४','५','६','७','८','९','१०','११','१२'];
+const circled = (n: number): string => n >= 1 && n <= 20 ? String.fromCharCode(0x245F + n) : String(n);
+
 const STATUS_COLOR: Record<string, string> = {
   stable:'#6bab8a', developing:'#c8a460', stub:'#9f7ec0',
 };
@@ -207,7 +210,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
             const rightCol = rest.filter((_, i) => i % 2 === 1);
             return (
               <div key={sec.key} className={`hs-sec hs-sec-${si}`}>
-                <div className="hs-sec-num">0{si + 1}</div>
+                <div className="hs-sec-num">{DEVANAGARI_NUMS[si] ?? String(si+1)}</div>
                 <div className="hs-sec-mark" />
                 <button className={`hs-sec-header${isCollapsed ? ' collapsed' : ''}`} onClick={() => toggleSection(sec.key)} aria-expanded={!isCollapsed}>
                   <span className="hs-sec-name">{sec.label}</span>
@@ -218,7 +221,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                 <div className={`hs-sec-body${isCollapsed ? ' collapsed' : ''}`}>
                   {lead && (
                     <button className="hs-bridge" data-cid={lead.id} onClick={() => openConcept(lead.id)}>
-                      <div className="hs-bridge-meta">Lead Concept</div>
+                      <div className="hs-bridge-meta"><span className="hs-order-lead">{circled(1)} read first</span><span>Lead Concept</span></div>
                       <div className="hs-bridge-title">{lead.title}</div>
                       {lead.excerpt && <div className="hs-bridge-exc">{lead.excerpt.slice(0, 240)}{lead.excerpt.length > 240 ? '…' : ''}</div>}
                       <div className="hs-bridge-foot">{lead.sources > 0 && `${lead.sources} src · `}{lead.backlinkCount > 0 && `${lead.backlinkCount} bl · `}{lead.status && `● ${lead.status}`}</div>
@@ -228,9 +231,10 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                     <div className="hs-two-col">
                       {[leftCol, rightCol].map((col, ci) => (
                         <div key={ci} className="hs-col">
-                          {col.map(c => (
+                          {col.map((c, j) => (
                             <button key={c.id} className={`hs-scard${ci === 1 ? ' hs-scard-right' : ''}`} data-cid={c.id} onClick={() => openConcept(c.id)}>
                               <span className="hs-scard-hint">open ↗</span>
+                              <span className="hs-order-num">{circled(ci === 0 ? j * 2 + 2 : j * 2 + 3)}</span>
                               <div className="hs-scard-title">{c.title}</div>
                               {c.excerpt && <div className="hs-scard-exc">{c.excerpt.slice(0, 120)}{c.excerpt.length > 120 ? '…' : ''}</div>}
                               <div className="hs-scard-meta">{c.sources > 0 && `${c.sources} src · `}{c.backlinkCount > 0 && `${c.backlinkCount} bl`}</div>
@@ -322,6 +326,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
       {!activeC && <div className="hs-hint" aria-hidden="true">tap any concept to explore</div>}
 
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@900&display=swap');
         .hs-root{min-height:100vh;background:var(--hs-bg,#03020a);color:var(--hs-ink,#f0eeff);overflow-x:hidden;position:relative}
         .hs-stripe{position:fixed;top:52px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--domain-color,#ef5a6f) 40%,var(--domain-color,#ef5a6f) 60%,transparent);opacity:.65;pointer-events:none;z-index:20}
         .hs-nav{position:fixed;top:0;left:0;right:0;height:52px;background:var(--hs-nav,rgba(3,2,10,.96));border-bottom:1px solid var(--hs-border,rgba(255,255,255,.07));z-index:50;backdrop-filter:blur(12px)}
@@ -349,7 +354,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         @keyframes hs-spulse{0%{top:-90px;opacity:0}45%{opacity:1}100%{top:100%;opacity:0}}
         @media(max-width:680px){.hs-spine-line,.hs-spine-pulse{display:none}}
         .hs-sec{position:relative;margin-bottom:0}
-        .hs-sec-num{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--font-fraunces,serif);font-weight:900;font-size:130px;line-height:1;color:var(--domain-color,#ef5a6f);opacity:.04;pointer-events:none;z-index:0;letter-spacing:-.06em;text-align:center;width:200px;margin-left:-100px;user-select:none;top:60px}
+        .hs-sec-num{position:absolute;left:50%;transform:translateX(-50%);font-family:'Noto Serif Devanagari',var(--font-fraunces,serif);font-weight:900;font-size:130px;line-height:1;color:var(--domain-color,#ef5a6f);opacity:.05;pointer-events:none;z-index:0;letter-spacing:-.02em;text-align:center;width:200px;margin-left:-100px;user-select:none;top:60px}
         @media(max-width:680px){.hs-sec-num{display:none}}
         .hs-sec-mark{position:absolute;left:50%;top:28px;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--hs-bg,#03020a);border:2px solid var(--domain-color,#ef5a6f);z-index:4}
         @media(max-width:680px){.hs-sec-mark{left:8px;transform:none}}
@@ -369,7 +374,9 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-bridge::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--domain-color,#ef5a6f);transform:scaleY(0);transform-origin:top;transition:transform .4s cubic-bezier(.16,1,.3,1)}
         .hs-bridge:hover{background:var(--hs-cardHov,rgba(16,12,36,.95))}
         .hs-bridge:hover::before{transform:scaleY(1)}
-        .hs-bridge-meta{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--hs-ink3,#565278);margin-bottom:10px}
+        .hs-bridge-meta{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--hs-ink3,#565278);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+        .hs-order-lead{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.18em;color:var(--domain-color,#ef5a6f);border:1px solid color-mix(in srgb,var(--domain-color,#ef5a6f) 45%,transparent);padding:2px 9px;opacity:.9;flex-shrink:0;white-space:nowrap}
+        .hs-order-num{position:absolute;left:12px;top:12px;font-family:var(--font-jetbrains,monospace);font-size:11px;color:var(--domain-color,#ef5a6f);opacity:.45;line-height:1;pointer-events:none;user-select:none}
         .hs-bridge-title{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(24px,3.6vw,44px);color:var(--domain-color,#ef5a6f);line-height:1.04;margin-bottom:14px;letter-spacing:-.025em;transition:opacity .15s;text-wrap:balance}
         .hs-bridge:hover .hs-bridge-title{opacity:.8}
         .hs-bridge-exc{font-family:var(--font-newsreader,serif);font-style:italic;font-size:clamp(14px,1.6vw,17px);line-height:1.76;color:var(--hs-ink2,#b4acd0);font-weight:300}
