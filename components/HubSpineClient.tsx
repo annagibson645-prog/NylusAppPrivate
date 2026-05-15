@@ -109,6 +109,12 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     try { localStorage.setItem('nylus-hub-palette', k); } catch {}
   }, []);
 
+  const bookmarkKey = `nylus-bookmark-${path ?? title}`;
+  const [bookmarkId, setBookmarkId] = useState<string | null>(null);
+  useEffect(() => {
+    try { const saved = localStorage.getItem(bookmarkKey); if (saved) setBookmarkId(saved); } catch {}
+  }, [bookmarkKey]);
+
   const allSections: SpineSection[] = unplaced.length > 0
     ? [...sections, { key:'__unplaced__', label:'Other Concepts', level:'thematic' as const, color:domainColor, badge:'', concepts:unplaced }]
     : sections;
@@ -127,7 +133,11 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
   const activeIdx = activeId ? ORDER.findIndex(c => c.id === activeId) : -1;
 
   const conceptSection = useCallback((id: string) => allSections.find(s => s.concepts.some(c => c.id === id)), [allSections]);
-  const openConcept    = useCallback((id: string) => setActiveId(id), []);
+  const openConcept    = useCallback((id: string) => {
+    setActiveId(id);
+    setBookmarkId(id);
+    try { localStorage.setItem(bookmarkKey, id); } catch {}
+  }, [bookmarkKey]);
   const closePanel     = useCallback(() => setActiveId(null), []);
 
   const navigate = useCallback((dir: number) => {
@@ -220,7 +230,8 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                 </button>
                 <div className={`hs-sec-body${isCollapsed ? ' collapsed' : ''}`}>
                   {lead && (
-                    <button className="hs-bridge" data-cid={lead.id} onClick={() => openConcept(lead.id)}>
+                    <button className={`hs-bridge${lead.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={lead.id} onClick={() => openConcept(lead.id)}>
+                      {lead.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
                       <div className="hs-bridge-meta"><span className="hs-order-lead">{circled(1)} read first</span><span>Lead Concept</span></div>
                       <div className="hs-bridge-title">{lead.title}</div>
                       {lead.excerpt && <div className="hs-bridge-exc">{lead.excerpt.slice(0, 240)}{lead.excerpt.length > 240 ? '…' : ''}</div>}
@@ -232,7 +243,8 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                       {[leftCol, rightCol].map((col, ci) => (
                         <div key={ci} className="hs-col">
                           {col.map((c, j) => (
-                            <button key={c.id} className={`hs-scard${ci === 1 ? ' hs-scard-right' : ''}`} data-cid={c.id} onClick={() => openConcept(c.id)}>
+                            <button key={c.id} className={`hs-scard${ci === 1 ? ' hs-scard-right' : ''}${c.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={c.id} onClick={() => openConcept(c.id)}>
+                              {c.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
                               <span className="hs-scard-hint">open ↗</span>
                               <span className="hs-order-num">{circled(ci === 0 ? j * 2 + 2 : j * 2 + 3)}</span>
                               <div className="hs-scard-title">{c.title}</div>
@@ -434,6 +446,11 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         @media(max-width:680px){.hs-dp-btn-name{display:none}}
         .hs-dp-next{margin-left:auto}
         .hs-hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.22em;color:color-mix(in srgb,var(--hs-ink,#f0eeff) 16%,transparent);text-transform:uppercase;z-index:5;pointer-events:none;white-space:nowrap}
+        .hs-bookmark-ring{position:absolute;inset:-1px;border:1px solid rgba(239,90,111,.4);pointer-events:none;z-index:2}
+        .hs-bookmark-label{position:absolute;top:-9px;left:10px;font-family:var(--font-jetbrains,monospace);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(239,90,111,.7);background:var(--hs-bg,#03020a);padding:0 4px;pointer-events:none;z-index:3;white-space:nowrap}
+        .hs-bookmark-dot{position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--domain-color,#ef5a6f);pointer-events:none;z-index:3}
+        .hs-bookmark-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--domain-color,#ef5a6f) 40%,transparent);animation:hs-bpulse 1.8s ease-out infinite}
+        @keyframes hs-bpulse{0%{transform:scale(1);opacity:1}100%{transform:scale(2.4);opacity:0}}
       `}</style>
     </div>
   );
