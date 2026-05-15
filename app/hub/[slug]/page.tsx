@@ -86,7 +86,7 @@ function parseHubSections(content: string, validIds: Set<string>): RawSection[] 
 
       const label = raw
         .replace(/[🗺️🔗🛠️]/gu, '')
-        .replace(/^(BEGINNER LEVEL|INTERMEDIATE LEVEL|ADVANCED LEVEL)[:\s—\-]*/i, '')
+        .replace(/^(beginner|intermediate|advanced)(\s+level)?[:\s—\-]*/i, '')
         .trim();
 
       current = { title: raw, label: label || raw, level, conceptIds: [] };
