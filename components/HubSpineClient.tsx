@@ -369,7 +369,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-sec-num{position:absolute;left:50%;transform:translateX(-50%);font-family:'Noto Serif Devanagari',var(--font-fraunces,serif);font-weight:900;font-size:130px;line-height:1;color:var(--domain-color,#ef5a6f);opacity:.05;pointer-events:none;z-index:0;letter-spacing:-.02em;text-align:center;width:200px;margin-left:-100px;user-select:none;top:60px}
         @media(max-width:680px){.hs-sec-num{display:none}}
         .hs-sec-mark{position:absolute;left:50%;top:28px;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--hs-bg,#03020a);border:2px solid var(--domain-color,#ef5a6f);z-index:4}
-        @media(max-width:680px){.hs-sec-mark{left:8px;transform:none}}
+        @media(max-width:680px){.hs-sec-mark{display:none}}
         .hs-sec-header{display:flex;align-items:center;justify-content:flex-start;gap:10px;padding:14px 16px 18px 32px;min-height:64px;cursor:pointer;position:relative;z-index:3;user-select:none;background:none;border:none;width:calc(50% - 28px);color:inherit}
         @media(max-width:680px){.hs-sec-header{padding:12px 12px 16px 12px;min-height:56px;width:100%}}
         .hs-sec-name{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(16px,2.2vw,22px);color:var(--domain-color,#ef5a6f);letter-spacing:.01em;transition:opacity .15s}
