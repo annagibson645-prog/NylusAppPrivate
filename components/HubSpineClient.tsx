@@ -112,7 +112,14 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
   const bookmarkKey = `nylus-bookmark-${path ?? title}`;
   const [bookmarkId, setBookmarkId] = useState<string | null>(null);
   useEffect(() => {
-    try { const saved = localStorage.getItem(bookmarkKey); if (saved) setBookmarkId(saved); } catch {}
+    try {
+      const saved = localStorage.getItem(bookmarkKey);
+      if (saved) {
+        setBookmarkId(saved);
+        const sec = allSections.find(s => s.concepts.some(c => c.id === saved));
+        if (sec) setCollapsed(prev => { const n = new Set(prev); n.delete(sec.key); return n; });
+      }
+    } catch {}
   }, [bookmarkKey]);
 
   const allSections: SpineSection[] = unplaced.length > 0
@@ -387,8 +394,8 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-bridge:hover{background:var(--hs-cardHov,rgba(16,12,36,.95))}
         .hs-bridge:hover::before{transform:scaleY(1)}
         .hs-bridge-meta{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--hs-ink3,#565278);margin-bottom:10px;display:flex;align-items:center;gap:10px}
-        .hs-order-lead{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.18em;color:var(--domain-color,#ef5a6f);border:1px solid color-mix(in srgb,var(--domain-color,#ef5a6f) 45%,transparent);padding:2px 9px;opacity:.9;flex-shrink:0;white-space:nowrap}
-        .hs-order-num{position:absolute;left:12px;top:12px;font-family:var(--font-jetbrains,monospace);font-size:11px;color:var(--domain-color,#ef5a6f);opacity:.45;line-height:1;pointer-events:none;user-select:none}
+        .hs-order-lead{font-family:var(--font-jetbrains,monospace);font-size:11px;letter-spacing:.18em;color:var(--domain-color,#ef5a6f);border:1px solid color-mix(in srgb,var(--domain-color,#ef5a6f) 45%,transparent);padding:3px 11px;opacity:1;flex-shrink:0;white-space:nowrap;font-weight:600}
+        .hs-order-num{position:absolute;left:12px;top:12px;font-family:var(--font-jetbrains,monospace);font-size:16px;color:var(--domain-color,#ef5a6f);opacity:.7;line-height:1;pointer-events:none;user-select:none}
         .hs-bridge-title{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(24px,3.6vw,44px);color:var(--domain-color,#ef5a6f);line-height:1.04;margin-bottom:14px;letter-spacing:-.025em;transition:opacity .15s;text-wrap:balance}
         .hs-bridge:hover .hs-bridge-title{opacity:.8}
         .hs-bridge-exc{font-family:var(--font-newsreader,serif);font-style:italic;font-size:clamp(14px,1.6vw,17px);line-height:1.76;color:var(--hs-ink2,#b4acd0);font-weight:300}
