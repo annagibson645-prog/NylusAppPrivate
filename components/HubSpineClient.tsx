@@ -380,7 +380,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-sec-header{display:flex;align-items:center;justify-content:flex-start;gap:10px;padding:14px 16px 18px 32px;min-height:64px;cursor:pointer;position:relative;z-index:3;user-select:none;background:none;border:none;width:calc(50% - 28px);color:inherit}
         @media(max-width:680px){.hs-sec-header{padding:12px 12px 16px 12px;min-height:56px;width:100%}}
         .hs-sec-name{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(16px,2.2vw,22px);color:var(--domain-color,#ef5a6f);letter-spacing:.01em;transition:opacity .15s}
-        .hs-sec-badge{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
+        .hs-sec-badge{font-family:var(--font-jetbrains,monospace);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--domain-color,#ef5a6f);opacity:.75;font-weight:600}
         .hs-sec-count{font-family:var(--font-jetbrains,monospace);font-size:9px;color:var(--hs-ink3,#565278);letter-spacing:.12em}
         .hs-sec-chevron{font-size:10px;color:var(--domain-color,#ef5a6f);opacity:.55;transition:transform .35s cubic-bezier(.16,1,.3,1);display:inline-block;margin-left:4px}
         .hs-sec-header.collapsed .hs-sec-chevron{transform:rotate(-90deg)}
