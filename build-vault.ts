@@ -286,7 +286,7 @@ async function buildVault() {
       sources: Number(fm.sources) || 0,
       path: relPath,
       content: raw,
-      excerpt: generateExcerpt(content, title),
+      excerpt: fm.excerpt ? String(fm.excerpt) : generateExcerpt(content, title),
       links: extractWikilinks(content),
       backlinks: [],
       hub: null,
