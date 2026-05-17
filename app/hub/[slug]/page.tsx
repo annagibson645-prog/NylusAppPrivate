@@ -29,8 +29,6 @@ const SKIP_SECTIONS = new Set([
   'how to navigate this hub',
   'key tensions',
   'key tensions in this area',
-  'cross-domain connections',
-  'cross-domain connection',
   'related hubs',
   'structural notes',
   'overview',

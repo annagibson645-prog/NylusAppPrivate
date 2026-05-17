@@ -395,7 +395,8 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-bridge:hover::before{transform:scaleY(1)}
         .hs-bridge-meta{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--hs-ink3,#565278);margin-bottom:10px;display:flex;align-items:center;gap:10px}
         .hs-order-lead{font-family:var(--font-jetbrains,monospace);font-size:11px;letter-spacing:.18em;color:var(--domain-color,#ef5a6f);border:1px solid color-mix(in srgb,var(--domain-color,#ef5a6f) 45%,transparent);padding:3px 11px;opacity:1;flex-shrink:0;white-space:nowrap;font-weight:600}
-        .hs-order-num{position:absolute;left:12px;top:12px;font-family:var(--font-jetbrains,monospace);font-size:16px;color:var(--domain-color,#ef5a6f);opacity:.7;line-height:1;pointer-events:none;user-select:none}
+        .hs-order-num{display:block;font-family:var(--font-jetbrains,monospace);font-size:11px;color:var(--domain-color,#ef5a6f);opacity:.5;line-height:1;pointer-events:none;user-select:none;margin-bottom:7px;letter-spacing:.08em}
+        @media(max-width:680px){.hs-order-num{font-size:10px;margin-bottom:5px}}
         .hs-bridge-title{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(24px,3.6vw,44px);color:var(--domain-color,#ef5a6f);line-height:1.04;margin-bottom:14px;letter-spacing:-.025em;transition:opacity .15s;text-wrap:balance}
         .hs-bridge:hover .hs-bridge-title{opacity:.8}
         .hs-bridge-exc{font-family:var(--font-newsreader,serif);font-style:italic;font-size:clamp(14px,1.6vw,17px);line-height:1.76;color:var(--hs-ink2,#b4acd0);font-weight:300}
