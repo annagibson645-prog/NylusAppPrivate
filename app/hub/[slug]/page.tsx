@@ -14,100 +14,15 @@ function loadJSON<T>(file: string): T {
 }
 
 const DOMAIN_FULL: Record<string, string> = {
-  psychology:              'Psychology',
-  history:                 'History',
-  'behavioral-mechanics':  'Behavioral Mechanics',
-  'eastern-spirituality':  'Eastern Spirituality',
-  'cross-domain':          'Cross-Domain',
-  'creative-practice':     'Creative Practice',
-  'ai-collaboration':      'AI Collaboration',
-  'african-spirituality':  'African Spirituality',
+  psychology:             'Psychology',
+  history:                'History',
+  'behavioral-mechanics': 'Behavioral Mechanics',
+  'eastern-spirituality': 'Eastern Spirituality',
+  'cross-domain':         'Cross-Domain',
+  'creative-practice':    'Creative Practice',
+  'ai-collaboration':     'AI Collaboration',
+  'african-spirituality': 'African Spirituality',
 };
-
-const SKIP_SECTIONS = new Set([
-  'what this hub covers',
-  'how to navigate this hub',
-  'key tensions',
-  'key tensions in this area',
-  'related hubs',
-  'structural notes',
-  'overview',
-  'convergence points',
-  'source node',
-  'sources',
-]);
-
-const LEVEL_ORDER: Record<string, number> = {
-  foundational: 0,
-  intermediate:  1,
-  advanced:      2,
-  thematic:      3,
-};
-
-const LEVEL_BADGE: Record<string, string> = {
-  foundational: 'Foundational',
-  intermediate:  'Intermediate',
-  advanced:      'Advanced',
-  thematic:      '',
-};
-
-const LEVEL_COLOR: Record<string, string> = {
-  foundational: '#6bab8a',
-  intermediate:  '#c8a460',
-  advanced:      '#9f7ec0',
-  thematic:      '#4a4468',
-};
-
-interface RawSection {
-  title: string;
-  label: string;
-  level: 'foundational' | 'intermediate' | 'advanced' | 'thematic';
-  conceptIds: string[];
-}
-
-function parseHubSections(content: string, validIds: Set<string>): RawSection[] {
-  if (!content) return [];
-  const sections: RawSection[] = [];
-  let current: RawSection | null = null;
-  const seen = new Set<string>();
-
-  for (const line of content.split('\n')) {
-    if (/^## /.test(line)) {
-      const raw   = line.replace(/^## /, '').trim();
-      const lower = raw.toLowerCase().replace(/[🗺️🔗🛠️]/gu, '').trim();
-      if (SKIP_SECTIONS.has(lower)) { current = null; continue; }
-
-      let level: RawSection['level'] = 'thematic';
-      if (/beginner/i.test(raw))       level = 'foundational';
-      else if (/intermediate/i.test(raw)) level = 'intermediate';
-      else if (/advanced/i.test(raw))  level = 'advanced';
-
-      const label = raw
-        .replace(/[🗺️🔗🛠️]/gu, '')
-        .replace(/^(beginner|intermediate|advanced)(\s+level)?[:\s—\-]*/i, '')
-        .trim();
-
-      current = { title: raw, label: label || raw, level, conceptIds: [] };
-      sections.push(current);
-      continue;
-    }
-
-    if (!current) continue;
-    const wikiRe = /\[\[ARCHIVES\/concepts\/[^/]+\/([^|\]]+)[|\]]/g;
-    let m: RegExpExecArray | null;
-    while ((m = wikiRe.exec(line)) !== null) {
-      const id = m[1].trim();
-      if (validIds.has(id) && !seen.has(id)) {
-        current.conceptIds.push(id);
-        seen.add(id);
-      }
-    }
-  }
-
-  return sections
-    .filter(s => s.conceptIds.length > 0)
-    .sort((a, b) => LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level]);
-}
 
 function nodeToSpineConcept(n: any, hubConceptIds: Set<string>): SpineConcept {
   return {
@@ -117,7 +32,7 @@ function nodeToSpineConcept(n: any, hubConceptIds: Set<string>): SpineConcept {
     sources:       typeof n.sources === 'number' ? n.sources : 0,
     backlinkCount: (n.backlinks?.length ?? 0),
     status:        n.status ?? undefined,
-    /* only links that are also in this hub — keeps the panel relevant */
+    /* only links that also exist in this hub — keeps the panel relevant */
     links: (n.links ?? []).filter((lid: string) => hubConceptIds.has(lid)),
   };
 }
@@ -133,29 +48,28 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
   const color = domainColor(hub.domain);
   const label = DOMAIN_FULL[hub.domain] ?? hub.domain;
 
+  // hub.concepts = only section-placed concepts (build-vault.ts guarantees this post-fix)
   const conceptIds = new Set<string>(hub.concepts ?? []);
   const allConceptNodes = graph.nodes.filter(
     (n: any) => n.type === 'concept' && conceptIds.has(n.id)
   );
   const conceptNodeMap = new Map(allConceptNodes.map((n: any) => [n.id, n]));
 
-  /* Parse raw sections → SpineSection[] */
-  const rawSections = parseHubSections(hub.content ?? '', conceptIds);
-  const placedIds   = new Set(rawSections.flatMap(s => s.conceptIds));
-
-  const spineSections: SpineSection[] = rawSections.map(raw => ({
-    key:      raw.title,
-    label:    raw.label,
-    level:    raw.level,
-    color:    LEVEL_COLOR[raw.level],
-    badge:    LEVEL_BADGE[raw.level],
-    concepts: raw.conceptIds
-      .map(id => conceptNodeMap.get(id))
+  // Sections are pre-parsed at build time — no re-parsing, no drift possible
+  const spineSections: SpineSection[] = (hub.sections ?? []).map((sec: any) => ({
+    key:      sec.key,
+    label:    sec.label,
+    level:    sec.level,
+    color:    sec.color,
+    badge:    sec.badge,
+    concepts: (sec.concepts as string[])
+      .map((id: string) => conceptNodeMap.get(id))
       .filter(Boolean)
       .map((n: any) => nodeToSpineConcept(n, conceptIds)),
   }));
 
-  /* Unplaced concepts — sorted by backlink count */
+  // Unplaced: safety net — build fix guarantees hub.concepts = placed only, so this is always []
+  const placedIds = new Set(spineSections.flatMap(s => s.concepts.map(c => c.id)));
   const unplacedConcepts: SpineConcept[] = allConceptNodes
     .filter((n: any) => !placedIds.has(n.id))
     .sort((a: any, b: any) => (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0))

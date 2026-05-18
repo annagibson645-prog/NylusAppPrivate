@@ -33,6 +33,16 @@ const DOMAIN_COLORS: Record<string, string> = {
   unknown: "#6b7280",
 };
 
+// ── Hub section parsing constants (single source of truth — page.tsx reads pre-parsed data) ──
+const HUB_SKIP_SECTIONS = new Set([
+  'what this hub covers', 'how to navigate this hub', 'key tensions',
+  'key tensions in this area', 'related hubs', 'structural notes',
+  'overview', 'convergence points', 'source node', 'sources',
+]);
+const HUB_LEVEL_ORDER: Record<string, number> = { foundational: 0, intermediate: 1, advanced: 2, thematic: 3 };
+const HUB_LEVEL_BADGE: Record<string, string> = { foundational: 'Foundational', intermediate: 'Intermediate', advanced: 'Advanced', thematic: '' };
+const HUB_LEVEL_COLOR: Record<string, string> = { foundational: '#6bab8a', intermediate: '#c8a460', advanced: '#9f7ec0', thematic: '#4a4468' };
+
 // ── Types ────────────────────────────────────────────────────────────────────
 interface VaultNode {
   id: string;
@@ -60,6 +70,16 @@ interface VaultNode {
   pressure_score?: number;
   word_count?: number;
   concepts?: string[];
+  sections?: HubSection[];
+}
+
+interface HubSection {
+  key: string;
+  label: string;
+  level: string;
+  badge: string;
+  color: string;
+  concepts: string[];
 }
 
 interface VaultEdge {
@@ -101,6 +121,49 @@ function extractSection(content: string, heading: string): string {
   );
   const match = content.match(regex);
   return match ? truncateAtWord(match[1].trim(), 400) : "";
+}
+
+function parseHubSections(content: string, validConceptIds: Set<string>): HubSection[] {
+  const sections: HubSection[] = [];
+  let current: HubSection | null = null;
+  const seen = new Set<string>();
+
+  for (const line of content.split('\n')) {
+    if (/^## /.test(line)) {
+      const raw = line.replace(/^## /, '').trim();
+      const lower = raw.toLowerCase().replace(/[🗺️🔗🛠️]/gu, '').trim();
+      if (HUB_SKIP_SECTIONS.has(lower)) { current = null; continue; }
+
+      let level = 'thematic';
+      if (/beginner/i.test(raw)) level = 'foundational';
+      else if (/intermediate/i.test(raw)) level = 'intermediate';
+      else if (/advanced/i.test(raw)) level = 'advanced';
+
+      const label = raw
+        .replace(/[🗺️🔗🛠️]/gu, '')
+        .replace(/^(beginner|intermediate|advanced)(\s+level)?[:\s—\-]*/i, '')
+        .trim();
+
+      current = { key: raw, label: label || raw, level, badge: HUB_LEVEL_BADGE[level] ?? '', color: HUB_LEVEL_COLOR[level] ?? '#4a4468', concepts: [] };
+      sections.push(current);
+      continue;
+    }
+
+    if (!current) continue;
+    const wikiRe = /\[\[ARCHIVES\/concepts\/[^/]+\/([^|\]]+)[|\]]/g;
+    let m: RegExpExecArray | null;
+    while ((m = wikiRe.exec(line)) !== null) {
+      const id = m[1].trim();
+      if (validConceptIds.has(id) && !seen.has(id)) {
+        current.concepts.push(id);
+        seen.add(id);
+      }
+    }
+  }
+
+  return sections
+    .filter(s => s.concepts.length > 0)
+    .sort((a, b) => (HUB_LEVEL_ORDER[a.level] ?? 3) - (HUB_LEVEL_ORDER[b.level] ?? 3));
 }
 
 function daysSince(dateStr: string): number {
@@ -332,25 +395,31 @@ async function buildVault() {
     }
   }
 
-  // Third pass: resolve hub membership from hubs folder
+  // Third pass: resolve hub membership + pre-parse sections (single parse, no dual-logic drift)
   const hubsDir = path.join(VAULT_PATH, "ARCHIVES/concepts/hubs");
   if (fs.existsSync(hubsDir)) {
     for (const hubFile of walkDir(hubsDir)) {
       const hubSlug = slugify(hubFile);
       const hubNode = nodes.get(hubSlug);
-      if (hubNode) hubNode.concepts = [];
-      const { content: hubContent } = matter(
-        fs.readFileSync(hubFile, "utf-8")
-      );
-      const linkedSlugs = extractWikilinks(hubContent);
-      for (const ls of linkedSlugs) {
+      if (hubNode) { hubNode.concepts = []; hubNode.sections = []; }
+      const { content: hubContent } = matter(fs.readFileSync(hubFile, "utf-8"));
+
+      // All concept IDs linked anywhere in this hub (for graph relationships)
+      const allLinkedConcepts = new Set<string>();
+      for (const ls of extractWikilinks(hubContent)) {
         const target = nodes.get(ls);
         if (target && target.type === "concept") {
-          target.hub = hubSlug;
-          if (hubNode && hubNode.concepts && !hubNode.concepts.includes(ls)) {
-            hubNode.concepts.push(ls);
-          }
+          target.hub = hubSlug; // graph edge: belongs to this hub
+          allLinkedConcepts.add(ls);
         }
+      }
+
+      // Parse sections using the SAME skip logic as the renderer — only placed concepts go in hub.concepts
+      if (hubNode) {
+        const sections = parseHubSections(hubContent, allLinkedConcepts);
+        const placedIds = new Set(sections.flatMap(s => s.concepts));
+        hubNode.sections = sections;
+        hubNode.concepts = [...placedIds]; // only section-placed concepts — zero ungrouped guaranteed
       }
     }
   }
@@ -492,7 +561,7 @@ async function buildVault() {
     console.log(`   Domain index files written`);
   }
 
-  // hubs.json — all active hub nodes, slim shape for the hubs page
+  // hubs.json — pre-parsed, no raw content (content caused file bloat + JSON corruption)
   const hubs = nodeArray
     .filter((n) => n.type === "hub" && n.status === "active")
     .sort((a, b) => a.domain.localeCompare(b.domain) || a.id.localeCompare(b.id))
@@ -503,9 +572,10 @@ async function buildVault() {
       color: DOMAIN_COLORS[n.domain] || DOMAIN_COLORS.unknown,
       excerpt: n.excerpt,
       status: n.status,
+      path: n.path,
       covers: (n.concepts || []).length,
-      concepts: n.concepts || [],
-      content: n.content || "",
+      concepts: n.concepts || [],   // only section-placed concepts
+      sections: n.sections || [],   // pre-parsed sections — page.tsx reads this directly
     }));
   fs.writeFileSync(
     path.join(OUT_DIR, "hubs.json"),
