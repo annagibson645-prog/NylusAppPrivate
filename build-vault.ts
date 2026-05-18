@@ -284,11 +284,54 @@ function parseLogFiles(): object[] {
   );
 }
 
+// ── Hub file validator ───────────────────────────────────────────────────────
+// Runs before every build pass. Detects truncated wikilinks (lines that open [[
+// but never close with ]]) and reports them with file + line number so the
+// problem surfaces immediately rather than silently producing hub=undefined
+// on affected concepts.
+function validateHubFiles(hubsDir: string): number {
+  if (!fs.existsSync(hubsDir)) return 0;
+
+  // Matches a line that contains [[ but has no closing ]] anywhere on that line
+  const truncatedLink = /\[\[[^\]]*$/;
+  let errorCount = 0;
+
+  for (const hubFile of walkDir(hubsDir)) {
+    const content = fs.readFileSync(hubFile, "utf-8");
+    const lines = content.split("\n");
+    const relFile = path.relative(hubsDir, hubFile);
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (truncatedLink.test(line)) {
+        const preview = line.trim().slice(0, 80);
+        console.warn(`⚠️  TRUNCATED LINK  ${relFile}  line ${i + 1}`);
+        console.warn(`   → ${preview}…`);
+        errorCount++;
+      }
+    }
+  }
+
+  if (errorCount > 0) {
+    console.warn(`\n⛔ ${errorCount} truncated wikilink(s) found in hub files.`);
+    console.warn(`   These concepts will have hub=undefined in graph.json.`);
+    console.warn(`   Fix the broken links before re-running sync.\n`);
+  } else {
+    console.log(`✅ Hub validation passed — no truncated wikilinks.`);
+  }
+
+  return errorCount;
+}
+
 // ── Main build ───────────────────────────────────────────────────────────────
 async function buildVault() {
   console.log("🔍 Scanning vault at:", VAULT_PATH);
 
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
+
+  // Validate hub files FIRST — truncated wikilinks silently drop hub assignments
+  const hubsDir = path.join(VAULT_PATH, "ARCHIVES/concepts/hubs");
+  validateHubFiles(hubsDir);
 
   // Collect all markdown files from included dirs
   const allFiles: string[] = [];
@@ -396,7 +439,6 @@ async function buildVault() {
   }
 
   // Third pass: resolve hub membership + pre-parse sections (single parse, no dual-logic drift)
-  const hubsDir = path.join(VAULT_PATH, "ARCHIVES/concepts/hubs");
   if (fs.existsSync(hubsDir)) {
     for (const hubFile of walkDir(hubsDir)) {
       const hubSlug = slugify(hubFile);
