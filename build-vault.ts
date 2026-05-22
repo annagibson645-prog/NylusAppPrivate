@@ -135,12 +135,20 @@ function parseHubSections(content: string, validConceptIds: Set<string>): HubSec
       if (HUB_SKIP_SECTIONS.has(lower)) { current = null; continue; }
 
       let level = 'thematic';
-      if (/beginner/i.test(raw)) level = 'foundational';
-      else if (/intermediate/i.test(raw)) level = 'intermediate';
-      else if (/advanced/i.test(raw)) level = 'advanced';
+      // Support invisible HTML comment badge markers: <!-- beginner/intermediate/advanced -->
+      const commentBadge = raw.match(/<!--\s*(beginner|intermediate|advanced)\s*-->/i);
+      if (commentBadge) {
+        const w = commentBadge[1].toLowerCase();
+        level = w === 'beginner' ? 'foundational' : w === 'intermediate' ? 'intermediate' : 'advanced';
+      } else {
+        if (/beginner/i.test(raw)) level = 'foundational';
+        else if (/intermediate/i.test(raw)) level = 'intermediate';
+        else if (/advanced/i.test(raw)) level = 'advanced';
+      }
 
       const label = raw
         .replace(/[🗺️🔗🛠️]/gu, '')
+        .replace(/<!--\s*(?:beginner|intermediate|advanced)\s*-->/i, '')
         .replace(/^(beginner|intermediate|advanced)(\s+level)?[:\s—\-]*/i, '')
         .trim();
 
