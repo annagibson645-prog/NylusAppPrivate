@@ -371,7 +371,7 @@ async function buildVault() {
     const ALLOWED_DOMAINS = new Set([
       "history", "eastern-spirituality", "african-spirituality",
       "psychology", "behavioral-mechanics", "cross-domain",
-      "creative-practice", "ai-collaboration", "unknown",
+      "creative-practice", "business", "unknown",
     ]);
     const rawDomain = fm.domain || inferDomain(relPath);
     const domain = ALLOWED_DOMAINS.has(rawDomain) ? rawDomain : "unknown";
@@ -544,7 +544,7 @@ async function buildVault() {
   const KNOWN_DOMAINS = [
     "history", "eastern-spirituality", "african-spirituality",
     "psychology", "behavioral-mechanics", "cross-domain",
-    "creative-practice", "ai-collaboration",
+    "creative-practice", "business",
   ];
   const domains = KNOWN_DOMAINS.filter((d) =>
     nodeArray.some((n) => n.domain === d)
@@ -690,7 +690,7 @@ function inferDomain(relPath: string): string {
   if (relPath.includes("african-spirituality")) return "african-spirituality";
   if (relPath.includes("behavioral-mechanics")) return "behavioral-mechanics";
   if (relPath.includes("creative-practice")) return "creative-practice";
-  if (relPath.includes("ai-collaboration")) return "ai-collaboration";
+  if (relPath.includes("business")) return "business";
   if (relPath.includes("cross-domain")) return "cross-domain";
   if (relPath.includes("psychology")) return "psychology";
   if (relPath.includes("history")) return "history";
