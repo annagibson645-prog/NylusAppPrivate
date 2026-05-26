@@ -53,11 +53,11 @@ const FM = "'JetBrains Mono', ui-monospace, monospace";
 
 // ─── DOMAIN CONSTANTS ────────────────────────────────────────────────────────
 const DOMAIN_COLOR: Record<string, string> = {
-  "cross-domain":         "#14b8a6",
+  "cross-domain":         "#38bdf8",
   "psychology":           "#3b82f6",
-  "eastern-spirituality": "#8b5cf6",
+  "eastern-spirituality": "#dc2626",
   "behavioral-mechanics": "#f97316",
-  "creative-practice":    "#f43f5e",
+  "creative-practice":    "#14b8a6",
   "history":              "#f59e0b",
   "african-spirituality": "#10b981",
   "business":             "#e879a0",

@@ -67,10 +67,10 @@ interface UngroupedConcept {
 const DOMAIN_META = [
   { key: "psychology",            label: "Psychology",           short: "Psychology",   color: "#f59e0b", angle: -90  },
   { key: "history",               label: "History",              short: "History",      color: "#e6c068", angle: -45  },
-  { key: "cross-domain",          label: "Cross-Domain",         short: "Cross-Domain", color: "#5fc9a8", angle: 0    },
+  { key: "cross-domain",          label: "Cross-Domain",         short: "Cross-Domain", color: "#38bdf8", angle: 0    },
   { key: "behavioral-mechanics",  label: "Behavioral Mechanics", short: "Behavioral",   color: "#a78bfa", angle: 45   },
-  { key: "eastern-spirituality",  label: "Eastern Spirituality", short: "Eastern",      color: "#7c8df0", angle: 90   },
-  { key: "creative-practice",     label: "Creative Practice",    short: "Creative",     color: "#ef5a6f", angle: 135  },
+  { key: "eastern-spirituality",  label: "Eastern Spirituality", short: "Eastern",      color: "#dc2626", angle: 90   },
+  { key: "creative-practice",     label: "Creative Practice",    short: "Creative",     color: "#14b8a6", angle: 135  },
   { key: "business",              label: "Business",             short: "Business",     color: "#e879a0", angle: 180  },
   { key: "african-spirituality",  label: "African Spirituality", short: "African",      color: "#34d399", angle: -135 },
 ] as const;

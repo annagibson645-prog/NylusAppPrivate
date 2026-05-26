@@ -26,9 +26,9 @@ const DOMAIN_COLORS: Record<string, string> = {
   psychology: '#f59e6f',
   history: '#e6c068',
   'behavioral-mechanics': '#a78bfa',
-  'eastern-spirituality': '#7c8df0',
-  'cross-domain': '#5fc9a8',
-  'creative-practice': '#ef5a6f',
+  'eastern-spirituality': '#dc2626',
+  'cross-domain': '#38bdf8',
+  'creative-practice': '#14b8a6',
   'business': '#e879a0',
   'african-spirituality': '#34d399',
 };

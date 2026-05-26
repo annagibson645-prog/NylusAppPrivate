@@ -125,15 +125,15 @@ const DOMAIN_CONFIG: Record<string, { id: string; name: string; color: string; d
     desc: 'What you do about it — influence architecture, persuasion, tactics, and the operational logic of moving people.',
   },
   'eastern-spirituality': {
-    id: 'eas', name: 'Eastern', color: '#7c8df0',
+    id: 'eas', name: 'Eastern', color: '#dc2626',
     desc: 'Contemplative traditions — yoga, Tantra, Vedanta, Buddhism, and the systematic maps of inner worlds.',
   },
   'cross-domain': {
-    id: 'crd', name: 'Cross-Domain', color: '#5fc9a8',
+    id: 'crd', name: 'Cross-Domain', color: '#38bdf8',
     desc: 'Concepts genuinely homeless in one domain — ideas that require two lenses simultaneously to be understood.',
   },
   'creative-practice': {
-    id: 'cre', name: 'Creative', color: '#ef5a6f',
+    id: 'cre', name: 'Creative', color: '#14b8a6',
     desc: 'The craft of making — writing, narrative structure, aesthetics, voice, and what separates lasting work from noise.',
   },
   'business': {

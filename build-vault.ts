@@ -23,11 +23,11 @@ const INCLUDED_DIRS = [
 
 const DOMAIN_COLORS: Record<string, string> = {
   history: "#e6c068",
-  "eastern-spirituality": "#7c8df0",
+  "eastern-spirituality": "#dc2626",
   psychology: "#f59e0b",
   "behavioral-mechanics": "#a78bfa",
-  "cross-domain": "#5fc9a8",
-  "creative-practice": "#ef5a6f",
+  "cross-domain": "#38bdf8",
+  "creative-practice": "#14b8a6",
   "african-spirituality": "#34d399",
   "business": "#e879a0",
   unknown: "#6b7280",
