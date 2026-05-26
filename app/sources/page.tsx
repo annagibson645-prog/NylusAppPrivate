@@ -60,7 +60,7 @@ export default function SourcesPage() {
     "history",
     "creative-practice",
     "cross-domain",
-    "ai-collaboration",
+    "business",
     "uncategorized",
   ].filter((d) => byDomain.has(d));
 

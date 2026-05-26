@@ -71,7 +71,7 @@ const DOMAIN_META = [
   { key: "behavioral-mechanics",  label: "Behavioral Mechanics", short: "Behavioral",   color: "#a78bfa", angle: 45   },
   { key: "eastern-spirituality",  label: "Eastern Spirituality", short: "Eastern",      color: "#7c8df0", angle: 90   },
   { key: "creative-practice",     label: "Creative Practice",    short: "Creative",     color: "#ef5a6f", angle: 135  },
-  { key: "ai-collaboration",      label: "AI Collaboration",     short: "AI Collab.",   color: "#9ca3af", angle: 180  },
+  { key: "business",              label: "Business",             short: "Business",     color: "#e879a0", angle: 180  },
   { key: "african-spirituality",  label: "African Spirituality", short: "African",      color: "#34d399", angle: -135 },
 ] as const;
 

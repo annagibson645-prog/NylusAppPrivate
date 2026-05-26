@@ -57,7 +57,7 @@ const DOMAIN_FULL: Record<string, string> = {
   "cross-domain": "Cross-Domain",
   "creative-practice": "Creative Practice",
   "african-spirituality": "African Spirituality",
-  "ai-collaboration": "AI Collaboration",
+  "business": "Business",
   unknown: "Other",
 };
 
@@ -69,7 +69,7 @@ const DOMAIN_BACK: Record<string, string> = {
   "cross-domain": "Cross-Domain",
   "creative-practice": "Creative",
   "african-spirituality": "African",
-  "ai-collaboration": "AI",
+  "business": "Business",
   unknown: "Other",
 };
 

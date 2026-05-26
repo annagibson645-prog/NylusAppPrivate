@@ -29,7 +29,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   'eastern-spirituality': '#7c8df0',
   'cross-domain': '#5fc9a8',
   'creative-practice': '#ef5a6f',
-  'ai-collaboration': '#9ca3af',
+  'business': '#e879a0',
   'african-spirituality': '#34d399',
 };
 

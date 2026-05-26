@@ -60,7 +60,7 @@ const DOMAIN_COLOR: Record<string, string> = {
   "creative-practice":    "#f43f5e",
   "history":              "#f59e0b",
   "african-spirituality": "#10b981",
-  "ai-collaboration":     "#06b6d4",
+  "business":             "#e879a0",
 };
 const DOMAIN_SHORT: Record<string, string> = {
   "cross-domain":         "cross",
@@ -70,7 +70,7 @@ const DOMAIN_SHORT: Record<string, string> = {
   "creative-practice":    "creative",
   "history":              "history",
   "african-spirituality": "african",
-  "ai-collaboration":     "ai",
+  "business":             "business",
 };
 const DOMAIN_LABEL: Record<string, string> = {
   "cross-domain":         "Cross-Domain",
@@ -80,7 +80,7 @@ const DOMAIN_LABEL: Record<string, string> = {
   "creative-practice":    "Creative Practice",
   "history":              "History",
   "african-spirituality": "African Spirituality",
-  "ai-collaboration":     "AI Collaboration",
+  "business":             "Business",
 };
 
 const DOMAINS = Object.keys(DOMAIN_COLOR);

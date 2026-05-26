@@ -29,7 +29,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   "cross-domain": "#5fc9a8",
   "creative-practice": "#ef5a6f",
   "african-spirituality": "#34d399",
-  "ai-collaboration": "#9ca3af",
+  "business": "#e879a0",
   unknown: "#6b7280",
 };
 

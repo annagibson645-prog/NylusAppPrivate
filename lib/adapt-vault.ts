@@ -136,9 +136,9 @@ const DOMAIN_CONFIG: Record<string, { id: string; name: string; color: string; d
     id: 'cre', name: 'Creative', color: '#ef5a6f',
     desc: 'The craft of making — writing, narrative structure, aesthetics, voice, and what separates lasting work from noise.',
   },
-  'ai-collaboration': {
-    id: 'ai', name: 'AI', color: '#9ca3af',
-    desc: 'Human-machine cognition — how intelligence augments and extends creative work at the frontier.',
+  'business': {
+    id: 'biz', name: 'Business', color: '#e879a0',
+    desc: 'How AI tools, systems, and workflows integrate into creative and knowledge work — AI mechanics, assisted-practice frameworks, infrastructure, and counter-tradition positions.',
   },
   'african-spirituality': {
     id: 'afr', name: 'African', color: '#34d399',
@@ -148,7 +148,7 @@ const DOMAIN_CONFIG: Record<string, { id: string; name: string; color: string; d
 
 const DOMAIN_ORDER = [
   'psychology','history','behavioral-mechanics','eastern-spirituality',
-  'cross-domain','creative-practice','ai-collaboration','african-spirituality',
+  'cross-domain','creative-practice','business','african-spirituality',
 ];
 
 export function shortId(domain: string): string {

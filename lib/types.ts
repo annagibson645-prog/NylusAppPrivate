@@ -96,7 +96,7 @@ export const DOMAIN_LABELS: Record<string, string> = {
   "cross-domain": "Cross-Domain",
   "creative-practice": "Creative",
   "african-spirituality": "African",
-  "ai-collaboration": "AI",
+  "business": "Business",
   unknown: "Other",
 };
 

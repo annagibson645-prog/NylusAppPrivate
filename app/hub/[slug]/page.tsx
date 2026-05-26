@@ -20,7 +20,7 @@ const DOMAIN_FULL: Record<string, string> = {
   'eastern-spirituality': 'Eastern Spirituality',
   'cross-domain':         'Cross-Domain',
   'creative-practice':    'Creative Practice',
-  'ai-collaboration':     'AI Collaboration',
+  'business':             'Business',
   'african-spirituality': 'African Spirituality',
 };
 
