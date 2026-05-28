@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
+import VaultSearch from '@/components/VaultSearch';
 
 export interface SpineConcept {
   id: string; title: string; excerpt?: string;
@@ -215,6 +216,22 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
             {totalBl > 0 && <span className="hs-stat"><b>{totalBl}</b> backlinks</span>}
           </div>
         </header>
+
+        {/* Vault search */}
+        <div style={{ marginBottom: 32 }}>
+          <VaultSearch
+            placeholder="Search concepts in the vault…"
+            showTypes={['concept', 'hub', 'collision', 'spark', 'source']}
+            colors={{
+              bg:      P.nav,
+              border:  P.border,
+              ink:     P.ink,
+              ink2:    P.ink2,
+              card:    P.card,
+              cardHov: P.cardHov,
+            }}
+          />
+        </div>
 
         <div className="hs-spine-wrap">
           <div className="hs-spine-line" />

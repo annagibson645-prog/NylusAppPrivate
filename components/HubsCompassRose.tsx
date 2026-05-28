@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import NavG from "./NavG";
+import VaultSearch from "./VaultSearch";
 
 // ─── Palettes (mirrors ConstellationV2 + collisions) ─────────────────────────
 const HUB_PALETTES = {
@@ -558,6 +559,22 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
             </button>
           )}
         </header>
+
+        {/* Vault search */}
+        <div style={{ width: "100%", maxWidth: 480, padding: "0 24px 8px", boxSizing: "border-box" }}>
+          <VaultSearch
+            placeholder="Search the vault…"
+            showTypes={['concept', 'hub', 'collision', 'spark', 'source']}
+            colors={{
+              bg:      P.bg2,
+              border:  P.border,
+              ink:     P.text,
+              ink2:    P.text2,
+              card:    P.bg3,
+              cardHov: P.stoneBg,
+            }}
+          />
+        </div>
 
         <svg viewBox="0 0 640 520" style={{ width: "100%", maxWidth: 720, display: "block" }}
           xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Compass rose — 8 knowledge domains">

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import VaultSearch from "@/components/VaultSearch";
 
 // ─── Proto G nav — Fraunces italic + blue frequency bars ─────────────────────
 // Drop into any page: <NavG active="collisions" />
@@ -103,19 +103,6 @@ interface NavGProps {
 
 export default function NavG({ active, right, count }: NavGProps) {
   const [theme, setTheme] = useState<'void' | 'sepia'>('void');
-  const router = useRouter();
-  const searchRef = useRef<HTMLInputElement>(null);
-
-  function handleSearchKey(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
-      const q = (e.currentTarget.value ?? '').trim();
-      if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
-    }
-    if (e.key === 'Escape') {
-      e.currentTarget.value = '';
-      e.currentTarget.blur();
-    }
-  }
 
   useEffect(() => {
     // Sync React state with whatever the no-flash script already applied
@@ -193,16 +180,20 @@ export default function NavG({ active, right, count }: NavGProps) {
           flexShrink: 0,
         }}>
           {/* Search */}
-          <input
-            ref={searchRef}
-            className="navg-search"
-            type="search"
-            placeholder="search..."
-            onKeyDown={handleSearchKey}
-            aria-label="Search the vault"
-            autoComplete="off"
-            spellCheck={false}
-          />
+          <div style={{ width: 180 }}>
+            <VaultSearch
+              placeholder="search…"
+              showTypes={['concept', 'hub', 'collision', 'spark', 'source', 'essay']}
+              colors={{
+                bg:      'rgba(13,11,24,0.99)',
+                border:  'rgba(255,255,255,0.10)',
+                ink:     '#eae6f5',
+                ink2:    '#8a849a',
+                card:    'rgba(255,255,255,0.035)',
+                cardHov: 'rgba(255,255,255,0.07)',
+              }}
+            />
+          </div>
 
           {right}
           {count && (
