@@ -305,7 +305,7 @@ function validateHubFiles(hubsDir: string): number {
   let errorCount = 0;
 
   for (const hubFile of walkDir(hubsDir)) {
-    const content = fs.readFileSync(hubFile, "utf-8");
+    const content = fs.readFileSync(hubFile, "utf-8").replace(/\0/g, "");
     const lines = content.split("\n");
     const relFile = path.relative(hubsDir, hubFile);
 
@@ -452,7 +452,7 @@ async function buildVault() {
       const hubSlug = slugify(hubFile);
       const hubNode = nodes.get(hubSlug);
       if (hubNode) { hubNode.concepts = []; hubNode.sections = []; }
-      const { content: hubContent } = matter(fs.readFileSync(hubFile, "utf-8"));
+      const { content: hubContent } = matter(fs.readFileSync(hubFile, "utf-8").replace(/\0/g, ""));
 
       // All concept IDs linked anywhere in this hub (for graph relationships)
       const allLinkedConcepts = new Set<string>();
