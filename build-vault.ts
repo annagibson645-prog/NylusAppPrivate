@@ -69,6 +69,7 @@ interface VaultNode {
   tension_b?: string;
   pressure_score?: number;
   word_count?: number;
+  research_domains?: Record<string, number>;
   concepts?: string[];
   sections?: HubSection[];
 }
@@ -375,7 +376,10 @@ async function buildVault() {
     ]);
     const rawDomain = fm.domain || inferDomain(relPath);
     const domain = ALLOWED_DOMAINS.has(rawDomain) ? rawDomain : "unknown";
-    const type = fm.type || inferType(relPath);
+    const rawType = fm.type || inferType(relPath);
+    const type = (rawType === "extraction" && relPath.includes("The Platform/Research"))
+      ? "research"
+      : rawType;
     // gray-matter parses YYYY-MM-DD as a Date object (UTC midnight) — keep as string to avoid timezone shift
     const created = fm.created
       ? fm.created instanceof Date
@@ -430,6 +434,9 @@ async function buildVault() {
     if (type === "essay" || type === "research") {
       const bodyText = content.replace(/^---[\s\S]*?---\n?/, "").replace(/[#*`\[\]]/g, "");
       node.word_count = bodyText.trim().split(/\s+/).filter(Boolean).length;
+    }
+    if (type === "research" && fm.domains && typeof fm.domains === "object" && !Array.isArray(fm.domains)) {
+      node.research_domains = fm.domains as Record<string, number>;
     }
 
     nodes.set(slug, node);

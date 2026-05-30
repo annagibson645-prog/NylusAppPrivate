@@ -71,6 +71,7 @@ export default function Nav() {
             {[
               { href: "/",           label: "Dashboard"  },
               { href: "/hubs",       label: "Hubs"       },
+              { href: "/research",   label: "Research"   },
               { href: "/essays",     label: "Essays"     },
               { href: "/collisions", label: "Collisions" },
               { href: "/sparks",     label: "Sparks"     },
@@ -117,6 +118,7 @@ export default function Nav() {
             {[
               { href: "/",           label: "Dashboard"  },
               { href: "/hubs",       label: "Hubs"       },
+              { href: "/research",   label: "Research"   },
               { href: "/essays",     label: "Essays"     },
               { href: "/collisions", label: "Collisions" },
               { href: "/sparks",     label: "Sparks"     },
