@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { readFileSync } from "fs";
 import path from "path";
 import Link from "next/link";
-import type { VaultNode, GraphData } from "@/lib/types";
+import type { VaultNode } from "@/lib/types";
 import { DOMAIN_LABELS } from "@/lib/types";
 
 function loadJSON<T>(file: string): T {
@@ -38,10 +38,10 @@ function cleanTitle(title: string): string {
 }
 
 export default function SourcesPage() {
-  const graph = loadJSON<GraphData>("graph.json");
+  // sources.json carries content (graph.json no longer does) — needed for author extraction.
+  const sourceNodes = loadJSON<VaultNode[]>("sources.json");
 
-  const sources = graph.nodes
-    .filter((n) => n.type === "source")
+  const sources = sourceNodes
     .map((n) => ({ ...n, author: extractAuthor(n.content), cleanTitle: cleanTitle(n.title) }))
     .sort((a, b) => a.cleanTitle.localeCompare(b.cleanTitle));
 

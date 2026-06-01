@@ -14,8 +14,13 @@ function loadJSON<T>(file: string): T {
 export default async function SparkPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const { nodes } = loadJSON<GraphData>("graph.json");
-  const node = nodes.find((n) => n.id === slug && n.type === "spark");
-  if (!node) notFound();
+  const slimNode = nodes.find((n) => n.id === slug && n.type === "spark");
+  if (!slimNode) notFound();
+
+  // graph.json is content-free — read the spark body from sparks.json.
+  const sparks = loadJSON<VaultNode[]>("sparks.json");
+  const content = sparks.find((n) => n.id === slug)?.content ?? "";
+  const node: VaultNode = { ...slimNode, content };
 
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   const nodeTypes = new Map(nodes.map((n) => [n.id, n.type]));

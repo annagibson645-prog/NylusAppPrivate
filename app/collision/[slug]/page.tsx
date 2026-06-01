@@ -90,7 +90,10 @@ export default async function CollisionPage({
 
   const col = node.color || DOMAIN_COLOR[node.domain] || "#8b5cf6";
   const score = node.pressure_score ?? 0;
-  const sections = parseSections(node.content);
+  // graph.json is content-free — read the collision body from collisions.json.
+  const collisionsData = loadJSON<VaultNode[]>("collisions.json");
+  const content = collisionsData.find((n) => n.id === slug)?.content ?? "";
+  const sections = parseSections(content);
 
   const sourceTensions = sections["source tensions"] || "";
   const collisionBody  = sections["the collision"] || sections["collision"] || "";

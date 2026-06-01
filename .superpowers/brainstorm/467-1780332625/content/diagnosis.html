@@ -1,0 +1,33 @@
+<h2>What's the rendering issue on the Research tab?</h2>
+<p class="subtitle">Pick the one that best describes what you're seeing at <code>/research</code></p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Blank page / crash</h3>
+      <p>White screen, error message, or Next.js error overlay</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Empty state — no cards</h3>
+      <p>Page loads but shows "no research reports yet" or just the header with nothing below</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Cards render but look broken</h3>
+      <p>Cards show up but layout, flipping, orbs, or domain filters look wrong</p>
+    </div>
+  </div>
+  <div class="option" data-choice="d" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Works locally, broken on the deployed site</h3>
+      <p>Dev server is fine but Vercel/production shows something different</p>
+    </div>
+  </div>
+</div>

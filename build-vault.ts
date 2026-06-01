@@ -500,10 +500,18 @@ async function buildVault() {
 
   // ── Write outputs ──────────────────────────────────────────────────────────
 
-  // graph.json
+  // graph.json — structural index ONLY. The full `content` of every node is
+  // deliberately omitted here: it would duplicate ~88MB of body text already
+  // stored in the per-type / per-domain files (collisions.json, sparks.json,
+  // sources.json, domain-*.json) and push this single file past GitHub's 100MB
+  // limit as the vault grows. Detail pages read content from those files by id.
+  const graphNodes = nodeArray.map((n) => {
+    const { content, ...rest } = n;
+    return rest;
+  });
   fs.writeFileSync(
     path.join(OUT_DIR, "graph.json"),
-    JSON.stringify({ nodes: nodeArray, edges }, null, 0)
+    JSON.stringify({ nodes: graphNodes, edges }, null, 0)
   );
 
   // collisions.json — sorted by pressure_score desc
@@ -522,6 +530,16 @@ async function buildVault() {
   fs.writeFileSync(
     path.join(OUT_DIR, "sparks.json"),
     JSON.stringify(sparks, null, 0)
+  );
+
+  // sources.json — source nodes WITH content (graph.json no longer carries it,
+  // so /source/[slug] and /sources read body + author from here)
+  const sourcesOut = nodeArray
+    .filter((n) => n.type === "source")
+    .sort((a, b) => a.title.localeCompare(b.title));
+  fs.writeFileSync(
+    path.join(OUT_DIR, "sources.json"),
+    JSON.stringify(sourcesOut, null, 0)
   );
 
   // search-index.json — lightweight, no full content

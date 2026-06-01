@@ -14,8 +14,13 @@ function loadJSON<T>(file: string): T {
 export default async function SourcePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const { nodes } = loadJSON<GraphData>("graph.json");
-  const node = nodes.find((n) => n.id === slug && n.type === "source");
-  if (!node) notFound();
+  const slimNode = nodes.find((n) => n.id === slug && n.type === "source");
+  if (!slimNode) notFound();
+
+  // graph.json is content-free — read the source body from sources.json.
+  const sources = loadJSON<VaultNode[]>("sources.json");
+  const content = sources.find((n) => n.id === slug)?.content ?? "";
+  const node: VaultNode = { ...slimNode, content };
 
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   const nodeTypes = new Map(nodes.map((n) => [n.id, n.type]));
