@@ -1520,18 +1520,11 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
     [data.DOMAINS]
   );
 
-  // small background star field
-  const stars = uM(() =>
-    Array.from({ length: 60 }).map((_, i) => ({
-      x: (i * 137.5) % 100, y: (i * 79.1) % 100,
-      r: 0.3 + (i % 4) * 0.22,
-      ph: (i * 1.618) % (Math.PI * 2),
-      sp: 0.4 + (i % 3) * 0.4,
-    })), []
-  );
-
   return (
     <div style={{ width: '100%', height: '100dvh', background: '#0e0d14', position: 'relative', overflow: 'hidden' }}>
+
+      {/* ── Shooting stars ───────────────────────────────────────── */}
+      <ShootingStars density={1} />
 
       {/* ── Branding ─────────────────────────────────────────────── */}
       <div style={{
@@ -1561,17 +1554,6 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
             <stop offset="100%" stopColor="rgba(0,0,0,0)" />
           </radialGradient>
         </defs>
-
-        {/* Star field */}
-        {stars.map((s, i) => (
-          <circle
-            key={i}
-            cx={s.x * VW / 100} cy={s.y * VH / 100}
-            r={s.r}
-            fill="white"
-            opacity={0.15 + (Math.sin(t * s.sp + s.ph) + 1) * 0.15}
-          />
-        ))}
 
         {/* Vault glow */}
         <circle cx={cx} cy={cy} r={orbitR + 60} fill="url(#m-vault-glow)" />
