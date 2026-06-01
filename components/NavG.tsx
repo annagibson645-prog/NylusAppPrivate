@@ -11,9 +11,10 @@ import VaultSearch from "@/components/VaultSearch";
 const NAV_ITEMS = [
   { label: "Dashboard",  idx: "01", href: "/"           },
   { label: "Hubs",       idx: "02", href: "/hubs"       },
-  { label: "Essays",     idx: "03", href: "/essays"     },
-  { label: "Collisions", idx: "04", href: "/collisions" },
-  { label: "Sparks",     idx: "05", href: "/sparks"     },
+  { label: "Research",   idx: "03", href: "/research"   },
+  { label: "Essays",     idx: "04", href: "/essays"     },
+  { label: "Collisions", idx: "05", href: "/collisions" },
+  { label: "Sparks",     idx: "06", href: "/sparks"     },
 ] as const;
 
 const STYLES = `

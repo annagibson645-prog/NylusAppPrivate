@@ -15,11 +15,12 @@ export default function ResearchPage() {
   const reports = loadJSON<any[]>("research.json");
 
   return (
-    <div className="void-page">
-      <div className="void-ambient" />
+    <>
       <Nav />
+      <div className="void-page">
+      <div className="void-ambient" />
 
-      <div style={{ position: "relative", zIndex: 2, maxWidth: "1100px", margin: "0 auto", padding: "64px 64px 160px" }}>
+      <div style={{ position: "relative", zIndex: 2, maxWidth: "1100px", margin: "0 auto" }} className="px-4 sm:px-10 lg:px-16 pt-12 sm:pt-16 pb-40">
 
         <div style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "11px", letterSpacing: "0.28em", color: "#e8b86a", textTransform: "uppercase", marginBottom: "24px", opacity: 0.75 }}>
           research · synthesis layer
@@ -34,6 +35,7 @@ export default function ResearchPage() {
         <ResearchLoom reports={reports} />
 
       </div>
-    </div>
+      </div>
+    </>
   );
 }

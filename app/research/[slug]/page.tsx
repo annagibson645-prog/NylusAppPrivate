@@ -63,11 +63,12 @@ export default async function ResearchSlugPage({
   const mins        = readMins(report.word_count);
 
   return (
-    <div className="void-page" style={{ "--domain-color": domainColor } as React.CSSProperties}>
-      <div className="void-ambient" />
+    <>
       <Nav />
+      <div className="void-page" style={{ "--domain-color": domainColor } as React.CSSProperties}>
+      <div className="void-ambient" />
 
-      <div style={{ position: "relative", zIndex: 2, maxWidth: "820px", margin: "0 auto", padding: "56px 64px 160px" }}>
+      <div style={{ position: "relative", zIndex: 2, maxWidth: "820px", margin: "0 auto" }} className="px-4 sm:px-10 lg:px-16 pt-10 sm:pt-14 pb-40">
 
         {/* ── Back ──────────────────────────────────────────────── */}
         <Link href="/research" style={{
@@ -109,6 +110,7 @@ export default async function ResearchSlugPage({
         />
 
       </div>
-    </div>
+      </div>
+    </>
   );
 }
