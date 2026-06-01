@@ -1491,6 +1491,173 @@ interface ConstellationV2Props {
 // ─── MOBILE VIEW ─────────────────────────────────────────────────────────────────────────────
 // Driven by the global MobileNav (layout.tsx) — no internal tab strip here.
 // Reads data-theme for void/sepia colors; `page` prop comes from the route.
+function C2MobileConstellation({ data }: { data: NylusData }) {
+  const router = useRouter();
+  const t = useTime(true);
+
+  // SVG canvas — portrait viewBox
+  const VW = 390, VH = 660;
+  const cx = VW / 2, cy = VH / 2 - 20;
+  const orbitR = 148;
+  const sphereR = 20;      // visual radius
+  const hitR    = 32;      // invisible touch-target radius
+
+  const domains = uM(() =>
+    data.DOMAINS.map((d, i) => {
+      const angle = (i / data.DOMAINS.length) * Math.PI * 2 - Math.PI / 2;
+      const x = cx + Math.cos(angle) * orbitR;
+      const y = cy + Math.sin(angle) * orbitR;
+      // label anchor: left side → end, right side → start, top/bottom → middle
+      const anchor = x < cx - 20 ? 'end' : x > cx + 20 ? 'start' : 'middle';
+      // label offset direction
+      const lx = x < cx - 20 ? x - sphereR - 8
+               : x > cx + 20 ? x + sphereR + 8
+               : x;
+      const ly = y < cy ? y - sphereR - 10 : y + sphereR + 18;
+      return { ...d, x, y, angle, anchor, lx, ly };
+    }),
+    [data.DOMAINS]
+  );
+
+  // small background star field
+  const stars = uM(() =>
+    Array.from({ length: 60 }).map((_, i) => ({
+      x: (i * 137.5) % 100, y: (i * 79.1) % 100,
+      r: 0.3 + (i % 4) * 0.22,
+      ph: (i * 1.618) % (Math.PI * 2),
+      sp: 0.4 + (i % 3) * 0.4,
+    })), []
+  );
+
+  return (
+    <div style={{ width: '100%', height: '100dvh', background: '#0e0d14', position: 'relative', overflow: 'hidden' }}>
+
+      {/* ── Branding ─────────────────────────────────────────────── */}
+      <div style={{
+        position: 'absolute', top: 20, left: 0, right: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        zIndex: 2, pointerEvents: 'none',
+      }}>
+        <span style={{ fontFamily: c2Style.serif, fontStyle: 'italic', fontSize: 18, color: '#eae6f5', opacity: 0.6, fontWeight: 300 }}>Nylus</span>
+        <span style={{ fontFamily: c2Style.mono, fontSize: 8, color: '#494456', letterSpacing: '0.2em', textTransform: 'uppercase' }}>constellation</span>
+      </div>
+
+      {/* ── Main SVG ─────────────────────────────────────────────── */}
+      <svg
+        viewBox={`0 0 ${VW} ${VH}`}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          {domains.map(d => (
+            <radialGradient key={d.id} id={`mg-${d.id}`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={d.color} stopOpacity="0.45" />
+              <stop offset="100%" stopColor={d.color} stopOpacity="0" />
+            </radialGradient>
+          ))}
+          <radialGradient id="m-vault-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="rgba(232,184,106,0.22)" />
+            <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+          </radialGradient>
+        </defs>
+
+        {/* Star field */}
+        {stars.map((s, i) => (
+          <circle
+            key={i}
+            cx={s.x * VW / 100} cy={s.y * VH / 100}
+            r={s.r}
+            fill="white"
+            opacity={0.15 + (Math.sin(t * s.sp + s.ph) + 1) * 0.15}
+          />
+        ))}
+
+        {/* Vault glow */}
+        <circle cx={cx} cy={cy} r={orbitR + 60} fill="url(#m-vault-glow)" />
+
+        {/* Orbit ring */}
+        <circle cx={cx} cy={cy} r={orbitR} fill="none" stroke="rgba(255,255,255,0.06)" strokeDasharray="3 8" />
+
+        {/* Spokes */}
+        {domains.map(d => (
+          <line key={'spoke-' + d.id}
+            x1={cx} y1={cy} x2={d.x} y2={d.y}
+            stroke="rgba(255,255,255,0.07)" strokeWidth={0.8}
+          />
+        ))}
+
+        {/* Center vault */}
+        <circle cx={cx} cy={cy} r={8} fill="#e8b86a" />
+        <circle cx={cx} cy={cy} r={16} fill="none" stroke="#e8b86a" strokeOpacity="0.35" />
+        <circle cx={cx} cy={cy} r={16 + (Math.sin(t * 1.8) + 1) * 5}
+          fill="none" stroke="#e8b86a"
+          strokeOpacity={0.18 - (Math.sin(t * 1.8) + 1) * 0.06}
+        />
+        <text x={cx} y={cy + 32} textAnchor="middle"
+          fill="#8a849a" fontSize="8" fontFamily={c2Style.mono} letterSpacing="0.2em">
+          VAULT
+        </text>
+
+        {/* Domain spheres — invisible hit targets + visuals */}
+        {domains.map(d => (
+          <g key={d.id}
+            onClick={() => router.push(`/hubs?domain=${d.key}`)}
+            style={{ cursor: 'pointer' }}
+          >
+            {/* Invisible enlarged touch target */}
+            <circle cx={d.x} cy={d.y} r={hitR} fill="transparent" />
+
+            {/* Glow halo */}
+            <circle cx={d.x} cy={d.y} r={sphereR * 2.2} fill={`url(#mg-${d.id})`} />
+
+            {/* Soft ring */}
+            <circle cx={d.x} cy={d.y} r={sphereR + 6} fill={d.color} opacity="0.18" />
+
+            {/* Pulsing outer ring */}
+            <circle cx={d.x} cy={d.y}
+              r={sphereR + 6 + (Math.sin(t * 1.2 + d.angle) + 1) * 3}
+              fill="none" stroke={d.color}
+              strokeOpacity={0.22 - (Math.sin(t * 1.2 + d.angle) + 1) * 0.06}
+            />
+
+            {/* Main sphere */}
+            <circle cx={d.x} cy={d.y} r={sphereR} fill={d.color} />
+
+            {/* Concept count inside sphere */}
+            <text x={d.x} y={d.y + 4} textAnchor="middle"
+              fill="rgba(0,0,0,0.55)" fontSize="10" fontFamily={c2Style.mono} fontWeight="600">
+              {d.concepts}
+            </text>
+
+            {/* Domain name label */}
+            <text
+              x={d.lx} y={d.ly}
+              textAnchor={d.anchor}
+              fill="#c8c0d8"
+              fontSize="11"
+              fontFamily={c2Style.font}
+              fontWeight="500"
+            >
+              {d.name}
+            </text>
+          </g>
+        ))}
+      </svg>
+
+      {/* ── Tap hint ─────────────────────────────────────────────── */}
+      <div style={{
+        position: 'absolute', bottom: 92, left: 0, right: 0,
+        textAlign: 'center',
+        fontFamily: c2Style.mono, fontSize: 9,
+        color: '#494456', letterSpacing: '0.16em', textTransform: 'uppercase',
+        pointerEvents: 'none',
+      }}>
+        tap a sphere to enter
+      </div>
+    </div>
+  );
+}
+
 function C2Mobile({ data, page }: { data: NylusData; page: string }) {
   const router = useRouter();
   const [theme, setTheme] = uS<'void' | 'sepia'>('void');
@@ -1507,6 +1674,11 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
     return () => obs.disconnect();
   }, []);
 
+  // Dashboard → full-screen constellation
+  if (page === 'dashboard' || page === 'galaxy') {
+    return <C2MobileConstellation data={data} />;
+  }
+
   const isVoid = theme === 'void';
   const bg      = isVoid ? '#0e0d14'                        : '#faf6ed';
   const bg2     = isVoid ? '#15131c'                        : '#ede6d4';
@@ -1522,10 +1694,8 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
 
   // Normalise page → display label
   const labels: Record<string, [string, string]> = {
-    dashboard: ['Dashboard', 'constellation'],
     sparks:    ['Sparks',   'generative tail'],
     essays:    ['Essays',   'the platform'],
-    galaxy:    ['Galaxy',   'concept map'],
     hubs:      ['Hubs',     'maps of content'],
   };
   const [pageTitle, pageSub] = labels[page] ?? ['Vault', 'nylus'];
@@ -1562,40 +1732,6 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
           {pageSub}
         </div>
       </div>
-
-      {/* ── DOMAINS ──────────────────────────────────────────────────── */}
-      {(page === 'dashboard' || page === 'galaxy') && (
-        <div>
-          {data.DOMAINS.map(d => (
-            <div key={d.id}
-              onClick={() => router.push(`/hubs?domain=${d.key}`)}
-              style={{ ...itemStyle, display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px' }}
-            >
-              <div style={{
-                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                background: d.color + '18',
-                border: `1px solid ${d.color}30`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color }} />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 15, fontWeight: 600, color: text, marginBottom: 2 }}>
-                  {d.name}
-                </div>
-                <div style={{ fontSize: 11, color: dim, lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {d.desc.slice(0, 70)}…
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, flexShrink: 0 }}>
-                <span style={{ fontFamily: mono, fontSize: 12, fontWeight: 600, color: text }}>{d.concepts}</span>
-                <span style={{ fontFamily: mono, fontSize: 9, color: dim2, letterSpacing: '0.06em' }}>concepts</span>
-              </div>
-            </div>
-          ))}
-
-        </div>
-      )}
 
       {/* ── SPARKS ───────────────────────────────────────────────────── */}
       {page === 'sparks' && (
