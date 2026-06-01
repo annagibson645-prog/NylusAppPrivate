@@ -1720,7 +1720,7 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
       {page === 'sparks' && (
         <div>
           {data.SPARKS.slice(0, 50).map(s => (
-            <div key={s.id} style={{ ...itemStyle, padding: '14px 18px' }}>
+            <div key={s.id} onClick={() => router.push(`/spark/${s.id}`)} style={{ ...itemStyle, padding: '14px 18px' }}>
               <div style={{ fontFamily: mono, fontSize: 10, color: accent, letterSpacing: '0.08em', marginBottom: 5 }}>
                 {s.domainName}
               </div>
