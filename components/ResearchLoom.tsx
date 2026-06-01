@@ -117,14 +117,12 @@ const ORB_ICONS: Record<string, string> = {
     <path class="cs-flame" d="M20 37 C12 33 11 24 17 18 C18 21 20.5 20 19.5 16 C19 10 25 8 22 3 C24 7 28 9 28 14 C30.5 12 31 10 30.5 8 C33 15 31.5 25 26 29 C24 32 23 35 20 37 Z" fill="url(#UID-fl)" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.5" stroke-linejoin="round"/>
     <path class="cs-flame2" d="M20 33 C15 30 15 24 19 20 C20 22 22 21.5 21 18 C24 21 24 27 22 30 C21 32 21 32 20 33 Z" fill="url(#UID-core)"/></svg>`,
 
-  "african-spirituality": `<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><defs>${ORB_DEFS}</defs>
+  "african-spirituality": `<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><defs>${ORB_DEFS}</defs>
     <g class="cs-beat">
-    <path d="M20 4 C26 4 29 9 29 18 C29 28 25 36 20 36 C15 36 11 28 11 18 C11 9 14 4 20 4Z" fill="url(#UID-grad)" fill-opacity="0.16"/>
-    <path d="M13.5 14 q3 -2 5.5 0 M21 14 q2.5 -2 5.5 0"/>
-    <ellipse cx="16.2" cy="16.4" rx="1.6" ry="1" fill="currentColor" stroke="none"/><ellipse cx="23.8" cy="16.4" rx="1.6" ry="1" fill="currentColor" stroke="none"/>
-    <path d="M20 17 L20 23 L17.6 25 M20 23 L22.4 25"/><path d="M16 29 q4 3 8 0"/>
-    <path d="M20 4 L20 8 M14.5 7 L13 4.5 M25.5 7 L27 4.5" opacity="0.8"/>
-    <path d="M12.5 20 h2.2 M25.3 20 h2.2 M12.8 24 h1.8 M25.4 24 h1.8" opacity="0.7"/></g></svg>`,
+      <path d="M11 12 C11.5 20 13 26 14.5 29 C16 31.5 24 31.5 25.5 29 C27 26 28.5 20 29 12 Z" fill="url(#UID-grad)" fill-opacity="0.14"/>
+      <ellipse cx="20" cy="12" rx="9.4" ry="3.2" fill="url(#UID-grad)" fill-opacity="0.45"/>
+      <path d="M12.6 14 L16 21 L19.7 14 L23.4 21 L27 14" opacity="0.85"/>
+      <path d="M14.5 29 C13.5 31 12.8 32 12 33 M25.5 29 C26.5 31 27.2 32 28 33" opacity="0.7"/></g></svg>`,
 
   "cross-domain": `<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><defs>${ORB_DEFS}<radialGradient id="UID-lens" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff" stop-opacity="0.85"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs>
     <g class="cs-spinC">
