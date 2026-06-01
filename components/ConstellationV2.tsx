@@ -38,6 +38,14 @@ const C2_PALETTES: Record<string, Record<string, string>> = {
     border: 'rgba(255,255,255,0.08)', borderHi: 'rgba(255,255,255,0.2)',
     hub: '#ffffff', hubGlow: 'rgba(255,255,255,0.15)',
   },
+  // Light/parchment palette — driven by the global data-theme="sepia" toggle,
+  // not the ember/aurora/monochrome cycle. Mirrors the mobile light theme.
+  parchment: {
+    bg: '#faf6ed', bg2: '#ede6d4', bg3: '#e6dcc8',
+    text: '#1e1408', dim: '#8b7355', dim2: '#b8a085',
+    border: 'rgba(60,46,24,0.12)', borderHi: 'rgba(60,46,24,0.28)',
+    hub: '#8b6914', hubGlow: 'rgba(139,105,20,0.18)',
+  },
 };
 
 const c2Style = {
@@ -123,12 +131,12 @@ const C2_HEADER_STYLES = `
     position: relative; display: flex; flex-direction: column;
     align-items: center; justify-content: center; gap: 5px;
     padding: 0 18px; cursor: pointer; height: 100%;
-    border-right: 1px solid rgba(255,255,255,0.07);
+    border-right: 1px solid var(--c2-sep, rgba(255,255,255,0.07));
     overflow: hidden; background: transparent; border-top: none;
     border-bottom: none; border-left: none;
     transition: background 0.2s;
   }
-  .c2-nav-item:hover { background: rgba(255,255,255,0.025); }
+  .c2-nav-item:hover { background: var(--c2-hover-bg, rgba(255,255,255,0.025)); }
   .c2-nav-item.c2-active { background: rgba(96,165,250,0.04); }
   .c2-nav-item.c2-active::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0;
@@ -138,16 +146,16 @@ const C2_HEADER_STYLES = `
   .c2-nav-ghost {
     position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
     font-family: 'Fraunces', Georgia, serif; font-size: 52px; font-style: italic;
-    color: #eae6f5; opacity: 0.03; font-weight: 600; pointer-events: none;
+    color: var(--c2-ghost, #eae6f5); opacity: 0.03; font-weight: 600; pointer-events: none;
     user-select: none; line-height: 1;
   }
   .c2-nav-lbl {
     font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-style: italic;
-    font-weight: 300; color: #8a849a; letter-spacing: -0.01em;
+    font-weight: 300; color: var(--c2-lbl, #8a849a); letter-spacing: -0.01em;
     position: relative; z-index: 1; transition: color 0.2s; white-space: nowrap;
   }
-  .c2-nav-item:hover .c2-nav-lbl { color: #cdc8dd; }
-  .c2-nav-item.c2-active .c2-nav-lbl { color: #eae6f5; font-weight: 500; }
+  .c2-nav-item:hover .c2-nav-lbl { color: var(--c2-lbl-hover, #cdc8dd); }
+  .c2-nav-item.c2-active .c2-nav-lbl { color: var(--c2-lbl-active, #eae6f5); font-weight: 500; }
   .c2-nav-bars {
     display: flex; align-items: flex-end; gap: 2px; height: 10px;
     opacity: 0; transition: opacity 0.25s; position: relative; z-index: 1;
@@ -161,9 +169,10 @@ const C2_HEADER_STYLES = `
   .c2-nav-bars span:nth-child(5) { animation: c2BarAnim 0.9s ease-in-out infinite 0.25s; }
 `;
 
-function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
+function C2Header({ P, page, setPage, tweaks, onCyclePalette, light, onToggleTheme }: {
   P: Palette; page: string; setPage: (p: string) => void;
   tweaks: Tweaks; onCyclePalette: () => void;
+  light: boolean; onToggleTheme: () => void;
 }) {
   const C2_DATA = useNylusData();
   const router = useRouter();
@@ -178,7 +187,15 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: C2_HEADER_STYLES }} />
-      <div style={{ display: 'flex', alignItems: 'stretch', height: 80, position: 'relative', zIndex: 2, background: P.bg2, borderBottom: `1px solid ${P.border}` }}>
+      <div style={{ display: 'flex', alignItems: 'stretch', height: 80, position: 'relative', zIndex: 2, background: P.bg2, borderBottom: `1px solid ${P.border}`,
+        ...(light ? {
+          '--c2-sep': 'rgba(60,46,24,0.12)',
+          '--c2-hover-bg': 'rgba(60,46,24,0.04)',
+          '--c2-ghost': '#1e1408',
+          '--c2-lbl': '#8b7355',
+          '--c2-lbl-hover': '#5c4a2a',
+          '--c2-lbl-active': '#1e1408',
+        } as CSSProperties : {}) }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 24px', borderRight: `1px solid ${P.border}`, flexShrink: 0 }}>
           <C2Logo P={P} />
@@ -206,8 +223,38 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette }: {
         {/* Right */}
         <div style={{ flex: 1 }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', borderLeft: `1px solid ${P.border}`, flexShrink: 0 }}>
-          <button onClick={onCyclePalette} style={{ background: 'transparent', border: 'none', color: P.dim, padding: '4px 8px', borderRadius: 6, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.6 }}>
-            {tweaks.palette}
+          {/* Palette cycle — only meaningful for the dark palettes */}
+          {!light && (
+            <button onClick={onCyclePalette} style={{ background: 'transparent', border: 'none', color: P.dim, padding: '4px 8px', borderRadius: 6, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.6 }}>
+              {tweaks.palette}
+            </button>
+          )}
+          {/* Parchment/Void toggle — global theme, synced site-wide */}
+          <button
+            onClick={onToggleTheme}
+            aria-label={light ? 'Switch to void mode' : 'Switch to parchment mode'}
+            title={light ? 'Void' : 'Parchment'}
+            style={{ background: 'transparent', border: 'none', color: P.dim, padding: 6, borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
+          >
+            {light ? (
+              /* Moon — in light mode, click to go dark */
+              <svg width="16" height="16" viewBox="0 0 15 15" fill="none">
+                <path d="M7.5 2C4.46 2 2 4.46 2 7.5C2 10.54 4.46 13 7.5 13C9.9 13 11.6 11.4 12.3 9.3C11.6 9.6 10.8 9.8 9.9 9.8C6.9 9.8 4.5 7.4 4.5 4.4C4.5 3.3 4.9 2.3 5.5 1.5C6.2 1.8 7 2 7.5 2Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" fill="none"/>
+              </svg>
+            ) : (
+              /* Sun — in dark mode, click to go light */
+              <svg width="16" height="16" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="3" stroke="currentColor" strokeWidth="1.2"/>
+                <line x1="7.5" y1="0.5" x2="7.5" y2="2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="7.5" y1="12.5" x2="7.5" y2="14.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="0.5" y1="7.5" x2="2.5" y2="7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="12.5" y1="7.5" x2="14.5" y2="7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="2.7" y1="2.7" x2="4.1" y2="4.1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="10.9" y1="10.9" x2="12.3" y2="12.3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="12.3" y1="2.7" x2="10.9" y2="4.1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <line x1="4.1" y1="10.9" x2="2.7" y2="12.3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+            )}
           </button>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
             <span style={{ fontFamily: c2Style.serif, fontStyle: 'italic', fontSize: 20, color: P.text, fontWeight: 400, lineHeight: 1 }}>
@@ -340,7 +387,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
           <circle cx={cx} cy={cy} r={R * 0.75} fill="none" stroke={P.border} strokeDasharray="2 6" opacity="0.6" />
           {positioned.map(d => (
             <line key={'l'+d.id} x1={cx} y1={cy} x2={d.x} y2={d.y}
-              stroke={hover === d.id ? d.color : 'rgba(255,255,255,0.06)'}
+              stroke={hover === d.id ? d.color : P.border}
               strokeWidth={hover === d.id ? 1.5 : 0.5}
               style={{ transition: 'stroke 0.2s' }} />
           ))}
@@ -395,7 +442,7 @@ function C2Dashboard({ P, tweaks, setPage, setOpenEssay, setOpenConcept, zoomedD
       </div>
 
       {/* SIDE PANEL */}
-      <div style={{ borderLeft: `1px solid ${P.border}`, padding: '28px 32px', overflow: 'auto', background: 'rgba(0,0,0,0.25)' }}>
+      <div style={{ borderLeft: `1px solid ${P.border}`, padding: '28px 32px', overflow: 'auto', background: P.bg2 }}>
         <div style={{ fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 14 }}>◐ tonight</div>
         <h1 style={{ fontFamily: c2Style.serif, fontSize: 36, fontWeight: 400, lineHeight: 1.05, margin: '0 0 14px', letterSpacing: '-0.02em' }}>
           A map of <em>where</em><br/>the writing<br/>is going.
@@ -513,7 +560,7 @@ function C2Orbit({ color, size, dots }: { color: string; size: number; dots: num
   const r = size / 2 - 4, cx = size / 2, cy = size / 2;
   return (
     <svg width={size} height={size}>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.12)" />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeOpacity={0.25} />
       <circle cx={cx} cy={cy} r={3} fill={color} />
       {Array.from({ length: dots }).map((_, i) => {
         const a = (i / dots) * Math.PI * 2;
@@ -774,7 +821,7 @@ function C2CollisionArc({ dA, dB, active }: { dA: NylusDomain; dB: NylusDomain; 
       />
       {/* pulsing ring around sphere origin point */}
       {active && (
-        <circle cx="400" cy="90" r="6" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+        <circle cx="400" cy="90" r="6" fill="none" stroke={dA.color} strokeOpacity="0.6" strokeWidth="1.5">
           <animate attributeName="r" from="6" to="22" dur="1.4s" repeatCount="indefinite" />
           <animate attributeName="opacity" from="0.5" to="0" dur="1.4s" repeatCount="indefinite" />
         </circle>
@@ -939,7 +986,7 @@ function C2Sparks({ P }: { P: Palette }) {
                     background: isActive
                       ? `color-mix(in srgb, ${d.color} 18%, ${P.bg3})`
                       : `color-mix(in srgb, ${d.color} 8%, ${P.bg2})`,
-                    color: isActive ? '#fff' : d.color,
+                    color: isActive ? P.text : d.color,
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     boxShadow: isActive ? `0 0 20px color-mix(in srgb, ${d.color} 35%, transparent)` : 'none',
@@ -976,7 +1023,7 @@ function C2Sparks({ P }: { P: Palette }) {
                     background: isActive
                       ? `color-mix(in srgb, ${meta.color} 15%, ${P.bg3})`
                       : `color-mix(in srgb, ${meta.color} 6%, ${P.bg2})`,
-                    color: isActive ? '#fff' : meta.color,
+                    color: isActive ? P.text : meta.color,
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     boxShadow: isActive ? `0 0 18px color-mix(in srgb, ${meta.color} 30%, transparent)` : 'none',
@@ -1309,9 +1356,9 @@ function C2Research({ P, setOpenEssay }: { P: Palette; setOpenEssay: (e: NylusEs
       {C2_DATA.ESSAYS.map(e => {
         const dom = C2_DATA.DOMAINS.find(d => e.tags.includes(d.name)) ?? C2_DATA.DOMAINS[0];
         return (
-          <div key={e.id} onClick={() => setOpenEssay(e)} style={{ marginBottom: 28, padding: '20px 24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, cursor: 'pointer', transition: 'background 0.2s' }}
-            onMouseEnter={ev => (ev.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-            onMouseLeave={ev => (ev.currentTarget.style.background = 'rgba(255,255,255,0.03)')}>
+          <div key={e.id} onClick={() => setOpenEssay(e)} style={{ marginBottom: 28, padding: '20px 24px', background: P.bg2, border: `1px solid ${P.border}`, borderRadius: 8, cursor: 'pointer', transition: 'background 0.2s' }}
+            onMouseEnter={ev => (ev.currentTarget.style.background = P.bg3)}
+            onMouseLeave={ev => (ev.currentTarget.style.background = P.bg2)}>
             <div style={{ fontFamily: c2Style.serif, fontSize: 19, lineHeight: 1.2, marginBottom: 8 }}>{e.title}</div>
             <div style={{ color: P.dim, fontSize: 13, lineHeight: 1.5, marginBottom: 10 }}>{e.excerpt.slice(0, 200)}…</div>
             <div style={{ display: 'flex', gap: 12, fontFamily: c2Style.mono, fontSize: 10, color: P.dim2 }}>
@@ -1447,7 +1494,7 @@ function C2ConceptPage({ P, tweaks, concept, close, setOpenEssay }: {
           <div style={{ position: 'absolute', top: 18, left: 24, fontFamily: c2Style.mono, fontSize: 10, color: P.dim, letterSpacing: '0.15em', textTransform: 'uppercase' }}>⊹ concept · concentric view</div>
           <button onClick={close} style={{ position: 'absolute', top: 18, right: 24, background: P.bg2, border: `1px solid ${P.border}`, color: P.dim, padding: '6px 12px', borderRadius: 6, cursor: 'pointer', fontFamily: c2Style.mono, fontSize: 11 }}>esc · close</button>
         </div>
-        <div style={{ borderLeft: `1px solid ${P.border}`, padding: '32px 36px', overflow: 'auto', background: 'rgba(0,0,0,0.4)' }}>
+        <div style={{ borderLeft: `1px solid ${P.border}`, padding: '32px 36px', overflow: 'auto', background: P.bg2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
             <span style={{ width: 8, height: 8, background: dom.color, borderRadius: '50%' }} />
             <span style={{ fontFamily: c2Style.mono, fontSize: 10, color: dom.color, letterSpacing: '0.18em', textTransform: 'uppercase' }}>{dom.name}</span>
@@ -1930,6 +1977,26 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
   const [zoomedDomain, setZoomedDomain] = uS<NylusDomain | null>(null);
   const [openConcept, setOpenConcept] = uS<NylusConcept | null>(null);
   const [tweaks, setTweaks] = uS<Tweaks>(C2_DEFAULTS);
+  const [theme, setTheme] = uS<'void' | 'sepia'>('void');
+
+  // Sync with the global parchment/void toggle (shared across the whole site).
+  uE(() => {
+    const sync = () => {
+      const t = document.documentElement.getAttribute('data-theme') as 'void' | 'sepia' | null;
+      if (t === 'void' || t === 'sepia') setTheme(t);
+    };
+    sync();
+    const obs = new MutationObserver(sync);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
+  }, []);
+
+  function toggleTheme() {
+    const next = theme === 'void' ? 'sepia' : 'void';
+    setTheme(next);
+    try { localStorage.setItem('nylus-theme', next); } catch {}
+    document.documentElement.setAttribute('data-theme', next);
+  }
 
   function setTweak(k: keyof Tweaks, v: unknown) {
     setTweaks(t => ({ ...t, [k]: v }));
@@ -1941,7 +2008,14 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
     setTweak('palette', next);
   }
 
-  const P = C2_PALETTES[tweaks.palette] ?? C2_PALETTES.ember;
+  // Light (sepia) forces the parchment palette and overrides the dark cycle.
+  const light = theme === 'sepia';
+  const P = light ? C2_PALETTES.parchment : (C2_PALETTES[tweaks.palette] ?? C2_PALETTES.ember);
+  const starBase = light ? '60,46,24' : '255,255,255';
+  const starAccents = uM(
+    () => (light ? data.DOMAINS.map(d => d.color) : undefined),
+    [light, data.DOMAINS]
+  );
 
   uE(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -1957,8 +2031,8 @@ export default function ConstellationV2({ data, initialPage }: ConstellationV2Pr
       <div style={{ width: '100%', height: '100%', background: P.bg, color: P.text,
         fontFamily: c2Style.font, display: 'flex', flexDirection: 'column',
         position: 'relative', overflow: 'hidden' }}>
-        <ShootingStars density={tweaks.starDensity} paused={!tweaks.motion} />
-        <C2Header P={P} page={page} setPage={setPage} tweaks={tweaks} onCyclePalette={onCyclePalette} />
+        <ShootingStars density={tweaks.starDensity} paused={!tweaks.motion} baseColor={starBase} accentColors={starAccents} />
+        <C2Header P={P} page={page} setPage={setPage} tweaks={tweaks} onCyclePalette={onCyclePalette} light={light} onToggleTheme={toggleTheme} />
         <div style={{ flex: 1, display: 'flex', minHeight: 0, position: 'relative', zIndex: 1 }}>
           {page === 'dashboard'  && <C2Dashboard P={P} tweaks={tweaks} setPage={setPage} setOpenEssay={setOpenEssay} setOpenConcept={setOpenConcept} zoomedDomain={zoomedDomain} setZoomedDomain={setZoomedDomain} />}
           {page === 'galaxy'     && <C2Galaxy P={P} tweaks={tweaks} setOpenConcept={setOpenConcept} />}
