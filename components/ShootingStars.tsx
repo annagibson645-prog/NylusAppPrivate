@@ -8,6 +8,8 @@ interface ShootingStarsProps {
   accentColors?: string[];
   density?: number;
   paused?: boolean;
+  /** Base star color as an "r,g,b" triplet. Defaults to white (for dark backgrounds). */
+  baseColor?: string;
 }
 
 const DEFAULT_ACCENTS = [
@@ -81,6 +83,7 @@ export default function ShootingStars({
   accentColors = DEFAULT_ACCENTS,
   density = 1,
   paused = false,
+  baseColor = '255,255,255',
 }: ShootingStarsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pausedRef = useRef(paused);
@@ -153,11 +156,11 @@ export default function ShootingStars({
           const ty = s.y - (s.vy / spd) * s.trail;
 
           const grad = ctx!.createLinearGradient(tx, ty, s.x, s.y);
-          grad.addColorStop(0, 'rgba(255,255,255,0)');
+          grad.addColorStop(0, `rgba(${baseColor},0)`);
           if (s.tier === 2) {
             grad.addColorStop(0.5, s.color + Math.round(a * 60).toString(16).padStart(2,'0'));
           }
-          grad.addColorStop(1, `rgba(255,255,255,${Math.min(1, a * 0.85)})`);
+          grad.addColorStop(1, `rgba(${baseColor},${Math.min(1, a * 0.85)})`);
 
           ctx!.beginPath();
           ctx!.moveTo(tx, ty);
@@ -170,14 +173,14 @@ export default function ShootingStars({
           if (s.tier > 0) {
             ctx!.beginPath();
             ctx!.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx!.fillStyle = `rgba(255,255,255,${a})`;
+            ctx!.fillStyle = `rgba(${baseColor},${a})`;
             ctx!.fill();
           }
 
           if (s.tier === 2) {
             const glow = ctx!.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
-            glow.addColorStop(0, `rgba(255,255,255,${a * 0.5})`);
-            glow.addColorStop(1, 'rgba(255,255,255,0)');
+            glow.addColorStop(0, `rgba(${baseColor},${a * 0.5})`);
+            glow.addColorStop(1, `rgba(${baseColor},0)`);
             ctx!.beginPath();
             ctx!.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
             ctx!.fillStyle = glow;
@@ -195,7 +198,7 @@ export default function ShootingStars({
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
     };
-  }, [density, accentColors]);
+  }, [density, accentColors, baseColor]);
 
   return (
     <canvas

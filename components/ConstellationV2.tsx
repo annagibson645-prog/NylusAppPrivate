@@ -1492,9 +1492,35 @@ interface ConstellationV2Props {
 // ─── MOBILE VIEW ─────────────────────────────────────────────────────────────────────────────
 // Driven by the global MobileNav (layout.tsx) — no internal tab strip here.
 // Reads data-theme for void/sepia colors; `page` prop comes from the route.
-function C2MobileConstellation({ data }: { data: NylusData }) {
+function C2MobileConstellation({ data, theme }: { data: NylusData; theme: 'void' | 'sepia' }) {
   const router = useRouter();
   const t = useTime(true);
+
+  // Theme-aware palette — light (parchment) vs dark (void). Domain sphere colors
+  // are left untouched (they read on both); only the chrome flips.
+  const light = theme === 'sepia';
+  const P = {
+    bg:        light ? '#faf6ed'               : '#0e0d14',
+    ring:      light ? 'rgba(60,46,24,0.10)'   : 'rgba(255,255,255,0.06)',
+    spoke:     light ? 'rgba(60,46,24,0.10)'   : 'rgba(255,255,255,0.07)',
+    vault:     light ? '#8b6914'               : '#e8b86a',
+    vaultGlow: light ? 'rgba(139,105,20,0.16)' : 'rgba(232,184,106,0.22)',
+    vaultLbl:  light ? '#8b7355'               : '#8a849a',
+    domainLbl: light ? '#5c4a2a'               : '#c8c0d8',
+    hint:      light ? '#8b7355'               : '#494456',
+    brand:     light ? '#1e1408'               : '#eae6f5',
+    brandSub:  light ? '#8b7355'               : '#494456',
+  };
+  // Shooting stars stay dynamic in both modes — only the color changes so they
+  // remain visible: warm espresso ink on parchment, white on void. Bright stars
+  // flash the domain colors so they complement the palette.
+  const starBase = light ? '60,46,24' : '255,255,255';
+  // Memoized so its identity is stable across the per-frame re-renders driven by
+  // useTime — otherwise ShootingStars would re-init its canvas every frame.
+  const starAccents = uM(
+    () => (light ? data.DOMAINS.map(d => d.color) : undefined),
+    [light, data.DOMAINS]
+  );
 
   // SVG canvas — portrait viewBox
   const VW = 390, VH = 660;
@@ -1522,10 +1548,10 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
   );
 
   return (
-    <div style={{ width: '100%', height: '100dvh', background: '#0e0d14', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: '100dvh', background: P.bg, position: 'relative', overflow: 'hidden' }}>
 
       {/* ── Shooting stars ───────────────────────────────────────── */}
-      <ShootingStars density={1} />
+      <ShootingStars density={1} baseColor={starBase} accentColors={starAccents} />
 
       {/* ── Branding ─────────────────────────────────────────────── */}
       <div style={{
@@ -1533,8 +1559,8 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         zIndex: 2, pointerEvents: 'none',
       }}>
-        <span style={{ fontFamily: c2Style.serif, fontStyle: 'italic', fontSize: 18, color: '#eae6f5', opacity: 0.6, fontWeight: 300 }}>Nylus</span>
-        <span style={{ fontFamily: c2Style.mono, fontSize: 8, color: '#494456', letterSpacing: '0.2em', textTransform: 'uppercase' }}>constellation</span>
+        <span style={{ fontFamily: c2Style.serif, fontStyle: 'italic', fontSize: 18, color: P.brand, opacity: 0.6, fontWeight: 300 }}>Nylus</span>
+        <span style={{ fontFamily: c2Style.mono, fontSize: 8, color: P.brandSub, letterSpacing: '0.2em', textTransform: 'uppercase' }}>constellation</span>
       </div>
 
       {/* ── Main SVG ─────────────────────────────────────────────── */}
@@ -1551,7 +1577,7 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
             </radialGradient>
           ))}
           <radialGradient id="m-vault-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(232,184,106,0.22)" />
+            <stop offset="0%" stopColor={P.vaultGlow} />
             <stop offset="100%" stopColor="rgba(0,0,0,0)" />
           </radialGradient>
         </defs>
@@ -1560,25 +1586,25 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
         <circle cx={cx} cy={cy} r={orbitR + 60} fill="url(#m-vault-glow)" />
 
         {/* Orbit ring */}
-        <circle cx={cx} cy={cy} r={orbitR} fill="none" stroke="rgba(255,255,255,0.06)" strokeDasharray="3 8" />
+        <circle cx={cx} cy={cy} r={orbitR} fill="none" stroke={P.ring} strokeDasharray="3 8" />
 
         {/* Spokes */}
         {domains.map(d => (
           <line key={'spoke-' + d.id}
             x1={cx} y1={cy} x2={d.x} y2={d.y}
-            stroke="rgba(255,255,255,0.07)" strokeWidth={0.8}
+            stroke={P.spoke} strokeWidth={0.8}
           />
         ))}
 
         {/* Center vault */}
-        <circle cx={cx} cy={cy} r={8} fill="#e8b86a" />
-        <circle cx={cx} cy={cy} r={16} fill="none" stroke="#e8b86a" strokeOpacity="0.35" />
+        <circle cx={cx} cy={cy} r={8} fill={P.vault} />
+        <circle cx={cx} cy={cy} r={16} fill="none" stroke={P.vault} strokeOpacity="0.35" />
         <circle cx={cx} cy={cy} r={16 + (Math.sin(t * 1.8) + 1) * 5}
-          fill="none" stroke="#e8b86a"
+          fill="none" stroke={P.vault}
           strokeOpacity={0.18 - (Math.sin(t * 1.8) + 1) * 0.06}
         />
         <text x={cx} y={cy + 32} textAnchor="middle"
-          fill="#8a849a" fontSize="8" fontFamily={c2Style.mono} letterSpacing="0.2em">
+          fill={P.vaultLbl} fontSize="8" fontFamily={c2Style.mono} letterSpacing="0.2em">
           VAULT
         </text>
 
@@ -1617,7 +1643,7 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
             <text
               x={d.lx} y={d.ly}
               textAnchor={d.anchor}
-              fill="#c8c0d8"
+              fill={P.domainLbl}
               fontSize="11"
               fontFamily={c2Style.font}
               fontWeight="500"
@@ -1633,7 +1659,7 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
         position: 'absolute', bottom: 92, left: 0, right: 0,
         textAlign: 'center',
         fontFamily: c2Style.mono, fontSize: 9,
-        color: '#494456', letterSpacing: '0.16em', textTransform: 'uppercase',
+        color: P.hint, letterSpacing: '0.16em', textTransform: 'uppercase',
         pointerEvents: 'none',
       }}>
         tap a sphere to enter
@@ -1660,7 +1686,7 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
 
   // Dashboard → full-screen constellation
   if (page === 'dashboard' || page === 'galaxy') {
-    return <C2MobileConstellation data={data} />;
+    return <C2MobileConstellation data={data} theme={theme} />;
   }
 
   const isVoid = theme === 'void';
