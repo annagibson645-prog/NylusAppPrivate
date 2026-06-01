@@ -21,7 +21,10 @@ The app has **three separate nav components** that drifted out of sync:
 - `C2Header` (inside `components/ConstellationV2.tsx`) — the Dashboard/galaxy nav.
   Its item list is hardcoded and **omits Research**. → symptom 1.
 - `NavG` (`components/NavG.tsx`) — used by hubs, collisions, etc. Inline-styled,
-  self-contained, theme-aware. Already includes Research.
+  self-contained, theme-aware. Already includes Research as of commit `f56389a`;
+  verified rendering on `/collisions` and `/hubs` in the preview. So the
+  "Research missing when not on hubs" report is, for these pages, a stale
+  view/deploy — the remaining genuine gap is the Dashboard (`C2Header`).
 - `Nav.tsx` (`components/Nav.tsx`) — used **only** by the two research pages.
 
 `Nav.tsx` is built entirely on **Tailwind utility classes** (`flex gap-4 px-4
