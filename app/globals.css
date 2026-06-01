@@ -18,6 +18,16 @@ html, body {
   --font-fraunces: var(--font-fraunces, "Fraunces", serif);
   --font-newsreader: var(--font-newsreader, "Newsreader", serif);
 
+  /* Page-level CSS variables — void (dark) defaults */
+  --bg:         #0e0d14;
+  --bg2:        #15131c;
+  --surface:    #1c1a26;
+  --surface-2:  #232130;
+  --border:     rgba(255,255,255,0.07);
+  --text:       #eae6f5;
+  --text-muted: #8a849a;
+  --text-dim:   #494456;
+
   /* NavG theme variables — void (dark) defaults */
   --navg-bg:           #15131c;
   --navg-text:         #eae6f5;
