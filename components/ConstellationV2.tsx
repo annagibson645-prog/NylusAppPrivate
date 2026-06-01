@@ -1508,7 +1508,7 @@ function C2MobileConstellation({ data }: { data: NylusData }) {
       const x = cx + Math.cos(angle) * orbitR;
       const y = cy + Math.sin(angle) * orbitR;
       // label anchor: left side → end, right side → start, top/bottom → middle
-      const anchor = x < cx - 20 ? 'end' : x > cx + 20 ? 'start' : 'middle';
+      const anchor: 'end' | 'start' | 'middle' = x < cx - 20 ? 'end' : x > cx + 20 ? 'start' : 'middle';
       // label offset direction
       const lx = x < cx - 20 ? x - sphereR - 8
                : x > cx + 20 ? x + sphereR + 8
