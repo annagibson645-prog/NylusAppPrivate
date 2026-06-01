@@ -1,33 +1,52 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
-// ── Domain config — mirrors vault domain keys ──────────────────────────────
+// ── Theme hook ────────────────────────────────────────────────────────────────
+function useTheme() {
+  const [sepia, setSepia] = useState(false);
+  useEffect(() => {
+    const read = () => setSepia(document.documentElement.getAttribute("data-theme") === "sepia");
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
+  }, []);
+  return sepia;
+}
+
+// ── Theme token helper ────────────────────────────────────────────────────────
+function T(sepia: boolean) {
+  return {
+    cardBg:     sepia ? "#faf6ed"              : "#110e1a",
+    cardBorder: sepia ? "rgba(139,105,20,0.18)": "rgba(255,255,255,0.08)",
+    text:       sepia ? "#1e1408"              : "#e8e0d0",
+    textDim:    sepia ? "#8b7355"              : "#a09080",
+    dim2:       sepia ? "#c0aa80"              : "#3a342a",
+    gold:       sepia ? "#8b6914"              : "#c9a84c",
+    hintColor:  sepia ? "#c0aa80"              : "#3a342a",
+    filterBg:   sepia ? "#ede7d9"              : "transparent",
+    filterBorder: sepia ? "rgba(139,105,20,0.25)" : "rgba(255,255,255,0.1)",
+    filterText: sepia ? "#8b7355"              : "#494456",
+    filterActive: sepia ? "rgba(139,105,20,0.12)" : "rgba(0,0,0,0)",
+  };
+}
+
+// ── Domain config ─────────────────────────────────────────────────────────────
 const DOMAIN_CONFIG = [
-  { key: "eastern-spirituality", short: "east-spirit", color: "#dc2626", name: "Eastern Spirituality" },
-  { key: "history",              short: "history",      color: "#e6c068", name: "History"             },
-  { key: "cross-domain",         short: "cross-domain", color: "#38bdf8", name: "Cross-Domain"        },
-  { key: "psychology",           short: "psychology",   color: "#f59e0b", name: "Psychology"          },
-  { key: "behavioral-mechanics", short: "beh-mech",     color: "#a78bfa", name: "Behavioral"          },
-  { key: "creative-practice",    short: "creative",     color: "#14b8a6", name: "Creative Practice"   },
-  { key: "african-spirituality", short: "african",      color: "#34d399", name: "African Spirituality"},
-  { key: "business",             short: "business",     color: "#e879a0", name: "Business"            },
+  { key: "eastern-spirituality", short: "EAST",  color: "#dc2626", name: "Eastern Spirituality" },
+  { key: "history",              short: "HIST",  color: "#e6c068", name: "History"              },
+  { key: "cross-domain",         short: "XDOM",  color: "#38bdf8", name: "Cross-Domain"         },
+  { key: "psychology",           short: "PSYC",  color: "#f59e0b", name: "Psychology"           },
+  { key: "behavioral-mechanics", short: "MECH",  color: "#a78bfa", name: "Behavioral Mechanics" },
+  { key: "creative-practice",    short: "CRTV",  color: "#14b8a6", name: "Creative Practice"    },
+  { key: "african-spirituality", short: "AFRC",  color: "#34d399", name: "African Spirituality" },
+  { key: "business",             short: "BSNS",  color: "#e879a0", name: "Business"             },
 ];
 
-// ── Anti-bloat constant ────────────────────────────────────────────────────
-// The Loom shows at most this many columns. As the corpus grows, older reports
-// fall off the grid but remain in the searchable list below. Keep the grid
-// readable — don't raise this above 16.
-const LOOM_WINDOW = 12;
+const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
 
-// ── SVG layout ────────────────────────────────────────────────────────────
-const LW = 148; // domain label column width
-const RH = 90;  // report header row height
-const CW = 70;  // cell width per report column
-const CH = 44;  // cell height per domain row
-
-// ── Types ──────────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 type ResearchNode = {
   id: string;
   title: string;
@@ -39,81 +58,334 @@ type ResearchNode = {
   status: string;
 };
 
-interface Tooltip {
-  x: number;
-  y: number;
-  domainColor: string;
-  domainName: string;
-  reportTitle: string;
-  score: number;
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getDomainColor(domain: string): string {
+  return DOMAIN_CONFIG.find(d => d.key === domain)?.color ?? "#8a849a";
 }
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-
-function getDomainScores(r: ResearchNode): Record<string, number> {
-  if (r.research_domains && Object.keys(r.research_domains).length > 0) {
-    return r.research_domains;
-  }
-  return r.domain && r.domain !== "unknown" ? { [r.domain]: 5 } : {};
+function getDomainName(domain: string): string {
+  return DOMAIN_CONFIG.find(d => d.key === domain)?.name ?? domain;
 }
-
-// Only render rows for domains that at least one report touches.
-function usedDomains(reports: ResearchNode[]) {
-  return DOMAIN_CONFIG.filter((d) =>
-    reports.some((r) => (getDomainScores(r)[d.key] || 0) > 0)
-  );
+function getDomainShort(domain: string): string {
+  return DOMAIN_CONFIG.find(d => d.key === domain)?.short ?? "—";
 }
-
 function fmtDate(d: string) {
   if (!d) return "";
   const dt = new Date(d);
-  return isNaN(dt.getTime())
-    ? d
-    : dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return isNaN(dt.getTime()) ? d : dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
-
 function readMins(wc?: number) {
   return wc ? Math.max(1, Math.round(wc / 220)) : null;
 }
 
-// ── Component ──────────────────────────────────────────────────────────────
+// ── Spinning Orb ──────────────────────────────────────────────────────────────
+// All 5 satellites use the domain color; dots vary in opacity for depth.
+function SpinningOrb({ color }: { color: string }) {
+  const DOT_COUNT = 5;
+  // stagger: full rotation = 4s, 360° / 5 = 72° = 0.8s per step
+  return (
+    <div style={{
+      position: "relative",
+      width: 76, height: 76,
+      flexShrink: 0,
+    }}>
+      {/* Outer glow ring */}
+      <div style={{
+        position: "absolute", inset: 0,
+        borderRadius: "50%",
+        border: `1px solid ${color}`,
+        opacity: 0.18,
+      }} />
 
-export default function ResearchLoom({ reports }: { reports: ResearchNode[] }) {
+      {/* Central sphere — pulsing */}
+      <div style={{
+        position: "absolute",
+        top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 18, height: 18,
+        borderRadius: "50%",
+        background: color,
+        boxShadow: `0 0 10px ${color}55`,
+        animation: "corpusOrbPulse 2.4s ease-in-out infinite",
+        zIndex: 2,
+        willChange: "box-shadow, opacity",
+      }} />
+
+      {/* Orbiting satellites — domain color, varying opacity for depth */}
+      {Array.from({ length: DOT_COUNT }).map((_, i) => (
+        <div key={i} style={{
+          position: "absolute",
+          top: 0, left: "50%",
+          width: 1,
+          height: "50%",
+          transformOrigin: "bottom center",
+          animation: "corpusOrbit 4s linear infinite",
+          animationDelay: `${-(i * 0.8).toFixed(2)}s`,
+          willChange: "transform",
+        }}>
+          <div style={{
+            position: "absolute",
+            top: 0, left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 5, height: 5,
+            borderRadius: "50%",
+            background: color,
+            // vary opacity so dots don't all look identical
+            opacity: 0.5 + (i % 3) * 0.17,
+            boxShadow: `0 0 5px ${color}99`,
+          }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Corner SVG ornament ───────────────────────────────────────────────────────
+function CardBorder({ color }: { color: string }) {
+  return (
+    <svg
+      style={{ position: "absolute", inset: 5, pointerEvents: "none" }}
+      viewBox="0 0 180 324" fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* corners */}
+      <path d="M1 22 L1 1 L22 1"    stroke={color} strokeOpacity="0.55" strokeWidth="1" />
+      <path d="M158 1 L179 1 L179 22"    stroke={color} strokeOpacity="0.55" strokeWidth="1" />
+      <path d="M1 302 L1 323 L22 323"   stroke={color} strokeOpacity="0.55" strokeWidth="1" />
+      <path d="M158 323 L179 323 L179 302" stroke={color} strokeOpacity="0.55" strokeWidth="1" />
+      {/* inner dashed rect */}
+      <rect x="2" y="2" width="176" height="320"
+        stroke={color} strokeOpacity="0.07" strokeWidth="0.5" strokeDasharray="3 6" />
+    </svg>
+  );
+}
+
+// ── Single card ───────────────────────────────────────────────────────────────
+// state: 0 = front, 1 = back (excerpt), 2 = open overlay
+function CorpusCard({ report, index }: { report: ResearchNode; index: number }) {
+  const [cardState, setCardState] = useState(0);
   const router = useRouter();
-  const [filterRow, setFilterRow] = useState(-1);
-  const [filterCol, setFilterCol] = useState(-1);
-  const [hovered,   setHovered]   = useState<string | null>(null);
-  const [tooltip,   setTooltip]   = useState<Tooltip | null>(null);
+  const sepia = useTheme();
+  const th = T(sepia);
+  const color = getDomainColor(report.domain);
+  const mins = readMins(report.word_count);
 
-  const loomReports = reports.slice(0, LOOM_WINDOW);
-  const domains     = usedDomains(reports);
-  const NR = loomReports.length;
-  const ND = domains.length;
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    // If they clicked the open-overlay link itself, let router handle it
+    if ((e.target as HTMLElement).closest("[data-open-link]")) return;
 
-  const SVG_W = LW + NR * CW;
-  const SVG_H = RH + ND * CH + 14;
+    if (cardState === 0) {
+      setCardState(1);
+    } else if (cardState === 1) {
+      setCardState(2);
+    } else {
+      // state 2 → reset to front
+      setCardState(0);
+    }
+  }, [cardState]);
 
-  const rowOp = (di: number) => filterRow === -1 ? 1 : filterRow === di ? 1 : 0.12;
+  const isFlipped = cardState >= 1;
+  const isOpen    = cardState === 2;
 
-  function toggleRow(di: number) {
-    setFilterRow((fr) => fr === di ? -1 : di);
-    setFilterCol(-1);
-  }
-  function toggleCol(ri: number) {
-    setFilterCol((fc) => fc === ri ? -1 : ri);
-    setFilterRow(-1);
-  }
-  function reset() { setFilterRow(-1); setFilterCol(-1); }
+  return (
+    <div
+      onClick={handleClick}
+      style={{
+        perspective: "1100px",
+        aspectRatio: "5/9",
+        cursor: "pointer",
+        position: "relative",
+      }}
+    >
+      {/* 3D wrapper */}
+      <div style={{
+        width: "100%", height: "100%",
+        position: "relative",
+        transformStyle: "preserve-3d",
+        transition: "transform 0.85s cubic-bezier(0.55, 0.08, 0.28, 1.0)",
+        transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+      }}>
 
-  // The list below mirrors the domain filter from the Loom
-  const listDomainKey = filterRow !== -1 ? domains[filterRow]?.key : null;
-  const filteredList  = listDomainKey
-    ? reports.filter((r) => (getDomainScores(r)[listDomainKey] || 0) > 0)
+        {/* ── FRONT ─────────────────────────────────────────────── */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          background: th.cardBg,
+          border: `1px solid ${color}30`,
+          display: "flex", flexDirection: "column",
+          alignItems: "center",
+          overflow: "hidden",
+          transition: "background 0.3s",
+        }}>
+          <CardBorder color={color} />
+
+          <div style={{
+            flex: 1, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            padding: "28px 18px 18px", gap: 18, width: "100%",
+          }}>
+            <SpinningOrb color={color} />
+
+            <div style={{
+              fontFamily: "var(--font-newsreader), Georgia, serif",
+              fontSize: 17, fontWeight: 400, fontStyle: "italic",
+              textAlign: "center", lineHeight: 1.3, color: th.text,
+            }}>
+              {report.title}
+            </div>
+
+            <div style={{
+              fontFamily: "var(--font-jetbrains), monospace",
+              fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase",
+              color, opacity: 0.65, textAlign: "center",
+            }}>
+              {getDomainName(report.domain)}
+            </div>
+          </div>
+
+          <div style={{
+            fontFamily: "var(--font-jetbrains), monospace",
+            fontSize: 9, letterSpacing: "0.1em", color: th.gold,
+            opacity: 0.45, paddingBottom: 12,
+          }}>
+            {ROMAN[index] ?? index + 1}
+          </div>
+        </div>
+
+        {/* ── BACK ──────────────────────────────────────────────── */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          transform: "rotateY(180deg)",
+          background: th.cardBg,
+          border: `1px solid ${color}30`,
+          display: "flex", flexDirection: "column",
+          overflow: "hidden",
+          transition: "background 0.3s",
+        }}>
+          <CardBorder color={color} />
+
+          {/* Content — blurs when overlay is active */}
+          <div style={{
+            flex: 1, display: "flex", flexDirection: "column",
+            padding: "22px 17px 12px", gap: 12,
+            transition: "filter 0.3s, opacity 0.3s",
+            filter: isOpen ? "blur(3px)" : "none",
+            opacity: isOpen ? 0.2 : 1,
+          }}>
+            <div style={{
+              fontFamily: "var(--font-jetbrains), monospace",
+              fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase",
+              color, opacity: 0.65,
+            }}>
+              {getDomainShort(report.domain)}
+            </div>
+
+            <div style={{
+              fontFamily: "var(--font-newsreader), Georgia, serif",
+              fontSize: 15, fontStyle: "italic", fontWeight: 600,
+              lineHeight: 1.2, color: th.text,
+            }}>
+              {report.title}
+            </div>
+
+            <div style={{ height: 1, background: color, opacity: 0.18 }} />
+
+            <div style={{
+              fontFamily: "var(--font-newsreader), Georgia, serif",
+              fontSize: 12, fontWeight: 300, lineHeight: 1.72,
+              color: th.textDim, flex: 1,
+              overflow: "hidden",
+            }}>
+              {report.excerpt ?? "No excerpt available."}
+            </div>
+
+            <div style={{
+              display: "flex", gap: 12,
+              fontFamily: "var(--font-jetbrains), monospace",
+              fontSize: 7, opacity: 0.35, letterSpacing: "0.06em",
+              color: th.text,
+            }}>
+              {report.word_count && <span>{report.word_count.toLocaleString()} words</span>}
+              {mins && <span>{mins} min read</span>}
+              {report.created && <span>{fmtDate(report.created)}</span>}
+            </div>
+          </div>
+
+          {/* Tap-again hint */}
+          <div style={{
+            fontFamily: "var(--font-jetbrains), monospace",
+            fontSize: 7, letterSpacing: "0.16em", textTransform: "uppercase",
+            color: th.hintColor, textAlign: "center",
+            paddingBottom: 10, flexShrink: 0,
+            transition: "opacity 0.3s",
+            opacity: isOpen ? 0 : 0.6,
+          }}>
+            tap again to open
+          </div>
+
+          {/* ── Open overlay (state 2) ───────────────────────────── */}
+          <div
+            data-open-link="true"
+            onClick={(e) => { e.stopPropagation(); router.push(`/research/${report.id}`); }}
+            style={{
+              position: "absolute", inset: 0,
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              gap: 12,
+              opacity: isOpen ? 1 : 0,
+              pointerEvents: isOpen ? "auto" : "none",
+              transition: "opacity 0.35s cubic-bezier(0.16,1,0.3,1)",
+              cursor: "pointer",
+              background: sepia ? `${color}18` : `${color}14`,
+              backdropFilter: isOpen ? "blur(6px)" : "none",
+            }}
+          >
+            <div style={{
+              fontFamily: "var(--font-newsreader), Georgia, serif",
+              fontSize: 80, lineHeight: 1, fontStyle: "italic", fontWeight: 300,
+              color,
+              textShadow: `0 0 24px ${color}66`,
+            }}>
+              →
+            </div>
+            <div style={{
+              fontFamily: "var(--font-jetbrains), monospace",
+              fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase",
+              color: th.text, opacity: 0.7,
+            }}>
+              Open Report
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+export default function ResearchLoom({ reports }: { reports: ResearchNode[] }) {
+  const [filterDomain, setFilterDomain] = useState<string | null>(null);
+  const sepia = useTheme();
+  const th = T(sepia);
+
+  const usedDomains = DOMAIN_CONFIG.filter(d =>
+    reports.some(r => r.domain === d.key)
+  );
+
+  const visible = filterDomain
+    ? reports.filter(r => r.domain === filterDomain)
     : reports;
 
   if (reports.length === 0) {
     return (
-      <div style={{ padding: "80px 0", textAlign: "center", fontFamily: "var(--font-jetbrains), monospace", fontSize: "11px", color: "#494456", letterSpacing: "0.1em" }}>
+      <div style={{
+        padding: "80px 0", textAlign: "center",
+        fontFamily: "var(--font-jetbrains), monospace",
+        fontSize: 11, color: "#494456", letterSpacing: "0.1em",
+      }}>
         no research reports yet — run a VRC session and save output to The Platform/Research
       </div>
     );
@@ -121,301 +393,72 @@ export default function ResearchLoom({ reports }: { reports: ResearchNode[] }) {
 
   return (
     <>
-      {/* ── Loom SVG ────────────────────────────────────────────── */}
-      <div style={{ overflowX: "auto", marginBottom: "20px", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "4px", background: "#15131c", padding: "24px 24px 16px" }}>
-        <svg
-          width={SVG_W} height={SVG_H}
-          viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-          style={{ display: "block", overflow: "visible" }}
-          onClick={reset}
+      {/* Inject CSS keyframes */}
+      <style>{`
+        @keyframes corpusOrbit {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes corpusOrbPulse {
+          0%,100% { opacity: 0.9; }
+          50%     { opacity: 0.65; box-shadow: 0 0 16px var(--pulse-color,currentColor); }
+        }
+      `}</style>
+
+      {/* ── Domain filter pills ─────────────────────────────────── */}
+      <div style={{
+        display: "flex", flexWrap: "wrap",
+        gap: "8px 12px", marginBottom: 48,
+        alignItems: "center",
+      }}>
+        <button
+          onClick={() => setFilterDomain(null)}
+          style={{
+            fontFamily: "var(--font-jetbrains), monospace",
+            fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase",
+            padding: "6px 14px",
+            border: `1px solid ${filterDomain === null ? th.gold : th.filterBorder}`,
+            background: filterDomain === null ? (sepia ? "rgba(139,105,20,0.1)" : "rgba(201,168,76,0.07)") : "transparent",
+            color: filterDomain === null ? th.gold : th.filterText,
+            cursor: "pointer", transition: "all 0.2s",
+          }}
         >
-          {/* Warp lines — horizontal domain threads */}
-          {domains.map((d, di) => (
-            <line key={`warp-${di}`}
-              x1={LW} y1={RH + di * CH + CH / 2}
-              x2={SVG_W} y2={RH + di * CH + CH / 2}
-              stroke={d.color} strokeWidth={0.8}
-              opacity={rowOp(di) * 0.25}
-            />
-          ))}
+          All Corpus
+        </button>
 
-          {/* Column separators — between each report */}
-          {Array.from({ length: NR + 1 }, (_, ri) => (
-            <line key={`csep-${ri}`}
-              x1={LW + ri * CW} y1={RH}
-              x2={LW + ri * CW} y2={RH + ND * CH}
-              stroke="rgba(255,255,255,0.07)" strokeWidth={1}
-            />
-          ))}
-
-          {/* Row separators — between each domain */}
-          {Array.from({ length: ND + 1 }, (_, di) => (
-            <line key={`rsep-${di}`}
-              x1={LW} y1={RH + di * CH}
-              x2={SVG_W} y2={RH + di * CH}
-              stroke="rgba(255,255,255,0.05)" strokeWidth={1}
-            />
-          ))}
-
-          {/* Cell hover targets — invisible rects capturing mouse events */}
-          {domains.map((d, di) =>
-            loomReports.map((r, ri) => {
-              const s = getDomainScores(r)[d.key] || 0;
-              return (
-                <rect key={`cell-${di}-${ri}`}
-                  x={LW + ri * CW + 1} y={RH + di * CH + 1}
-                  width={CW - 2} height={CH - 2}
-                  fill="transparent" rx={1}
-                  style={{ cursor: s > 0 ? (filterRow === di && filterCol === ri ? "pointer" : "crosshair") : "default" }}
-                  onMouseEnter={(e) => {
-                    if (s > 0) setTooltip({ x: e.clientX, y: e.clientY, domainColor: d.color, domainName: d.name, reportTitle: r.title, score: s });
-                  }}
-                  onMouseLeave={() => setTooltip(null)}
-                  onMouseMove={(e) => setTooltip((t) => t ? { ...t, x: e.clientX, y: e.clientY } : null)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!s) return;
-                    const alreadyActive = filterRow === di && filterCol === ri;
-                    if (alreadyActive) {
-                      router.push(`/research/${r.id}`);
-                    } else {
-                      setFilterRow(di);
-                      setFilterCol(ri);
-                    }
-                  }}
-                />
-              );
-            })
-          )}
-
-          {/* Domain labels — left column, clickable */}
-          {domains.map((d, di) => {
-            const y       = RH + di * CH + CH / 2;
-            const focused = filterRow === di;
-            const op      = filterRow !== -1 ? (focused ? 1 : 0.18) : 0.72;
-            return (
-              <g key={`dlbl-${di}`} style={{ cursor: "pointer" }}
-                onClick={(e) => { e.stopPropagation(); toggleRow(di); }}>
-                <rect x={LW - 12} y={y - 5} width={3} height={10} fill={d.color} rx={1} opacity={op} />
-                <text x={LW - 18} y={y + 4} textAnchor="end"
-                  fill={focused ? "#eae6f5" : d.color}
-                  fontFamily="JetBrains Mono, monospace"
-                  fontSize={10} letterSpacing="0.05em" opacity={op}>
-                  {d.short}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Report labels — top row, rotated 44°, clickable */}
-          {loomReports.map((r, ri) => {
-            const x       = LW + ri * CW + CW / 2;
-            const focused = filterCol === ri;
-            const op      = filterCol !== -1 ? (focused ? 1 : 0.15) : 1;
-            const label   = r.title.length > 26 ? r.title.slice(0, 26) + "…" : r.title;
-            return (
-              <g key={`rlbl-${ri}`} transform={`translate(${x},${RH - 6})`}
-                style={{ cursor: "pointer" }}
-                onClick={(e) => { e.stopPropagation(); toggleCol(ri); }}>
-                <text transform="rotate(-44)" textAnchor="start"
-                  fill={focused ? "#eae6f5" : "#8a849a"}
-                  fontFamily="Newsreader, serif"
-                  fontSize={11} fontStyle="italic" opacity={op}>
-                  {label}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Knots — Filter variant */}
-          {domains.map((d, di) =>
-            loomReports.map((r, ri) => {
-              const s = getDomainScores(r)[d.key] || 0;
-              if (!s) return null;
-              const cx        = LW + ri * CW + CW / 2;
-              const cy        = RH + di * CH + CH / 2;
-              const rowFade   = filterRow !== -1 && filterRow !== di;
-              const colFade   = filterCol !== -1 && filterCol !== ri;
-              const intersect = filterRow === di && filterCol === ri && filterRow !== -1;
-              const op        = rowFade || colFade ? 0.06 : intersect ? 1 : 0.75;
-              const rad       = intersect ? 11 : 7;
-              return (
-                <g key={`knot-${di}-${ri}`} style={{ pointerEvents: "none" }}>
-                  {intersect && (
-                    <>
-                      <circle cx={cx} cy={cy} r={18} fill="none" stroke={d.color} strokeWidth={0.8} opacity={0.25} />
-                      <circle cx={cx} cy={cy} r={13} fill="none" stroke={d.color} strokeWidth={0.5} opacity={0.4} />
-                    </>
-                  )}
-                  <circle cx={cx} cy={cy} r={rad} fill={d.color} opacity={op} />
-                </g>
-              );
-            })
-          )}
-
-          {/* Column index labels at bottom */}
-          {loomReports.map((_, ri) => (
-            <text key={`idx-${ri}`}
-              x={LW + ri * CW + CW / 2} y={RH + ND * CH + 12}
-              textAnchor="middle"
-              fill={filterCol === ri ? "#8a849a" : "#2a2535"}
-              fontFamily="JetBrains Mono, monospace"
-              fontSize={8} letterSpacing="0.08em">
-              {String(ri + 1).padStart(2, "0")}
-            </text>
-          ))}
-
-          {/* Interaction hint — shown when nothing is filtered */}
-          {filterRow === -1 && filterCol === -1 && NR > 0 && (
-            <text x={LW + (NR * CW) / 2} y={RH + ND * CH + 12}
-              textAnchor="middle" fill="#2a2535"
-              fontFamily="JetBrains Mono, monospace"
-              fontSize={8} letterSpacing="0.12em">
-              CLICK A DOMAIN OR REPORT TO ISOLATE
-            </text>
-          )}
-        </svg>
-      </div>
-
-      {/* ── Domain legend / filter chips ──────────────────────── */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 20px", marginBottom: "16px", maxWidth: "820px" }}>
-        {domains.map((d, di) => {
-          const isActive = filterRow === di;
-          return (
-            <button key={d.key}
-              onClick={() => toggleRow(di)}
-              style={{
-                display: "flex", alignItems: "center", gap: "7px",
-                background: "transparent", border: "none", cursor: "pointer", padding: 0,
-                fontFamily: "var(--font-jetbrains), monospace",
-                fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase",
-                color: isActive ? "#eae6f5" : d.color,
-                opacity: filterRow !== -1 && !isActive ? 0.3 : 1,
-                transition: "opacity 0.15s, color 0.15s",
-              }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: d.color }} />
-              {d.short}
-            </button>
-          );
-        })}
-        {filterRow !== -1 && (
-          <button onClick={reset}
-            style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-jetbrains), monospace", fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#494456" }}>
-            × clear
+        {usedDomains.map(d => (
+          <button
+            key={d.key}
+            onClick={() => setFilterDomain(d.key === filterDomain ? null : d.key)}
+            style={{
+              display: "flex", alignItems: "center", gap: 7,
+              fontFamily: "var(--font-jetbrains), monospace",
+              fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase",
+              padding: "6px 14px",
+              border: `1px solid ${filterDomain === d.key ? d.color : th.filterBorder}`,
+              background: filterDomain === d.key ? `${d.color}12` : "transparent",
+              color: filterDomain === d.key ? d.color : th.filterText,
+              cursor: "pointer", transition: "all 0.2s",
+            }}
+          >
+            <div style={{
+              width: 6, height: 6, borderRadius: "50%", background: d.color, flexShrink: 0,
+            }} />
+            {d.name}
           </button>
-        )}
+        ))}
       </div>
 
-      {/* Loom window note — only appears once corpus exceeds LOOM_WINDOW */}
-      {reports.length > LOOM_WINDOW && (
-        <p style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "10px", color: "#494456", letterSpacing: "0.06em", marginBottom: "24px" }}>
-          loom shows {LOOM_WINDOW} most recent — {reports.length - LOOM_WINDOW} older {reports.length - LOOM_WINDOW === 1 ? "report" : "reports"} in the archive below
-        </p>
-      )}
-
-      {/* ── Ornament ──────────────────────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", margin: "56px 0 40px" }}>
-        <div style={{ flex: 1, height: "1px", background: "#1c1828" }} />
-        <span style={{ fontFamily: "var(--font-fraunces), serif", fontSize: "18px", color: "#e8b86a", opacity: 0.5, fontStyle: "italic" }}>✦</span>
-        <div style={{ flex: 1, height: "1px", background: "#1c1828" }} />
+      {/* ── Card grid ───────────────────────────────────────────── */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+        gap: 28,
+      }}>
+        {visible.map((r, i) => (
+          <CorpusCard key={r.id} report={r} index={i} />
+        ))}
       </div>
-
-      {/* ── Report list ───────────────────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", paddingBottom: "16px", borderBottom: "1px solid #1c1828" }}>
-        <span style={{ fontFamily: "var(--font-newsreader), serif", fontSize: "20px", fontStyle: "italic", color: "#eae6f5" }}>
-          {listDomainKey
-            ? `${domains.find((d) => d.key === listDomainKey)?.name ?? listDomainKey} Research`
-            : "All Research"}
-        </span>
-        <span style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "9px", color: "#494456", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          {filteredList.length} {filteredList.length === 1 ? "report" : "reports"}
-        </span>
-      </div>
-
-      {filteredList.length === 0 ? (
-        <div style={{ padding: "48px 0", textAlign: "center", fontFamily: "var(--font-jetbrains), monospace", fontSize: "11px", color: "#494456", letterSpacing: "0.08em" }}>
-          no reports in this domain yet
-        </div>
-      ) : (
-        filteredList.map((r) => {
-          const scores     = getDomainScores(r);
-          const domainTags = DOMAIN_CONFIG.filter((d) => (scores[d.key] || 0) > 0);
-          const mins       = readMins(r.word_count);
-          const isHovered  = hovered === r.id;
-          const globalIdx  = reports.indexOf(r) + 1;
-          return (
-            <Link key={r.id} href={`/research/${r.id}`}
-              onMouseEnter={() => setHovered(r.id)}
-              onMouseLeave={() => setHovered(null)}
-              style={{
-                display: "flex", alignItems: "flex-start", gap: "16px",
-                padding: `16px 0 16px ${isHovered ? "6px" : "0"}`,
-                borderBottom: "1px solid #1c1828",
-                textDecoration: "none",
-                transition: "padding-left 0.15s",
-              }}>
-              <div style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "9px", color: "#494456", paddingTop: "4px", width: "28px", flexShrink: 0, letterSpacing: "0.06em" }}>
-                {String(globalIdx).padStart(2, "0")}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: "var(--font-newsreader), serif", fontSize: "16px", fontStyle: "italic", color: isHovered ? "#c4bcd8" : "#9890b0", marginBottom: "8px", lineHeight: 1.4, transition: "color 0.15s" }}>
-                  {r.title}
-                </div>
-                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                  {domainTags.map((d) => (
-                    <span key={d.key} style={{
-                      fontFamily: "var(--font-jetbrains), monospace",
-                      fontSize: "8px", letterSpacing: "0.1em", textTransform: "uppercase",
-                      padding: "2px 7px", borderRadius: "2px",
-                      color: d.color, background: `${d.color}18`, border: `0.5px solid ${d.color}30`,
-                    }}>
-                      {d.short}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "10px", color: "#494456", paddingTop: "4px", flexShrink: 0, textAlign: "right" }}>
-                {fmtDate(r.created)}
-                {mins && <><br /><span style={{ color: "#2a2535" }}>{mins} min</span></>}
-              </div>
-            </Link>
-          );
-        })
-      )}
-
-      {/* ── Tooltip ───────────────────────────────────────────── */}
-      {tooltip && (
-        <div style={{
-          position: "fixed",
-          left: Math.min(tooltip.x + 14, (typeof window !== "undefined" ? window.innerWidth : 1400) - 250) + "px",
-          top:  tooltip.y + 14 + "px",
-          background: "#1c1a26",
-          border: "1px solid rgba(255,255,255,0.15)",
-          borderRadius: "4px",
-          padding: "8px 12px",
-          fontFamily: "var(--font-jetbrains), monospace",
-          fontSize: "10px", color: "#eae6f5",
-          pointerEvents: "none", zIndex: 200,
-          maxWidth: "220px", lineHeight: 1.6,
-        }}>
-          <div style={{ color: tooltip.domainColor, fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>
-            {tooltip.domainName}
-          </div>
-          <div style={{ color: "#ccc4dc", fontFamily: "var(--font-newsreader), serif", fontStyle: "italic", marginBottom: "5px", fontSize: "11px" }}>
-            {tooltip.reportTitle.length > 60 ? tooltip.reportTitle.slice(0, 60) + "…" : tooltip.reportTitle}
-          </div>
-          <div>
-            depth: <span style={{ color: "#e8b86a" }}>{tooltip.score}/5</span>
-            {" — "}
-            {(["—", "light touch", "moderate", "strong", "deep", "primary"] as const)[tooltip.score]}
-            {filterRow !== -1 && filterCol !== -1 && (
-              <div style={{ marginTop: "6px", color: "#494456", fontSize: "9px", letterSpacing: "0.1em" }}>
-                click again to open →
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </>
   );
 }

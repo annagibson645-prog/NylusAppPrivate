@@ -25,10 +25,10 @@ export default function ResearchPage() {
           research · synthesis layer
         </div>
 
-        <h1 className="void-title">The Loom</h1>
+        <h1 className="void-title">The Corpus</h1>
 
         <p className="void-lede" style={{ "--domain-color": "#e8b86a" } as React.CSSProperties}>
-          A woven index of the research corpus. Rows are knowledge domains, columns are synthesis reports — each knot marks where a report draws from that domain&apos;s source material. Click any domain or report to filter.
+          A synthesis archive. Each card is a research report — click once to reveal the abstract, click again to open.
         </p>
 
         <ResearchLoom reports={reports} />
