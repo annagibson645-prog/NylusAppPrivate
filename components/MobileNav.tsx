@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 const TABS = [
   { href: '/',           label: 'Dashboard'  },
   { href: '/hubs',       label: 'Hubs'       },
+  { href: '/research',   label: 'Research'   },
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
 ] as const;
@@ -79,6 +80,17 @@ function IconHubs({ active }: { active: boolean }) {
   );
 }
 
+function IconResearch({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      {/* open book */}
+      <path d="M9 4v10M9 4C9 4 6 3 3 4v10c3-1 6 0 6 0M9 4c0 0 3-1 6 0v10c-3-1-6 0-6 0"
+        stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"
+        fill="none" opacity={active ? 1 : 0.7}/>
+    </svg>
+  );
+}
+
 function SunIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 15 15" fill="none">
@@ -140,6 +152,7 @@ export default function MobileNav() {
               {label === 'Sparks'     && <IconSparks     active={isActive} />}
               {label === 'Collisions' && <IconCollisions active={isActive} />}
               {label === 'Hubs'       && <IconHubs       active={isActive} />}
+              {label === 'Research'   && <IconResearch   active={isActive} />}
             </span>
             <span className="mnav-label">{label}</span>
           </Link>
