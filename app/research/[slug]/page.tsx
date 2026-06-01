@@ -3,7 +3,7 @@ import path from "path";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { marked } from "marked";
-import Nav from "@/components/Nav";
+import NavG from "@/components/NavG";
 
 export const dynamic = "force-dynamic";
 
@@ -64,11 +64,11 @@ export default async function ResearchSlugPage({
 
   return (
     <>
-      <Nav />
+      <NavG active="Research" />
       <div className="void-page" style={{ "--domain-color": domainColor } as React.CSSProperties}>
       <div className="void-ambient" />
 
-      <div style={{ position: "relative", zIndex: 2, maxWidth: "820px", margin: "0 auto" }} className="px-4 sm:px-10 lg:px-16 pt-10 sm:pt-14 pb-40">
+      <div style={{ position: "relative", zIndex: 2, maxWidth: "820px", margin: "0 auto", padding: "56px clamp(20px, 5vw, 64px) 160px" }}>
 
         {/* ── Back ──────────────────────────────────────────────── */}
         <Link href="/research" style={{
