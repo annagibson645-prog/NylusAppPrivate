@@ -36,8 +36,35 @@ function readMins(wc?: number) {
   return wc ? Math.max(1, Math.round(wc / 220)) : null;
 }
 
-function renderContent(raw: string): string {
-  const body = raw.replace(/^---[\s\S]*?---\n?/, "");
+function slugFromWikilink(target: string): string {
+  return target.split("/").pop()!.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function routeForType(type: string, slug: string): string {
+  if (type === "source") return `/source/${slug}`;
+  if (type === "spark") return `/spark/${slug}`;
+  if (type === "collision") return `/collision/${slug}`;
+  if (type === "research" || type === "essay") return `/${type}/${slug}`;
+  return `/concept/${slug}`;
+}
+
+function renderContent(raw: string, nodeTypes: Map<string, string>): string {
+  let body = raw.replace(/^---[\s\S]*?---\n?/, "");
+  // [[wikilinks]] → real links (or a "broken" span if the page isn't in the vault)
+  body = body.replace(
+    /\[\[([^\]|#\n]+?)(?:\|([^\]\n]+))?\]\]/g,
+    (_m, target: string, alias?: string) => {
+      const display = alias?.trim() || target.split("/").pop() || target;
+      const slug = slugFromWikilink(target);
+      if (nodeTypes.has(slug)) {
+        return `<a href="${routeForType(nodeTypes.get(slug)!, slug)}" class="void-link">${display}</a>`;
+      }
+      return `<span class="void-link-broken" title="Not in vault: ${target}">${display}</span>`;
+    }
+  );
+  // strip footnote definitions, turn footnote refs into superscripts
+  body = body.replace(/^\[\^[^\]]+\]:.+$/gm, "");
+  body = body.replace(/\[\^([^\]]+)\]/g, "<sup>$1</sup>");
   return marked.parse(body) as string;
 }
 
@@ -58,8 +85,14 @@ export default async function ResearchSlugPage({
   const report = reports.find((r) => r.id === slug);
   if (!report) notFound();
 
+  let nodeTypes = new Map<string, string>();
+  try {
+    const graph = loadJSON<{ nodes: { id: string; type: string }[] }>("graph.json");
+    nodeTypes = new Map(graph.nodes.map((n) => [n.id, n.type]));
+  } catch { /* links will render as plain text if graph is unavailable */ }
+
   const domainColor = DOMAIN_COLORS[report.domain] ?? "#8a849a";
-  const html        = renderContent(report.content ?? "");
+  const html        = renderContent(report.content ?? "", nodeTypes);
   const mins        = readMins(report.word_count);
 
   return (

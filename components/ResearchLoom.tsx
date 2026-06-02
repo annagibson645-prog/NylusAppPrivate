@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect, useId } from "react";
+import React, { useState, useCallback, useEffect, useRef, useId } from "react";
 import { useRouter } from "next/navigation";
 
 // ── Theme hook ────────────────────────────────────────────────────────────────
@@ -240,6 +240,8 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
   const color = getDomainColor(report.domain);
   const mins = readMins(report.word_count);
 
+  const rootRef = useRef<HTMLDivElement>(null);
+
   const handleClick = useCallback((e: React.MouseEvent) => {
     // If they clicked the open-overlay link itself, let router handle it
     if ((e.target as HTMLElement).closest("[data-open-link]")) return;
@@ -254,11 +256,22 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
     }
   }, [cardState]);
 
+  // Click anywhere outside a flipped card → flip it back to the front.
+  useEffect(() => {
+    if (cardState === 0) return;
+    const onDocDown = (e: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setCardState(0);
+    };
+    document.addEventListener("mousedown", onDocDown);
+    return () => document.removeEventListener("mousedown", onDocDown);
+  }, [cardState]);
+
   const isFlipped = cardState >= 1;
   const isOpen    = cardState === 2;
 
   return (
     <div
+      ref={rootRef}
       onClick={handleClick}
       style={{
         perspective: "1100px",
