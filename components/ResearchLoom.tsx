@@ -247,14 +247,19 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
     if ((e.target as HTMLElement).closest("[data-open-link]")) return;
 
     if (cardState === 0) {
-      setCardState(1);
+      setCardState(1);            // (touch) tap flips to the excerpt
     } else if (cardState === 1) {
-      setCardState(2);
+      setCardState(2);            // tap → open
     } else {
-      // state 2 → reset to front
-      setCardState(0);
+      router.push(`/research/${report.id}`); // tap again → go to the full report
     }
-  }, [cardState]);
+  }, [cardState, router, report.id]);
+
+  // Desktop (hover-capable devices): hover flips to the excerpt, leaving flips back.
+  const hoverCapable = () =>
+    typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
+  const handleEnter = useCallback(() => { if (hoverCapable()) setCardState((s) => (s === 0 ? 1 : s)); }, []);
+  const handleLeave = useCallback(() => { if (hoverCapable()) setCardState(0); }, []);
 
   // Click anywhere outside a flipped card → flip it back to the front.
   useEffect(() => {
@@ -273,6 +278,8 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
     <div
       ref={rootRef}
       onClick={handleClick}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
       style={{
         perspective: "1100px",
         aspectRatio: "5/9",
