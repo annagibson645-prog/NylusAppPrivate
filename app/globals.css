@@ -397,7 +397,7 @@ html, body {
 
 .void-prose h2 {
   font-family: var(--font-jetbrains), monospace;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0.2em;
   color: #b3aacb;
   text-transform: uppercase;
