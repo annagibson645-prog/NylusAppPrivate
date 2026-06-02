@@ -227,7 +227,19 @@ function generateExcerpt(content: string, title: string): string {
   // on cards) leads with the actual subject matter, not the machinery.
   const META = /\bVRC\b|SCHOLAR mode|THINKER mode|raw[- ]extraction|\bOps?\b\s*[\d–-]|operations?\b[^.]*\b(?:run|lineup|artifact)\b|Verify:\s|Compress:\s|Operationalize/i;
   const best = paragraphs.find((p) => !META.test(p)) || paragraphs[0] || lines.find((l) => l.trim().length > 60) || "";
-  return truncateAtWord(stripMarkdown(best).replace(/\s+/g, " ").trim(), 200);
+  const cleaned = stripMarkdown(best).replace(/\s+/g, " ").trim();
+
+  // A brief, complete synopsis — the first sentence (or two, if the first is
+  // short). Always ends on a sentence boundary; never a mid-word "…" trail-off.
+  const sentences = cleaned.match(/[^.!?]+[.!?]+["')\]]?/g) || [cleaned];
+  let out = "";
+  for (const s of sentences) {
+    const cand = (out ? out + " " : "") + s.trim();
+    if (out && cand.length > 220) break;   // don't overflow the card
+    out = cand;
+    if (out.length >= 70) break;           // one solid sentence is enough
+  }
+  return (out || cleaned.slice(0, 200)).trim();
 }
 
 function getTitle(content: string, filePath: string): string {
@@ -408,7 +420,11 @@ async function buildVault() {
       sources: Number(fm.sources) || 0,
       path: relPath,
       content: raw,
-      excerpt: fm.excerpt ? String(fm.excerpt) : generateExcerpt(content, title),
+      // Card description: prefer an author-written synopsis (a 1–2 sentence
+      // encapsulation of the whole report), then fall back to a generated excerpt.
+      excerpt: (fm.synopsis || fm.description || fm.excerpt)
+        ? String(fm.synopsis || fm.description || fm.excerpt)
+        : generateExcerpt(content, title),
       links: extractWikilinks(content),
       backlinks: [],
       hub: null,
