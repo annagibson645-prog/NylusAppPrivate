@@ -380,11 +380,11 @@ html, body {
 }
 
 .void-prose p {
-  font-size: 17px;
-  line-height: 1.92;
+  font-size: 19px;
+  line-height: 1.9;
   color: #ccc8dc;
-  margin-bottom: 22px;
-  max-width: 640px;
+  margin-bottom: 24px;
+  max-width: 660px;
   font-weight: 300;
 }
 
@@ -450,10 +450,10 @@ html, body {
 
 .void-prose ul li,
 .void-prose ol li {
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: 18px;
+  line-height: 1.75;
   color: #c0b8d0;
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #2e2840;
   padding-left: 20px;
   position: relative;
@@ -508,7 +508,9 @@ html, body {
 .void-link {
   color: var(--domain-color, #a78bfa);
   text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--domain-color, #a78bfa) 30%, transparent);
+  font-size: 1.06em;
+  font-weight: 400;
+  border-bottom: 1.5px solid color-mix(in srgb, var(--domain-color, #a78bfa) 45%, transparent);
   transition: border-color 0.2s, color 0.2s;
 }
 .void-link:hover { color: #c4b0fc; border-color: var(--domain-color, #a78bfa); }
