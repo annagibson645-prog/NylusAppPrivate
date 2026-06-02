@@ -1822,6 +1822,21 @@ html, body {
 .vmore:hover{ color:var(--c); }
 .vmore .plus{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border:1px solid var(--c); border-radius:50%; color:var(--c); font-size:15px; line-height:1; transition:background .2s,color .2s; }
 .vmore:hover .plus{ background:var(--c); color:var(--bg); }
+
+/* Sparks page sepia/parchment theming.
+   The .veins-* rules read the core page variables (--text, --text-dim,
+   --border, --bg), but the sepia theme only overrides .void-*/.hub-* classes
+   and never the core vars — so in light mode Sparks text rendered near-white
+   on parchment. Re-scope the palette to the veins subtree; domain colors (--c)
+   stay vivid in both themes. */
+[data-theme="sepia"] .veins-wrap{
+  --text:       #3c2e18;
+  --text-muted: #8b7355;
+  --text-dim:   #8b7355;
+  --border:     #d8cdb8;
+  --bg:         #f5f0e8;
+}
+
 @media (max-width:600px){
   .veins-wrap{ padding:32px 14px 96px; }
   .vhead{ flex-wrap:wrap; gap:8px 12px; padding:16px 4px; }
