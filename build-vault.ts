@@ -222,7 +222,11 @@ function generateExcerpt(content: string, title: string): string {
   }
   if (current.length > 60) paragraphs.push(current.trim());
 
-  const best = paragraphs[0] || lines.find((l) => l.trim().length > 60) || "";
+  // The research method must stay invisible: skip any opening paragraph that
+  // describes the VRC process / levers / operation counts, so the excerpt (shown
+  // on cards) leads with the actual subject matter, not the machinery.
+  const META = /\bVRC\b|SCHOLAR mode|THINKER mode|raw[- ]extraction|\bOps?\b\s*[\d–-]|operations?\b[^.]*\b(?:run|lineup|artifact)\b|Verify:\s|Compress:\s|Operationalize/i;
+  const best = paragraphs.find((p) => !META.test(p)) || paragraphs[0] || lines.find((l) => l.trim().length > 60) || "";
   return truncateAtWord(stripMarkdown(best).replace(/\s+/g, " ").trim(), 200);
 }
 
