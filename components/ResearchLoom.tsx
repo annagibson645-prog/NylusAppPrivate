@@ -148,9 +148,9 @@ function OrbSymbol({ domainKey, color }: { domainKey: string; color: string }) {
       style={{
         position: "absolute", top: "50%", left: "50%",
         transform: "translate(-50%, -50%)",
-        width: 56, height: 56, color,
+        width: 40, height: 40, color,
         display: "flex", alignItems: "center", justifyContent: "center",
-        filter: `drop-shadow(0 0 9px ${color}99)`,
+        filter: `drop-shadow(0 0 7px ${color}99)`,
         animation: "corpusSymPulse 3.2s ease-in-out infinite",
         zIndex: 2,
       }}
@@ -167,7 +167,7 @@ function SpinningOrb({ color, domain }: { color: string; domain: string }) {
   return (
     <div style={{
       position: "relative",
-      width: 104, height: 104,
+      width: 72, height: 72,
       flexShrink: 0,
     }}>
       {/* Outer glow ring */}
@@ -197,7 +197,7 @@ function SpinningOrb({ color, domain }: { color: string; domain: string }) {
             position: "absolute",
             top: 0, left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 5, height: 5,
+            width: 4, height: 4,
             borderRadius: "50%",
             background: color,
             // vary opacity so dots don't all look identical
@@ -282,7 +282,7 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
       onMouseLeave={handleLeave}
       style={{
         perspective: "1100px",
-        aspectRatio: "5/9",
+        aspectRatio: "5/7",
         cursor: "pointer",
         position: "relative",
       }}
@@ -311,23 +311,25 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
           <CardBorder color={color} />
 
           <div style={{
-            flex: 1, display: "flex", flexDirection: "column",
+            flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
             alignItems: "center", justifyContent: "center",
-            padding: "28px 18px 18px", gap: 18, width: "100%",
+            padding: "16px 12px 12px", gap: 10, width: "100%",
           }}>
             <SpinningOrb color={color} domain={report.domain} />
 
             <div style={{
               fontFamily: "var(--font-newsreader), Georgia, serif",
-              fontSize: 17, fontWeight: 400, fontStyle: "italic",
-              textAlign: "center", lineHeight: 1.3, color: th.text,
+              fontSize: 13, fontWeight: 400, fontStyle: "italic",
+              textAlign: "center", lineHeight: 1.25, color: th.text,
+              display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical",
+              overflow: "hidden", maxWidth: "100%",
             }}>
               {report.title}
             </div>
 
             <div style={{
               fontFamily: "var(--font-jetbrains), monospace",
-              fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase",
+              fontSize: 7, letterSpacing: "0.18em", textTransform: "uppercase",
               color, opacity: 0.65, textAlign: "center",
             }}>
               {getDomainName(report.domain)}
@@ -359,8 +361,8 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
 
           {/* Content — blurs when overlay is active */}
           <div style={{
-            flex: 1, display: "flex", flexDirection: "column",
-            padding: "22px 17px 12px", gap: 12,
+            flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+            padding: "13px 12px 9px", gap: 8,
             transition: "filter 0.3s, opacity 0.3s",
             filter: isOpen ? "blur(3px)" : "none",
             opacity: isOpen ? 0.2 : 1,
@@ -368,32 +370,35 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
             <div style={{
               fontFamily: "var(--font-jetbrains), monospace",
               fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase",
-              color, opacity: 0.65,
+              color, opacity: 0.65, flexShrink: 0,
             }}>
               {getDomainShort(report.domain)}
             </div>
 
             <div style={{
               fontFamily: "var(--font-newsreader), Georgia, serif",
-              fontSize: 15, fontStyle: "italic", fontWeight: 600,
-              lineHeight: 1.2, color: th.text,
+              fontSize: 12.5, fontStyle: "italic", fontWeight: 600,
+              lineHeight: 1.2, color: th.text, flexShrink: 0,
+              display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical",
+              overflow: "hidden",
             }}>
               {report.title}
             </div>
 
-            <div style={{ height: 1, background: color, opacity: 0.18 }} />
+            <div style={{ height: 1, background: color, opacity: 0.18, flexShrink: 0 }} />
 
             <div style={{
               fontFamily: "var(--font-newsreader), Georgia, serif",
-              fontSize: 12, fontWeight: 300, lineHeight: 1.72,
-              color: th.textDim, flex: 1,
+              fontSize: 10.5, fontWeight: 300, lineHeight: 1.5,
+              color: th.textDim, flex: 1, minHeight: 0,
               overflow: "hidden",
+              display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 8,
             }}>
               {report.excerpt ?? "No excerpt available."}
             </div>
 
             <div style={{
-              display: "flex", gap: 12,
+              display: "flex", gap: 10, flexWrap: "wrap", flexShrink: 0,
               fontFamily: "var(--font-jetbrains), monospace",
               fontSize: 7, opacity: 0.35, letterSpacing: "0.06em",
               color: th.text,
@@ -522,6 +527,9 @@ export default function ResearchLoom({ reports }: { reports: ResearchNode[] }) {
         .cs-typ3{transform-box:fill-box;transform-origin:left center;animation:csTyp 3s ease-in-out infinite 1.2s}
         .cs-breathe{animation:corpusSymPulse 3s ease-in-out infinite}
         @media (prefers-reduced-motion:reduce){ [class^="cs-"],[class*=" cs-"]{animation:none !important} }
+        /* ── Research card grid: 2 across on mobile, smaller auto-fill on wider screens ── */
+        .corpus-grid{ display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+        @media (min-width:640px){ .corpus-grid{ gap:18px; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); } }
       `}</style>
 
       {/* ── Domain filter pills ─────────────────────────────────── */}
@@ -569,11 +577,7 @@ export default function ResearchLoom({ reports }: { reports: ResearchNode[] }) {
       </div>
 
       {/* ── Card grid ───────────────────────────────────────────── */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-        gap: 28,
-      }}>
+      <div className="corpus-grid">
         {visible.map((r, i) => (
           <CorpusCard key={r.id} report={r} index={i} />
         ))}
