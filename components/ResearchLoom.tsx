@@ -148,7 +148,7 @@ function OrbSymbol({ domainKey, color }: { domainKey: string; color: string }) {
       style={{
         position: "absolute", top: "50%", left: "50%",
         transform: "translate(-50%, -50%)",
-        width: 40, height: 40, color,
+        color,
         display: "flex", alignItems: "center", justifyContent: "center",
         filter: `drop-shadow(0 0 7px ${color}99)`,
         animation: "corpusSymPulse 3.2s ease-in-out infinite",
@@ -165,11 +165,7 @@ function SpinningOrb({ color, domain }: { color: string; domain: string }) {
   const DOT_COUNT = 5;
   // stagger: full rotation = 4s, 360° / 5 = 72° = 0.8s per step
   return (
-    <div style={{
-      position: "relative",
-      width: 72, height: 72,
-      flexShrink: 0,
-    }}>
+    <div className="cs-orb">
       {/* Outer glow ring */}
       <div style={{
         position: "absolute", inset: 0,
@@ -317,9 +313,9 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
           }}>
             <SpinningOrb color={color} domain={report.domain} />
 
-            <div style={{
+            <div className="cs-ftitle" style={{
               fontFamily: "var(--font-newsreader), Georgia, serif",
-              fontSize: 13, fontWeight: 400, fontStyle: "italic",
+              fontWeight: 400, fontStyle: "italic",
               textAlign: "center", lineHeight: 1.25, color: th.text,
               display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical",
               overflow: "hidden", maxWidth: "100%",
@@ -327,9 +323,9 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
               {report.title}
             </div>
 
-            <div style={{
+            <div className="cs-fdomain" style={{
               fontFamily: "var(--font-jetbrains), monospace",
-              fontSize: 7, letterSpacing: "0.18em", textTransform: "uppercase",
+              letterSpacing: "0.18em", textTransform: "uppercase",
               color, opacity: 0.65, textAlign: "center",
             }}>
               {getDomainName(report.domain)}
@@ -367,17 +363,17 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
             filter: isOpen ? "blur(3px)" : "none",
             opacity: isOpen ? 0.2 : 1,
           }}>
-            <div style={{
+            <div className="cs-bdomain" style={{
               fontFamily: "var(--font-jetbrains), monospace",
-              fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase",
+              letterSpacing: "0.25em", textTransform: "uppercase",
               color, opacity: 0.65, flexShrink: 0,
             }}>
               {getDomainShort(report.domain)}
             </div>
 
-            <div style={{
+            <div className="cs-btitle" style={{
               fontFamily: "var(--font-newsreader), Georgia, serif",
-              fontSize: 12.5, fontStyle: "italic", fontWeight: 600,
+              fontStyle: "italic", fontWeight: 600,
               lineHeight: 1.2, color: th.text, flexShrink: 0,
               display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical",
               overflow: "hidden",
@@ -387,9 +383,9 @@ function CorpusCard({ report, index }: { report: ResearchNode; index: number }) 
 
             <div style={{ height: 1, background: color, opacity: 0.18, flexShrink: 0 }} />
 
-            <div style={{
+            <div className="cs-bexcerpt" style={{
               fontFamily: "var(--font-newsreader), Georgia, serif",
-              fontSize: 10.5, fontWeight: 300, lineHeight: 1.5,
+              fontWeight: 300, lineHeight: 1.5,
               color: th.textDim, flex: 1, minHeight: 0,
               overflow: "hidden",
               display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 8,
@@ -531,6 +527,30 @@ export default function ResearchLoom({ reports }: { reports: ResearchNode[] }) {
         .corpus-grid{ display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); }
         @media (min-width:640px){ .corpus-grid{ gap:24px; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); } }
         @media (min-width:1100px){ .corpus-grid{ gap:28px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); } }
+        /* ── Card internals: scale up the orb + type on wider screens (card size unchanged) ── */
+        .cs-orb{ position:relative; width:72px; height:72px; flex-shrink:0; }
+        .cs-orb-sym{ width:40px; height:40px; }
+        .cs-ftitle{ font-size:13px; }
+        .cs-fdomain{ font-size:7px; }
+        .cs-btitle{ font-size:12.5px; }
+        .cs-bexcerpt{ font-size:10.5px; }
+        .cs-bdomain{ font-size:7px; }
+        @media (min-width:640px){
+          .cs-orb{ width:90px; height:90px; }
+          .cs-orb-sym{ width:52px; height:52px; }
+          .cs-ftitle{ font-size:16px; }
+          .cs-fdomain{ font-size:8px; }
+          .cs-btitle{ font-size:15px; }
+          .cs-bexcerpt{ font-size:12.5px; }
+          .cs-bdomain{ font-size:8px; }
+        }
+        @media (min-width:1100px){
+          .cs-orb{ width:108px; height:108px; }
+          .cs-orb-sym{ width:62px; height:62px; }
+          .cs-ftitle{ font-size:18px; }
+          .cs-btitle{ font-size:16.5px; }
+          .cs-bexcerpt{ font-size:13.5px; }
+        }
       `}</style>
 
       {/* ── Domain filter pills ─────────────────────────────────── */}
