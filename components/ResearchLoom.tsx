@@ -529,7 +529,8 @@ export default function ResearchLoom({ reports }: { reports: ResearchNode[] }) {
         @media (prefers-reduced-motion:reduce){ [class^="cs-"],[class*=" cs-"]{animation:none !important} }
         /* ── Research card grid: 2 across on mobile, smaller auto-fill on wider screens ── */
         .corpus-grid{ display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); }
-        @media (min-width:640px){ .corpus-grid{ gap:18px; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); } }
+        @media (min-width:640px){ .corpus-grid{ gap:24px; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); } }
+        @media (min-width:1100px){ .corpus-grid{ gap:28px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); } }
       `}</style>
 
       {/* ── Domain filter pills ─────────────────────────────────── */}
