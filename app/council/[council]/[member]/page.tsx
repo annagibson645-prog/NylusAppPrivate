@@ -19,7 +19,7 @@ const CSS = `
   .seat-root {
     --ink: #eae6f5; --muted: #8a849a; --dim: #494456;
     --bg: #0e0d14; --hair: rgba(255,255,255,0.07); --emblem-bg: #0e0d14;
-    background: transparent;
+    background: #0e0d14;
     color: var(--ink);
     min-height: 100vh;
     font-family: var(--font-newsreader), Georgia, serif;
@@ -29,6 +29,7 @@ const CSS = `
   [data-theme="sepia"] .seat-root {
     --ink: #2c1f0e; --muted: #6f6048; --dim: #b3a07e;
     --bg: #f0ead8; --hair: rgba(44,31,14,0.12); --emblem-bg: #f0ead8;
+    background: #f0ead8;
   }
 
   .seat-hero {

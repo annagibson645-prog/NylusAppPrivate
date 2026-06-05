@@ -74,7 +74,8 @@ export default async function CouncilPage({
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        .council-page { position: relative; min-height: 100vh; background: transparent; }
+        .council-page { position: relative; min-height: 100vh; background: #0e0d14; }
+        [data-theme="sepia"] .council-page { background: #f0ead8; }
         .council-inner {
           position: relative; z-index: 2;
           max-width: 1120px; margin: 0 auto;

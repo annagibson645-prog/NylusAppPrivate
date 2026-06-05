@@ -17,12 +17,13 @@ const P5_STYLES = `
     display: flex;
     width: 100%;
     min-height: calc(100vh - 80px);
-    background: transparent;
+    background: #0e0d14;
     --p5-emblem-bg: #0e0d14;
     color: var(--text, #eae6f5);
     overflow: hidden;
   }
   [data-theme="sepia"] .p5-root {
+    background: #f0ead8;
     --p5-emblem-bg: #f0ead8;
     color: var(--text, #2c1f0e);
   }
