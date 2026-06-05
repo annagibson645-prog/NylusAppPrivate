@@ -10,6 +10,7 @@ const TABS = [
   { href: '/research',   label: 'Research'   },
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
+  { href: '/council',    label: 'Council'    },
 ] as const;
 
 // ─── SVG icons ────────────────────────────────────────────────────────────────
@@ -91,6 +92,25 @@ function IconResearch({ active }: { active: boolean }) {
   );
 }
 
+function IconCouncil({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      {/* three seats at a table */}
+      <circle cx="9" cy="4" r="2"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.8}/>
+      <circle cx="3.5" cy="9.5" r="1.7"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.2" opacity={active ? 0.9 : 0.6}/>
+      <circle cx="14.5" cy="9.5" r="1.7"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.2" opacity={active ? 0.9 : 0.6}/>
+      <path d="M3 15c0-2.2 2.7-3.5 6-3.5s6 1.3 6 3.5"
+        stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7}/>
+    </svg>
+  );
+}
+
 function SunIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 15 15" fill="none">
@@ -153,6 +173,7 @@ export default function MobileNav() {
               {label === 'Collisions' && <IconCollisions active={isActive} />}
               {label === 'Hubs'       && <IconHubs       active={isActive} />}
               {label === 'Research'   && <IconResearch   active={isActive} />}
+              {label === 'Council'    && <IconCouncil    active={isActive} />}
             </span>
             <span className="mnav-label">{label}</span>
           </Link>
