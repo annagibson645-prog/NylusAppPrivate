@@ -4,7 +4,7 @@
 //   Influence (left) · Sovereignty (center) · Craftsmanship (right).
 // No coupling to the vault build pipeline.
 
-export type EmblemKey = "eye" | "crown" | "hammerpen";
+export type EmblemKey = "eye" | "crown" | "hammerpen" | "gears" | "hammer";
 
 export interface CouncilMember {
   slug: string;
@@ -129,9 +129,9 @@ export const CRAFTSMAN: Council = {
     "Convene at the desk — when the work needs sharpening, when you can't tell if it's working, when you're tempted to ship something half-finished or polish forever.",
   convene:
     "A council rich in quality and built to guard the one faculty it was born to protect: finishing. The forge is either lit or it is cold.",
-  emblem: "hammerpen",
-  color: "#2dd4bf",
-  colorRgb: "45,212,191",
+  emblem: "hammer",
+  color: "#60a5fa",
+  colorRgb: "96,165,250",
   members: [
     {
       slug: "nicolas-cole",

@@ -3,6 +3,7 @@ import Link from "next/link";
 import NavG from "@/components/NavG";
 import { getCouncil, COUNCILS } from "@/lib/council-data";
 import { Emblem } from "@/components/council/CouncilEmblems";
+import CouncilStars from "@/components/council/CouncilStars";
 
 export const dynamic = "force-static";
 
@@ -30,6 +31,7 @@ export default async function CouncilPage({
       <NavG active="The Council" />
       <div className="void-page council-page" style={cssVars}>
         <div className="void-ambient" />
+        <CouncilStars density={0.5} accent={council.color} />
 
         <div className="council-inner">
           {/* Back */}
@@ -37,20 +39,21 @@ export default async function CouncilPage({
             ← The Council
           </Link>
 
-          {/* Emblem mark */}
-          <div className="council-emblem-mark" aria-hidden>
-            <Emblem kind={council.emblem} />
-          </div>
-
-          <div className="council-domain-chip">{council.mode}</div>
-          <h1 className="council-title">{council.name}</h1>
-          <p className="council-lede">{council.tagline}</p>
-          <p className="council-sub">{council.question}</p>
+          {/* Centered header — name at top, large emblem beneath */}
+          <header className="council-head">
+            <div className="council-domain-chip">{council.mode}</div>
+            <h1 className="council-title">{council.name}</h1>
+            <div className="council-emblem-mark" aria-hidden>
+              <Emblem kind={council.emblem} />
+            </div>
+            <p className="council-lede">{council.tagline}</p>
+            <p className="council-sub">{council.question}</p>
+          </header>
 
           {/* Seats */}
           <div className="council-seats">
             {council.members.map((m) => (
-              <article key={m.slug} className="seat-card">
+              <Link key={m.slug} href={`/council/${council.key}/${m.slug}`} className="seat-card">
                 <div className="seat-top">
                   <span className="seat-carries">{m.carries}</span>
                   {m.living && <span className="seat-living">living figure</span>}
@@ -59,7 +62,8 @@ export default async function CouncilPage({
                 <p className="seat-role">{m.seat}</p>
                 <blockquote className="seat-question">“{m.question}”</blockquote>
                 <p className="seat-blurb">{m.blurb}</p>
-              </article>
+                <span className="seat-enter">Enter the seat →</span>
+              </Link>
             ))}
           </div>
 
@@ -70,7 +74,7 @@ export default async function CouncilPage({
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        .council-page { position: relative; min-height: 100vh; }
+        .council-page { position: relative; min-height: 100vh; background: transparent; }
         .council-inner {
           position: relative; z-index: 2;
           max-width: 1120px; margin: 0 auto;
@@ -85,9 +89,16 @@ export default async function CouncilPage({
         }
         .council-back:hover { color: var(--domain-color); }
 
+        /* Centered header */
+        .council-head {
+          display: flex; flex-direction: column; align-items: center;
+          text-align: center; margin-bottom: 60px;
+        }
         .council-emblem-mark {
-          color: var(--domain-color); width: 64px; height: 64px;
-          margin-bottom: 22px; opacity: .9;
+          color: var(--domain-color);
+          width: clamp(112px, 16vw, 168px); height: clamp(112px, 16vw, 168px);
+          margin: 26px 0 4px; opacity: .92;
+          filter: drop-shadow(0 0 22px rgba(var(--domain-color-rgb), 0.25));
         }
         .council-emblem-mark svg { width: 100%; height: 100%; }
 
@@ -99,19 +110,18 @@ export default async function CouncilPage({
         .council-title {
           font-family: 'Fraunces', Georgia, serif; font-style: italic;
           font-weight: 400; font-size: clamp(38px, 6vw, 64px);
-          line-height: 1.04; color: #eae6f5; margin: 0 0 22px;
+          line-height: 1.04; color: #eae6f5; margin: 0;
           letter-spacing: -0.01em;
         }
         .council-lede {
           font-family: 'Newsreader', Georgia, serif;
           font-size: clamp(19px, 2.4vw, 25px); line-height: 1.5;
-          color: #cdc8dd; max-width: 720px;
-          padding-left: 18px; border-left: 2px solid var(--domain-color);
-          margin: 0 0 14px;
+          color: #cdc8dd; max-width: 680px;
+          margin: 26px auto 0;
         }
         .council-sub {
           font-size: 15px; line-height: 1.6; color: #8a849a;
-          max-width: 680px; margin: 0 0 56px;
+          max-width: 620px; margin: 14px auto 0;
         }
 
         .council-seats {
@@ -123,10 +133,21 @@ export default async function CouncilPage({
         .seat-card {
           border: 1px solid rgba(255,255,255,0.08);
           border-radius: 14px; padding: 26px 24px 28px;
-          background: rgba(255,255,255,0.02);
+          background: rgba(20,18,28,0.55);
+          backdrop-filter: blur(3px);
           display: flex; flex-direction: column;
+          text-decoration: none; color: inherit;
           transition: border-color .25s, transform .25s, background .25s;
         }
+        .seat-enter {
+          margin-top: 20px;
+          font-family: var(--font-jetbrains), monospace;
+          font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+          color: var(--domain-color); opacity: 0; transform: translateY(4px);
+          transition: opacity .25s, transform .25s;
+        }
+        .seat-card:hover .seat-enter { opacity: .95; transform: translateY(0); }
+        [data-theme="sepia"] .seat-card { background: rgba(240,234,216,0.7); }
         .seat-card:hover {
           border-color: color-mix(in srgb, var(--domain-color) 55%, transparent);
           background: rgba(var(--domain-color-rgb), .05);

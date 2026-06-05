@@ -64,9 +64,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   ].join(" ");
 
   return (
-    <html lang="en" className={fontVars} style={{ height: "100%" }}>
-      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-      <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+    <html lang="en" className={fontVars} style={{ height: "100%" }} suppressHydrationWarning>
+      <head>
+        {/* No-flash theme init — runs before paint, sets data-theme on <html>. */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body style={{ margin: 0, padding: 0, height: "100%" }}>
         {children}
         <MobileNav />

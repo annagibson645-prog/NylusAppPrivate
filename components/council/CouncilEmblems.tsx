@@ -6,6 +6,8 @@
 // CSS target sub-elements (iris, gems, hammer, pen) for richer motion.
 
 import type { SVGProps } from "react";
+// Chosen emblem set (user picks): Eye → A, Crown → B, Craftsmanship → Hammer.
+import { EyeA, CrownB, GearsC, HammerC } from "./EmblemPrototypes";
 
 const baseProps = {
   viewBox: "0 0 200 200",
@@ -147,11 +149,61 @@ export function HammerPenEmblem(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/* ─── GEARS — Craftsmanship ──────────────────────────────────────────────────
+   Two interlocking gears — the machinery of making. `data-part="gear-a"` /
+   `data-part="gear-b"` let CSS spin them in opposite directions if desired. */
+function gearPath(cx: number, cy: number, rOuter: number, rInner: number, teeth: number) {
+  // Build a cog outline: alternating outer (tooth tip) and inner (valley) points.
+  const steps = teeth * 2;
+  const pts: string[] = [];
+  for (let i = 0; i < steps; i++) {
+    const a = (i / steps) * Math.PI * 2 - Math.PI / 2;
+    const r = i % 2 === 0 ? rOuter : rInner;
+    const x = cx + Math.cos(a) * r;
+    const y = cy + Math.sin(a) * r;
+    pts.push(`${x.toFixed(2)},${y.toFixed(2)}`);
+  }
+  return `M${pts.join(" L")} Z`;
+}
+
+export function GearsEmblem(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...baseProps} {...props}>
+      {/* large gear, upper-left */}
+      <g data-part="gear-a">
+        <path d={gearPath(78, 80, 52, 43, 12)} strokeWidth={2.4} fill="currentColor" fillOpacity={0.06} />
+        <circle cx="78" cy="80" r="16" strokeWidth={2.2} />
+        <circle cx="78" cy="80" r="4.5" fill="currentColor" stroke="none" />
+        {/* inner spokes */}
+        <g opacity={0.5}>
+          {Array.from({ length: 6 }).map((_, i) => {
+            const a = (i / 6) * Math.PI * 2;
+            return (
+              <line key={i}
+                x1={78 + Math.cos(a) * 6} y1={80 + Math.sin(a) * 6}
+                x2={78 + Math.cos(a) * 15} y2={80 + Math.sin(a) * 15}
+                strokeWidth={1.2} />
+            );
+          })}
+        </g>
+      </g>
+      {/* smaller gear, lower-right, meshing with the first */}
+      <g data-part="gear-b">
+        <path d={gearPath(132, 130, 38, 31, 10)} strokeWidth={2.2} fill="currentColor" fillOpacity={0.06} />
+        <circle cx="132" cy="130" r="12" strokeWidth={2} />
+        <circle cx="132" cy="130" r="3.5" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+  );
+}
+
 export function Emblem({
   kind,
   ...props
-}: { kind: "eye" | "crown" | "hammerpen" } & SVGProps<SVGSVGElement>) {
-  if (kind === "eye") return <EyeEmblem {...props} />;
-  if (kind === "crown") return <CrownEmblem {...props} />;
+}: { kind: "eye" | "crown" | "hammerpen" | "gears" | "hammer" } & SVGProps<SVGSVGElement>) {
+  if (kind === "eye") return <EyeA {...props} />;
+  if (kind === "crown") return <CrownB {...props} />;
+  if (kind === "hammer") return <HammerC {...props} />;
+  if (kind === "gears") return <GearsC {...props} />;
   return <HammerPenEmblem {...props} />;
 }
