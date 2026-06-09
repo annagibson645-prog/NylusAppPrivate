@@ -34,6 +34,21 @@ const DOMAIN_LABEL: Record<string, string> = {
   "business":             "Business",
 };
 
+// Theme-aware palette: dark (void) values inline below; parchment overrides in
+// the <style> block so the page responds to the light/dark toggle.
+const COLLISION_THEME_CSS = `
+  .collision-root{
+    --cbg:#0e0d14; --cpanel:#0a0912; --cborder:#1c1828; --cink:#e8e3f0;
+    --cmuted:#8c84b0; --cdim:#3a3460; --cdim2:#2a2540; --cdim3:#4a4468; --cdim4:#6c6490;
+    --cpip:rgba(255,255,255,0.08);
+  }
+  [data-theme="sepia"] .collision-root{
+    --cbg:#f0ead8; --cpanel:#ece4d2; --cborder:#d8cdb8; --cink:#2c1f0e;
+    --cmuted:#6f6048; --cdim:#9a8a6a; --cdim2:#c0b090; --cdim3:#8b7355; --cdim4:#5c4a2a;
+    --cpip:rgba(44,31,14,0.12);
+  }
+`;
+
 function cleanTitle(t: string) {
   return t.replace(/^Collision:\s*/i, "");
 }
@@ -70,7 +85,7 @@ function Pips({ score, color }: { score: number; color: string }) {
       {Array.from({ length: total }).map((_, i) => (
         <span key={i} style={{
           width: 6, height: 6, borderRadius: "50%",
-          background: i < filled ? color : "rgba(255,255,255,0.08)",
+          background: i < filled ? color : "var(--cpip)",
           display: "inline-block",
         }} />
       ))}
@@ -113,7 +128,8 @@ export default async function CollisionPage({
   const FM = "var(--font-jetbrains, 'JetBrains Mono', monospace)";
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0e0d14", color: "#e8e3f0", fontFamily: FN }}>
+    <div className="collision-root" style={{ minHeight: "100vh", background: "var(--cbg)", color: "var(--cink)", fontFamily: FN }}>
+      <style dangerouslySetInnerHTML={{ __html: COLLISION_THEME_CSS }} />
 
       <NavG
         active="Collisions"
@@ -130,8 +146,8 @@ export default async function CollisionPage({
 
         {/* D1 VOID DOSSIER */}
         <div style={{
-          background: "#0a0912",
-          border: "1px solid #1c1828",
+          background: "var(--cpanel)",
+          border: "1px solid var(--cborder)",
           borderRadius: 2,
           padding: "44px 48px",
           position: "relative",
@@ -153,29 +169,29 @@ export default async function CollisionPage({
             <span style={{ fontFamily: FM, fontSize: 13, color: col, letterSpacing: ".12em", textTransform: "uppercase" }}>
               {DOMAIN_LABEL[node.domain] || node.domain}
             </span>
-            <span style={{ fontFamily: FM, fontSize: 12, color: "#3a3460", letterSpacing: ".06em" }}>
+            <span style={{ fontFamily: FM, fontSize: 12, color: "var(--cdim)", letterSpacing: ".06em" }}>
               {node.created}
             </span>
           </div>
 
           {/* Ornament */}
-          <div style={{ fontFamily: FM, fontSize: 13, color: "#2a2540", letterSpacing: ".06em", marginBottom: 24, position: "relative" }}>
+          <div style={{ fontFamily: FM, fontSize: 13, color: "var(--cdim2)", letterSpacing: ".06em", marginBottom: 24, position: "relative" }}>
             — collision —
           </div>
 
           {/* Title */}
           <h1 style={{
             fontFamily: FF, fontStyle: "italic", fontWeight: 200,
-            fontSize: 48, color: "#e8e3f0",
+            fontSize: 48, color: "var(--cink)",
             lineHeight: 1.05, letterSpacing: "-.02em",
             marginBottom: 24, position: "relative",
           }}>{cleanTitle(node.title)}</h1>
 
           {/* Excerpt */}
           <p style={{
-            fontFamily: FN, fontSize: 20, color: "#8c84b0",
+            fontFamily: FN, fontSize: 20, color: "var(--cmuted)",
             lineHeight: 1.65, marginBottom: 32, paddingBottom: 32,
-            borderBottom: "1px solid #1c1828", position: "relative",
+            borderBottom: "1px solid var(--cborder)", position: "relative",
           }}>{node.excerpt}</p>
 
           {/* Tension table */}
@@ -184,32 +200,32 @@ export default async function CollisionPage({
               {sourceTensions && (
                 <tr>
                   <td style={{
-                    fontFamily: FM, fontSize: 12, color: "#3a3460",
+                    fontFamily: FM, fontSize: 12, color: "var(--cdim)",
                     letterSpacing: ".1em", textTransform: "uppercase",
                     width: 100, paddingRight: 20, paddingTop: 16, paddingBottom: 16,
-                    verticalAlign: "top", borderTop: "1px solid #1c1828",
+                    verticalAlign: "top", borderTop: "1px solid var(--cborder)",
                   }}>Sources</td>
                   <td style={{
                     fontFamily: FN, fontStyle: "italic", fontSize: 17,
-                    color: "#8c84b0", lineHeight: 1.65,
+                    color: "var(--cmuted)", lineHeight: 1.65,
                     paddingTop: 14, paddingBottom: 16,
-                    borderTop: "1px solid #1c1828", verticalAlign: "top",
+                    borderTop: "1px solid var(--cborder)", verticalAlign: "top",
                   }}>{stripMd(sourceTensions)}</td>
                 </tr>
               )}
               {collisionBody && (
                 <tr>
                   <td style={{
-                    fontFamily: FM, fontSize: 12, color: "#3a3460",
+                    fontFamily: FM, fontSize: 12, color: "var(--cdim)",
                     letterSpacing: ".1em", textTransform: "uppercase",
                     width: 100, paddingRight: 20, paddingTop: 16, paddingBottom: 16,
-                    verticalAlign: "top", borderTop: "1px solid #1c1828",
+                    verticalAlign: "top", borderTop: "1px solid var(--cborder)",
                   }}>Tension</td>
                   <td style={{
                     fontFamily: FN, fontStyle: "italic", fontSize: 17,
-                    color: "#8c84b0", lineHeight: 1.65,
+                    color: "var(--cmuted)", lineHeight: 1.65,
                     paddingTop: 14, paddingBottom: 16,
-                    borderTop: "1px solid #1c1828", verticalAlign: "top",
+                    borderTop: "1px solid var(--cborder)", verticalAlign: "top",
                   }}>
                     {stripMd(collisionBody).slice(0, 420)}
                     {stripMd(collisionBody).length > 420 ? "…" : ""}
@@ -219,16 +235,16 @@ export default async function CollisionPage({
               {candidateIdea && (
                 <tr>
                   <td style={{
-                    fontFamily: FM, fontSize: 12, color: "#3a3460",
+                    fontFamily: FM, fontSize: 12, color: "var(--cdim)",
                     letterSpacing: ".1em", textTransform: "uppercase",
                     width: 100, paddingRight: 20, paddingTop: 16, paddingBottom: 16,
-                    verticalAlign: "top", borderTop: "1px solid #1c1828",
+                    verticalAlign: "top", borderTop: "1px solid var(--cborder)",
                   }}>Candidate</td>
                   <td style={{
                     fontFamily: FN, fontStyle: "italic", fontSize: 17,
-                    color: "#8c84b0", lineHeight: 1.65,
+                    color: "var(--cmuted)", lineHeight: 1.65,
                     paddingTop: 14, paddingBottom: 16,
-                    borderTop: "1px solid #1c1828", verticalAlign: "top",
+                    borderTop: "1px solid var(--cborder)", verticalAlign: "top",
                   }}>
                     {stripMd(candidateIdea).slice(0, 500)}
                     {stripMd(candidateIdea).length > 500 ? "…" : ""}
@@ -241,13 +257,13 @@ export default async function CollisionPage({
           {/* Footer: pressure */}
           <div style={{
             display: "flex", alignItems: "center", gap: 10,
-            paddingTop: 8, borderTop: "1px solid #1c1828", position: "relative",
+            paddingTop: 8, borderTop: "1px solid var(--cborder)", position: "relative",
           }}>
             <Pips score={score} color={col} />
-            <span style={{ fontFamily: FM, fontSize: 13, color: "#4a4468", marginLeft: 4, letterSpacing: ".06em" }}>
+            <span style={{ fontFamily: FM, fontSize: 13, color: "var(--cdim3)", marginLeft: 4, letterSpacing: ".06em" }}>
               pressure {score}
             </span>
-            <span style={{ fontFamily: FM, fontSize: 12, color: "#2a2540", letterSpacing: ".08em", textTransform: "uppercase", marginLeft: 12 }}>
+            <span style={{ fontFamily: FM, fontSize: 12, color: "var(--cdim2)", letterSpacing: ".08em", textTransform: "uppercase", marginLeft: 12 }}>
               {node.status}
             </span>
           </div>
@@ -256,10 +272,10 @@ export default async function CollisionPage({
         {/* WHAT WOULD NEED TO BE TRUE */}
         {needsTrue && (
           <div style={{ marginTop: 48 }}>
-            <div style={{ fontFamily: FM, fontSize: 12, color: "#3a3460", letterSpacing: ".14em", textTransform: "uppercase", marginBottom: 20 }}>
+            <div style={{ fontFamily: FM, fontSize: 12, color: "var(--cdim)", letterSpacing: ".14em", textTransform: "uppercase", marginBottom: 20 }}>
               What Would Need to Be True
             </div>
-            <div style={{ fontFamily: FN, fontSize: 18, color: "#6c6490", lineHeight: 1.75, whiteSpace: "pre-line" }}>
+            <div style={{ fontFamily: FN, fontSize: 18, color: "var(--cdim4)", lineHeight: 1.75, whiteSpace: "pre-line" }}>
               {stripMd(needsTrue)}
             </div>
           </div>
@@ -268,7 +284,7 @@ export default async function CollisionPage({
         {/* CONNECTIONS */}
         {(linkedNodes.length > 0 || backlinkedNodes.length > 0) && (
           <div style={{ marginTop: 56 }}>
-            <div style={{ fontFamily: FM, fontSize: 12, color: "#3a3460", letterSpacing: ".14em", textTransform: "uppercase", marginBottom: 20 }}>
+            <div style={{ fontFamily: FM, fontSize: 12, color: "var(--cdim)", letterSpacing: ".14em", textTransform: "uppercase", marginBottom: 20 }}>
               Connected
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -285,7 +301,7 @@ export default async function CollisionPage({
                   return (
                     <Link key={linked.id} href={href} style={{
                       display: "flex", alignItems: "center", gap: 12,
-                      padding: "12px 0", borderBottom: "1px solid #1c1828",
+                      padding: "12px 0", borderBottom: "1px solid var(--cborder)",
                       textDecoration: "none",
                     }}>
                       <span style={{
@@ -299,7 +315,7 @@ export default async function CollisionPage({
                       }}>{linked.type}</span>
                       <span style={{
                         fontFamily: FN, fontStyle: "italic",
-                        fontSize: 16, color: "#8c84b0", lineHeight: 1.3,
+                        fontSize: 16, color: "var(--cmuted)", lineHeight: 1.3,
                       }}>{linked.title}</span>
                     </Link>
                   );
@@ -311,7 +327,7 @@ export default async function CollisionPage({
         {/* BACK */}
         <div style={{ marginTop: 60 }}>
           <Link href="/collisions" style={{
-            fontFamily: FM, fontSize: 12, color: "#4a4468",
+            fontFamily: FM, fontSize: 12, color: "var(--cdim3)",
             textDecoration: "none", letterSpacing: ".1em", textTransform: "uppercase",
           }}>
             back to collisions
