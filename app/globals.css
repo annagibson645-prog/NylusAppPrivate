@@ -1017,8 +1017,10 @@ html, body {
 [data-theme="sepia"] body { background: #f5f0e8 !important; }
 /* html override too -- otherwise <html> stays dark and shows through any
    page that is transparent / taller than one viewport (the "half-black in
-   light mode" seam on sparks, council, etc.) */
-[data-theme="sepia"] html { background: #f5f0e8 !important; }
+   light mode" seam on sparks, council, etc.).
+   NOTE: the selector must be html[data-theme] — data-theme is ON <html>, so
+   `[data-theme] html` (a descendant html) would never match. */
+html[data-theme="sepia"] { background: #f5f0e8 !important; }
 
 /* void-hub-card (domain page: hub cards) */
 [data-theme="sepia"] .void-hub-card         { background: #ede6d4 !important; border-color: #d0c4a8 !important; }
