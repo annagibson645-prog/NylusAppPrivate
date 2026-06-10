@@ -1,10 +1,12 @@
 "use client";
 
 // app/sparks/page.tsx — the Sparks list.
-// "Illuminated Index × Subtype Lens": the two-pane Council-style index (sticky
-// rail + numbered entries) fused with the subtype lens — the rail filters by
-// BOTH current (domain) and kind (subtype), every entry wears its kind's colour
-// and glyph, and the right pane groups by whichever taxonomy you're not filtering.
+// "Illuminated Index × Subtype Lens": two-pane Council-style index (sticky rail +
+// numbered entries) fused with the subtype lens. The rail is a MULTI-SELECT
+// filter: toggle any currents (domains) and any kinds (subtypes), plus a text
+// search. Within a group selections are OR; across groups they are AND
+// (e.g. History + Essay Seed → only history essay-seeds). Every entry wears its
+// kind's colour + glyph; the right pane groups by whichever axis isn't narrowed.
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -85,14 +87,13 @@ function fmtDate(d?: string): string {
 
 const PAGE_SIZE = 120;
 
-type Facet = { mode: "all" | "domain" | "kind"; key: string };
-
 export default function SparksPage() {
   const [sparks, setSparks] = useState<Spark[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [active, setActive] = useState<Facet>({ mode: "all", key: "all" });
+  const [selDomains, setSelDomains] = useState<Set<string>>(new Set());
+  const [selKinds, setSelKinds] = useState<Set<Kind>>(new Set());
+  const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE_SIZE);
-  const [fading, setFading] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -132,30 +133,46 @@ export default function SparksPage() {
   const kindRank = (k: Kind) => KIND_ORDER.indexOf(k);
   const byDate = (a: Spark, b: Spark) => (b.created || "").localeCompare(a.created || "") || a.title.localeCompare(b.title);
 
-  // group the visible list by the taxonomy we are NOT filtering on
-  const groupBy: "domain" | "kind" = active.mode === "domain" ? "kind" : "domain";
+  // group by the axis we are NOT narrowing to a single value
+  const groupBy: "domain" | "kind" = selDomains.size === 1 ? "kind" : "domain";
+
+  const q = query.trim().toLowerCase();
+  const anyFilter = selDomains.size > 0 || selKinds.size > 0 || q.length > 0;
 
   const filtered = useMemo(() => {
-    let base = sparks;
-    if (active.mode === "domain") base = sparks.filter((s) => s.domain === active.key);
-    else if (active.mode === "kind") base = sparks.filter((s) => bucketOf(s.subtype) === active.key);
-    const arr = [...base];
-    if (groupBy === "domain") arr.sort((a, b) => domainRank(a.domain) - domainRank(b.domain) || byDate(a, b));
-    else arr.sort((a, b) => kindRank(bucketOf(a.subtype)) - kindRank(bucketOf(b.subtype)) || byDate(a, b));
-    return arr;
-  }, [sparks, active, groupBy]);
+    const base = sparks.filter((s) => {
+      if (selDomains.size && !selDomains.has(s.domain)) return false;
+      if (selKinds.size && !selKinds.has(bucketOf(s.subtype))) return false;
+      if (q) {
+        const hay = (s.title + " " + (s.excerpt || "")).toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+    if (groupBy === "domain") base.sort((a, b) => domainRank(a.domain) - domainRank(b.domain) || byDate(a, b));
+    else base.sort((a, b) => kindRank(bucketOf(a.subtype)) - kindRank(bucketOf(b.subtype)) || byDate(a, b));
+    return base;
+  }, [sparks, selDomains, selKinds, q, groupBy]);
 
   const shown = filtered.slice(0, limit);
 
-  function pick(f: Facet) {
-    if (f.mode === active.mode && f.key === active.key) return;
-    setFading(true);
-    window.setTimeout(() => { setActive(f); setLimit(PAGE_SIZE); setFading(false); }, 170);
+  function toggleDomain(d: string) {
+    setSelDomains((prev) => { const n = new Set(prev); n.has(d) ? n.delete(d) : n.add(d); return n; });
+    setLimit(PAGE_SIZE);
   }
+  function toggleKind(k: Kind) {
+    setSelKinds((prev) => { const n = new Set(prev); n.has(k) ? n.delete(k) : n.add(k); return n; });
+    setLimit(PAGE_SIZE);
+  }
+  function clearAll() { setSelDomains(new Set()); setSelKinds(new Set()); setQuery(""); setLimit(PAGE_SIZE); }
 
-  const facetLabel = active.mode === "all" ? "all sparks"
-    : active.mode === "domain" ? DOMAIN_LABEL[active.key] || active.key
-    : KINDS[active.key as Kind]?.label || active.key;
+  const summary = useMemo(() => {
+    const parts: string[] = [];
+    DOMAIN_ORDER.forEach((d) => selDomains.has(d) && parts.push(DOMAIN_LABEL[d]));
+    KIND_ORDER.forEach((k) => selKinds.has(k) && parts.push(KINDS[k].label));
+    if (q) parts.push(`“${query.trim()}”`);
+    return parts.length ? parts.join(" · ") : "all sparks";
+  }, [selDomains, selKinds, q, query]);
 
   let lastGroup = "";
 
@@ -173,34 +190,50 @@ export default function SparksPage() {
           <aside className="spx-rail">
             <div className="spx-eyebrow">⚡ eight currents · seven kinds</div>
             <h1 className="spx-title">Sparks</h1>
-            <p className="spx-lede">Raw observations before they harden into concepts. Filter by the current they run in, or by the kind of spark they are.</p>
+            <p className="spx-lede">Raw observations before they harden into concepts. Search, or combine currents and kinds — pick History <em>and</em> Essay Seed to see exactly those.</p>
 
-            <div className="spx-railrule" aria-hidden />
+            {/* search */}
+            <div className="spx-searchwrap">
+              <span className="spx-searchicon" aria-hidden>⌕</span>
+              <input
+                className="spx-search"
+                type="search"
+                value={query}
+                onChange={(e) => { setQuery(e.target.value); setLimit(PAGE_SIZE); }}
+                placeholder="search sparks…"
+                aria-label="Search sparks"
+              />
+              {query && (
+                <button type="button" className="spx-searchclear" onClick={() => setQuery("")} aria-label="Clear search">×</button>
+              )}
+            </div>
 
-            <p className="spx-grouplbl">By current</p>
-            <nav className="spx-nav" aria-label="Filter sparks by domain">
-              <FacetBtn on={active.mode === "all"} color="var(--ac)" rgb="var(--ac-rgb)" label="All sparks" count={sparks.length || "—"} diamond onClick={() => pick({ mode: "all", key: "all" })} />
+            <div className="spx-grouphdr">
+              <p className="spx-grouplbl">By current</p>
+              {anyFilter && <button type="button" className="spx-clear" onClick={clearAll}>clear all</button>}
+            </div>
+            <nav className="spx-nav" aria-label="Filter sparks by current (multi-select)">
               {railDomains.map((d) => {
                 const col = DOMAIN_COLOR[d];
-                return <FacetBtn key={d} on={active.mode === "domain" && active.key === d} color={col} rgb={hexToRgb(col)} label={DOMAIN_LABEL[d]} count={domainCounts[d]} diamond onClick={() => pick({ mode: "domain", key: d })} />;
+                return <FacetBtn key={d} on={selDomains.has(d)} color={col} rgb={hexToRgb(col)} label={DOMAIN_LABEL[d]} count={domainCounts[d]} diamond onClick={() => toggleDomain(d)} />;
               })}
             </nav>
 
             <p className="spx-grouplbl">By kind</p>
-            <nav className="spx-nav" aria-label="Filter sparks by kind">
+            <nav className="spx-nav" aria-label="Filter sparks by kind (multi-select)">
               {railKinds.map((k) => {
                 const m = KINDS[k];
-                return <FacetBtn key={k} on={active.mode === "kind" && active.key === k} color={m.color} rgb={hexToRgb(m.color)} label={m.label} count={kindCounts[k]} glyph={m.glyph} onClick={() => pick({ mode: "kind", key: k })} />;
+                return <FacetBtn key={k} on={selKinds.has(k)} color={m.color} rgb={hexToRgb(m.color)} label={m.label} count={kindCounts[k]} glyph={m.glyph} onClick={() => toggleKind(k)} />;
               })}
             </nav>
           </aside>
 
           {/* ── RIGHT PANE ── */}
           <section className="spx-pane" aria-live="polite">
-            <p className="spx-resultline">{loaded ? <><b>{filtered.length}</b> {filtered.length === 1 ? "spark" : "sparks"} · {facetLabel}</> : "loading the index…"}</p>
+            <p className="spx-resultline">{loaded ? <><b>{filtered.length}</b> {filtered.length === 1 ? "spark" : "sparks"} · {summary}</> : "loading the index…"}</p>
 
-            <ol className={`spx-list${fading ? " spx-fading" : ""}`}>
-              {loaded && filtered.length === 0 && <li className="spx-empty">No sparks here yet.</li>}
+            <ol className="spx-list">
+              {loaded && filtered.length === 0 && <li className="spx-empty">No sparks match these filters.{anyFilter && <> <button type="button" className="spx-inlineclear" onClick={clearAll}>clear filters</button></>}</li>}
 
               {shown.map((s, i) => {
                 const k = bucketOf(s.subtype);
@@ -220,7 +253,7 @@ export default function SparksPage() {
                         <span className="spx-subhead-n">{headCount}</span>
                       </div>
                     )}
-                    <Link href={`/spark/${s.id}`} className={`spx-entry${i < 5 && !fading ? ` spx-stagger spx-s${i}` : ""}`} style={{ "--ec": km.color, "--ec-rgb": hexToRgb(km.color) } as React.CSSProperties}>
+                    <Link href={`/spark/${s.id}`} className={`spx-entry${i < 5 ? ` spx-stagger spx-s${i}` : ""}`} style={{ "--ec": km.color, "--ec-rgb": hexToRgb(km.color) } as React.CSSProperties}>
                       <span className="spx-num" aria-hidden>{num}</span>
                       <div className="spx-body">
                         <div className="spx-meta">
@@ -258,7 +291,8 @@ function FacetBtn({ on, color, rgb, label, count, diamond, glyph, onClick }: {
 }) {
   return (
     <button type="button" className={`spx-navrow${on ? " spx-on" : ""}`} aria-pressed={on} onClick={onClick}
-      style={{ "--rc": color, "--rwash": `rgba(${rgb},0.10)` } as React.CSSProperties}>
+      style={{ "--rc": color, "--rwash": `rgba(${rgb},0.12)` } as React.CSSProperties}>
+      <span className={`spx-box${on ? " spx-boxon" : ""}`} aria-hidden>{on ? "✓" : ""}</span>
       {glyph ? <span className="spx-kglyph" aria-hidden>{glyph}</span> : <span className="spx-diamond" aria-hidden />}
       <span className="spx-navlbl">{label}</span>
       <span className="spx-navcount">{count}</span>
@@ -292,47 +326,71 @@ const CSS = `
     display:grid; grid-template-columns:36% 64%; align-items:start; }
 
   /* rail */
-  .spx-rail{ position:sticky; top:96px; padding:48px 40px 48px 0; border-right:1px solid var(--hair);
-    opacity:0; transform:translateY(14px); animation:spxRise .8s cubic-bezier(0.16,1,0.3,1) .05s forwards; }
+  .spx-rail{ position:sticky; top:96px; max-height:calc(100vh - 112px); overflow-y:auto;
+    padding:48px 36px 48px 0; border-right:1px solid var(--hair);
+    opacity:0; transform:translateY(14px); animation:spxRise .8s cubic-bezier(0.16,1,0.3,1) .05s forwards;
+    scrollbar-width:thin; }
+  .spx-rail::-webkit-scrollbar{ width:6px; } .spx-rail::-webkit-scrollbar-thumb{ background:var(--hair); border-radius:3px; }
   .spx-eyebrow{ font-family:var(--font-jetbrains),monospace; font-size:11px; letter-spacing:0.24em;
     text-transform:uppercase; color:var(--ac); opacity:0.85; margin:0 0 18px; }
   .spx-title{ font-family:var(--font-fraunces),Georgia,serif; font-style:italic; font-weight:400;
-    font-size:clamp(40px,5vw,60px); line-height:1; letter-spacing:-0.02em; color:var(--ink); margin:0; text-wrap:balance; }
-  .spx-lede{ font-family:var(--font-newsreader),serif; font-size:16px; line-height:1.6; color:var(--muted);
-    margin:18px 0 0; max-width:34ch; text-wrap:pretty; }
-  .spx-railrule{ height:1px; background:var(--hair); margin:28px 0 18px; }
+    font-size:clamp(40px,5vw,58px); line-height:1; letter-spacing:-0.02em; color:var(--ink); margin:0; text-wrap:balance; }
+  .spx-lede{ font-family:var(--font-newsreader),serif; font-size:15.5px; line-height:1.6; color:var(--muted);
+    margin:16px 0 0; max-width:36ch; text-wrap:pretty; }
+  .spx-lede em{ color:var(--ink); font-style:italic; }
+
+  /* search */
+  .spx-searchwrap{ position:relative; display:flex; align-items:center; margin:24px 0 8px; }
+  .spx-searchicon{ position:absolute; left:13px; color:var(--dim); font-size:15px; pointer-events:none; }
+  .spx-search{ width:100%; font-family:var(--font-jetbrains),monospace; font-size:12.5px;
+    background:var(--panel); border:1px solid var(--hair); border-radius:8px;
+    padding:11px 34px 11px 34px; color:var(--ink); outline:none;
+    transition:border-color .2s, background .2s; }
+  .spx-search::placeholder{ color:var(--dim); }
+  .spx-search::-webkit-search-cancel-button{ display:none; }
+  .spx-search:focus{ border-color:rgba(var(--ac-rgb),0.6); background:rgba(var(--ac-rgb),0.04); }
+  .spx-searchclear{ position:absolute; right:8px; width:22px; height:22px; border:none; background:transparent;
+    color:var(--muted); font-size:18px; line-height:1; cursor:pointer; border-radius:4px; }
+  .spx-searchclear:hover{ color:var(--ink); background:var(--panel); }
+  .spx-searchclear:focus-visible{ outline:2px solid rgba(var(--ac-rgb),0.6); outline-offset:1px; }
+
+  .spx-grouphdr{ display:flex; align-items:baseline; justify-content:space-between; margin:20px 0 8px; }
   .spx-grouplbl{ font-family:var(--font-jetbrains),monospace; font-size:10px; letter-spacing:0.22em;
-    text-transform:uppercase; color:var(--dim); margin:18px 0 8px; }
-  .spx-grouplbl:first-of-type{ margin-top:0; }
+    text-transform:uppercase; color:var(--dim); margin:20px 0 8px; }
+  .spx-grouphdr .spx-grouplbl{ margin:0; }
+  .spx-clear{ font-family:var(--font-jetbrains),monospace; font-size:10px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--ac); background:transparent; border:none; cursor:pointer; padding:0; }
+  .spx-clear:hover{ text-decoration:underline; }
+  .spx-clear:focus-visible{ outline:2px solid rgba(var(--ac-rgb),0.6); outline-offset:2px; }
 
   .spx-nav{ display:flex; flex-direction:column; gap:2px; }
-  .spx-navrow{ position:relative; display:flex; align-items:center; gap:12px; padding:9px 14px 9px 12px;
+  .spx-navrow{ position:relative; display:flex; align-items:center; gap:10px; padding:8px 12px 8px 10px;
     border-radius:5px; background:transparent; border:none; cursor:pointer; text-align:left; width:100%;
-    color:var(--muted); transition:background .25s, color .25s; -webkit-tap-highlight-color:transparent; }
-  .spx-navrow::before{ content:''; position:absolute; left:0; top:7px; bottom:7px; width:2px; border-radius:2px;
-    background:var(--rc,var(--ac)); opacity:0; transition:opacity .25s; }
+    color:var(--muted); transition:background .2s, color .2s; -webkit-tap-highlight-color:transparent; }
   .spx-navrow:hover{ background:var(--panel); color:var(--ink); }
   .spx-navrow:focus-visible{ outline:2px solid rgba(var(--ac-rgb),0.6); outline-offset:2px; }
   .spx-navrow.spx-on{ background:var(--rwash); color:var(--ink); }
-  .spx-navrow.spx-on::before{ opacity:1; }
-  .spx-diamond{ width:9px; height:9px; flex-shrink:0; transform:rotate(45deg); background:var(--rc,var(--ac));
-    transition:box-shadow .25s; }
-  .spx-navrow.spx-on .spx-diamond, .spx-navrow:hover .spx-diamond{ box-shadow:0 0 8px var(--rc,var(--ac)); }
-  .spx-kglyph{ width:14px; flex-shrink:0; text-align:center; color:var(--rc,var(--ac));
-    font-family:var(--font-fraunces),serif; font-size:14px; line-height:1; }
+  .spx-box{ width:15px; height:15px; flex-shrink:0; border-radius:4px; border:1.5px solid var(--hair);
+    display:flex; align-items:center; justify-content:center; font-size:10px; line-height:1; color:#0e0d14;
+    transition:background .2s, border-color .2s; }
+  .spx-navrow:hover .spx-box{ border-color:var(--rc,var(--ac)); }
+  .spx-box.spx-boxon{ background:var(--rc,var(--ac)); border-color:var(--rc,var(--ac)); }
+  html[data-theme="sepia"] .spx-box.spx-boxon{ color:#f0ead8; }
+  .spx-diamond{ width:8px; height:8px; flex-shrink:0; transform:rotate(45deg); background:var(--rc,var(--ac)); }
+  .spx-kglyph{ width:13px; flex-shrink:0; text-align:center; color:var(--rc,var(--ac));
+    font-family:var(--font-fraunces),serif; font-size:13px; line-height:1; }
   .spx-navlbl{ flex:1; font-family:var(--font-fraunces),Georgia,serif; font-style:italic; font-weight:400;
-    font-size:17px; letter-spacing:-0.01em; line-height:1.15; }
+    font-size:16px; letter-spacing:-0.01em; line-height:1.15; }
   .spx-navcount{ font-family:var(--font-jetbrains),monospace; font-size:11px; color:var(--dim);
-    font-variant-numeric:tabular-nums; transition:color .25s; }
+    font-variant-numeric:tabular-nums; }
   .spx-navrow.spx-on .spx-navcount, .spx-navrow:hover .spx-navcount{ color:var(--muted); }
 
   /* pane */
   .spx-pane{ padding:48px 0 48px 40px; min-width:0; }
-  .spx-resultline{ font-family:var(--font-jetbrains),monospace; font-size:11px; letter-spacing:0.16em;
-    text-transform:uppercase; color:var(--dim); margin:0; font-variant-numeric:tabular-nums; }
+  .spx-resultline{ font-family:var(--font-jetbrains),monospace; font-size:11px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--dim); margin:0; font-variant-numeric:tabular-nums; line-height:1.6; }
   .spx-resultline b{ color:var(--ac); font-weight:400; }
-  .spx-list{ list-style:none; margin:24px 0 0; padding:0; transition:opacity .28s; }
-  .spx-list.spx-fading{ opacity:0; }
+  .spx-list{ list-style:none; margin:24px 0 0; padding:0; }
 
   .spx-subhead{ display:flex; align-items:baseline; gap:12px; margin:36px 0 4px; padding-top:20px; border-top:1px solid var(--hair); }
   .spx-subhead-lbl{ font-family:var(--font-jetbrains),monospace; font-size:11px; letter-spacing:0.22em;
@@ -367,8 +425,8 @@ const CSS = `
     margin:7px 0 0; text-wrap:pretty; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 
   .spx-entry.spx-stagger{ opacity:0; transform:translateY(10px); animation:spxRise .7s cubic-bezier(0.16,1,0.3,1) forwards; }
-  .spx-entry.spx-s0{ animation-delay:.18s; } .spx-entry.spx-s1{ animation-delay:.26s; }
-  .spx-entry.spx-s2{ animation-delay:.34s; } .spx-entry.spx-s3{ animation-delay:.42s; } .spx-entry.spx-s4{ animation-delay:.50s; }
+  .spx-entry.spx-s0{ animation-delay:.14s; } .spx-entry.spx-s1{ animation-delay:.20s; }
+  .spx-entry.spx-s2{ animation-delay:.26s; } .spx-entry.spx-s3{ animation-delay:.32s; } .spx-entry.spx-s4{ animation-delay:.38s; }
 
   .spx-more{ display:block; margin:36px auto 0; padding:13px 28px; background:transparent;
     border:1px solid var(--hair); border-radius:6px; font-family:var(--font-jetbrains),monospace; font-size:11px;
@@ -377,19 +435,21 @@ const CSS = `
   .spx-more:hover{ border-color:rgba(var(--ac-rgb),0.5); color:var(--ac); background:rgba(var(--ac-rgb),0.04); }
   .spx-more:focus-visible{ outline:2px solid rgba(var(--ac-rgb),0.6); outline-offset:2px; }
   .spx-empty{ font-family:var(--font-newsreader),serif; font-style:italic; font-size:16px; color:var(--muted); padding:40px 0; text-align:center; }
+  .spx-inlineclear{ font-family:var(--font-jetbrains),monospace; font-style:normal; font-size:11px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--ac); background:transparent; border:none; cursor:pointer; }
+  .spx-inlineclear:hover{ text-decoration:underline; }
 
   @keyframes spxRise{ to{ opacity:1; transform:translateY(0); } }
 
   @media (max-width:900px){
     .spx-inner{ grid-template-columns:1fr; padding:0 20px 80px; }
-    .spx-rail{ position:static; padding:32px 0 8px; border-right:none; }
-    .spx-railrule{ margin:20px 0 14px; }
+    .spx-rail{ position:static; max-height:none; overflow:visible; padding:32px 0 8px; border-right:none; }
     .spx-pane{ padding:8px 0 40px; border-top:1px solid var(--hair); }
     .spx-entry{ grid-template-columns:48px 1fr; gap:14px; }
     .spx-num{ font-size:30px; }
   }
   @media (prefers-reduced-motion:reduce){
     .spx-rail, .spx-entry.spx-stagger{ animation:none; opacity:1; transform:none; }
-    .spx-list, .spx-entry, .spx-entry::before, .spx-num, .spx-etitle, .spx-diamond{ transition:none; }
+    .spx-list, .spx-entry, .spx-entry::before, .spx-num, .spx-etitle{ transition:none; }
   }
 `;
