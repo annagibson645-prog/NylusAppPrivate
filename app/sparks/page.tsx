@@ -94,6 +94,7 @@ export default function SparksPage() {
   const [selKinds, setSelKinds] = useState<Set<Kind>>(new Set());
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE_SIZE);
+  const [essays, setEssays] = useState<{ links?: string[] }[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -112,6 +113,11 @@ export default function SparksPage() {
         setLoaded(true);
       })
       .catch(() => { if (alive) setLoaded(true); });
+    // essays.json → which sparks were developed into essays (empty until essays exist)
+    fetch("/data/essays.json")
+      .then((r) => r.json())
+      .then((rows: any[]) => { if (alive) setEssays(Array.isArray(rows) ? rows : []); })
+      .catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -125,6 +131,14 @@ export default function SparksPage() {
     for (const s of sparks) { const k = bucketOf(s.subtype); c[k] = (c[k] || 0) + 1; }
     return c;
   }, [sparks]);
+
+  // essays-per-spark: count essays whose links point at each spark id
+  const essayCount = useMemo(() => {
+    const sparkIds = new Set(sparks.map((s) => s.id));
+    const c: Record<string, number> = {};
+    for (const e of essays) for (const l of e.links || []) if (sparkIds.has(l)) c[l] = (c[l] || 0) + 1;
+    return c;
+  }, [sparks, essays]);
 
   const railDomains = useMemo(() => DOMAIN_ORDER.filter((d) => (domainCounts[d] || 0) > 0), [domainCounts]);
   const railKinds = useMemo(() => KIND_ORDER.filter((k) => (kindCounts[k] || 0) > 0), [kindCounts]);
@@ -263,6 +277,11 @@ export default function SparksPage() {
                           <span className="spx-domdot" style={{ "--dc": DOMAIN_COLOR[s.domain] || "#8a849a" } as React.CSSProperties} aria-hidden />
                           <span>{DOMAIN_SHORT[s.domain] || s.domain}</span>
                           {s.created && <><span className="spx-dot" aria-hidden>·</span><span className="spx-date">{fmtDate(s.created)}</span></>}
+                          {essayCount[s.id] > 0 && (
+                            <span className="spx-essays" title={`developed into ${essayCount[s.id]} essay${essayCount[s.id] > 1 ? "s" : ""}`}>
+                              ✦ {essayCount[s.id]} {essayCount[s.id] > 1 ? "essays" : "essay"}
+                            </span>
+                          )}
                         </div>
                         <h2 className="spx-etitle">{s.title}</h2>
                         {s.excerpt && <p className="spx-excerpt">{s.excerpt}</p>}
@@ -418,6 +437,8 @@ const CSS = `
   .spx-dot{ color:var(--dim); }
   .spx-domdot{ width:6px; height:6px; border-radius:50%; background:var(--dc,#8a849a); display:inline-block; }
   .spx-date{ color:var(--dim); font-variant-numeric:tabular-nums; letter-spacing:0.06em; }
+  .spx-essays{ color:var(--ec,var(--ac)); border:1px solid color-mix(in srgb, var(--ec,var(--ac)) 40%, transparent);
+    border-radius:999px; padding:2px 8px; letter-spacing:0.04em; }
   .spx-etitle{ font-family:var(--font-fraunces),Georgia,serif; font-style:italic; font-weight:400; font-size:21px;
     line-height:1.22; letter-spacing:-0.01em; color:var(--ink); margin:0; text-wrap:balance; transition:color .25s; }
   .spx-entry:hover .spx-etitle{ color:var(--ec,var(--ac)); }
