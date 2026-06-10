@@ -454,6 +454,17 @@ async function buildVault() {
     if (type === "essay" || type === "research") {
       const bodyText = content.replace(/^---[\s\S]*?---\n?/, "").replace(/[#*`\[\]]/g, "");
       node.word_count = bodyText.trim().split(/\s+/).filter(Boolean).length;
+      // Connect an essay to the spark(s) it grew from. Declare in frontmatter:
+      //   spark: ego-as-oblation        (single)
+      //   sparks: [ego-as-oblation, x]  (multiple)
+      // The id is the slug from the spark's URL (/spark/<id>). This feeds the
+      // same links → backlinks graph as a [[wikilink]] in the body, so the spark
+      // page shows the essay and the essay page shows the spark.
+      const declaredSparks = ([] as unknown[]).concat(fm.spark ?? [], fm.sparks ?? []);
+      for (const raw of declaredSparks) {
+        const sl = slugify(String(raw));
+        if (sl && !node.links.includes(sl)) node.links.push(sl);
+      }
     }
     if (type === "research" && fm.domains && typeof fm.domains === "object" && !Array.isArray(fm.domains)) {
       node.research_domains = fm.domains as Record<string, number>;

@@ -20,6 +20,7 @@ function routeForType(type: string, slug: string): string {
   if (type === "source") return `/source/${slug}`;
   if (type === "spark") return `/spark/${slug}`;
   if (type === "collision") return `/collision/${slug}`;
+  if (type === "essay" || type === "research") return `/${type}/${slug}`;
   return `/concept/${slug}`;
 }
 
@@ -431,27 +432,52 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
           )}
 
           {/* Connections */}
-          {hasConnections && (
-            <>
-              <div className="void-section-label">connected concepts</div>
-              <div className="void-connections-grid">
-                {backlinkedNodes.slice(0, 8).map((n) => (
-                  <Link key={n.id} href={typeRoute(n)} className="void-conn-cell">
-                    <div className="void-conn-domain" style={{ color: n.color }}>
-                      {DOMAIN_BACK[n.domain] || n.domain}
+          {hasConnections && (() => {
+            const essayBacks = backlinkedNodes.filter((n) => n.type === "essay" || n.type === "research");
+            const otherBacks = backlinkedNodes.filter((n) => n.type !== "essay" && n.type !== "research");
+            return (
+              <>
+                {/* Essays / research that grew from this node */}
+                {essayBacks.length > 0 && (
+                  <>
+                    <div className="void-section-label">developed into</div>
+                    <div className="void-connections-grid">
+                      {essayBacks.map((n) => (
+                        <Link key={n.id} href={typeRoute(n)} className="void-conn-cell">
+                          <div className="void-conn-domain" style={{ color: n.color }}>
+                            {n.type === "research" ? "⊹ research" : "✦ essay"}
+                          </div>
+                          <div className="void-conn-title">{n.title}</div>
+                        </Link>
+                      ))}
                     </div>
-                    <div className="void-conn-title">{n.title}</div>
-                  </Link>
-                ))}
-                {node.links.slice(0, 8).map((id) => (
-                  <Link key={id} href={`/concept/${id}`} className="void-conn-cell">
-                    <div className="void-conn-domain">→ link</div>
-                    <div className="void-conn-title">{id.replace(/-/g, " ")}</div>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
+                  </>
+                )}
+
+                {(otherBacks.length > 0 || node.links.length > 0) && (
+                  <>
+                    <div className="void-section-label">connected concepts</div>
+                    <div className="void-connections-grid">
+                      {otherBacks.slice(0, 8).map((n) => (
+                        <Link key={n.id} href={typeRoute(n)} className="void-conn-cell">
+                          <div className="void-conn-domain" style={{ color: n.color }}>
+                            {DOMAIN_BACK[n.domain] || n.domain}
+                          </div>
+                          <div className="void-conn-title">{n.title}</div>
+                        </Link>
+                      ))}
+                      {node.links.slice(0, 8).map((id) => (
+                        <Link key={id} href={`/concept/${id}`} className="void-conn-cell">
+                          <div className="void-conn-domain">→ link</div>
+                          <div className="void-conn-title">{id.replace(/-/g, " ")}</div>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            );
+          })()}
 
           {/* Hub */}
           {node.hub && (
