@@ -10,6 +10,7 @@ const TABS = [
   { href: '/research',   label: 'Research'   },
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
+  { href: '/tones',      label: 'Tones'      },
   { href: '/council',    label: 'Council'    },
 ] as const;
 
@@ -111,6 +112,20 @@ function IconCouncil({ active }: { active: boolean }) {
   );
 }
 
+function IconTones({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      {/* three book spines */}
+      <rect x="2.5" y="3" width="3.2" height="12" rx="1"
+        fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7}/>
+      <rect x="7.4" y="3" width="3.2" height="12" rx="1"
+        fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.3" opacity={active ? 0.85 : 0.6}/>
+      <rect x="12" y="4.5" width="3.5" height="10.5" rx="1" transform="rotate(9 13.7 9.7)"
+        fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.3" opacity={active ? 0.7 : 0.5}/>
+    </svg>
+  );
+}
+
 function SunIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 15 15" fill="none">
@@ -173,6 +188,7 @@ export default function MobileNav() {
               {label === 'Collisions' && <IconCollisions active={isActive} />}
               {label === 'Hubs'       && <IconHubs       active={isActive} />}
               {label === 'Research'   && <IconResearch   active={isActive} />}
+              {label === 'Tones'      && <IconTones      active={isActive} />}
               {label === 'Council'    && <IconCouncil    active={isActive} />}
             </span>
             <span className="mnav-label">{label}</span>
