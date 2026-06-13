@@ -1,0 +1,318 @@
+[
+  {
+    "id": "s1",
+    "title": "Tantra Illuminated",
+    "author": "Christopher Wallis",
+    "cover": "",
+    "numHighlights": 412,
+    "lastHighlightedAt": "2026-06-04",
+    "kind": "domain",
+    "domain": "eastern-spirituality",
+    "genre": null,
+    "tag": "Eastern Spirituality",
+    "color": "#dc2626",
+    "activity": [
+      2,
+      1,
+      3,
+      2,
+      1,
+      3,
+      2,
+      0,
+      3,
+      3,
+      0,
+      2
+    ],
+    "highlights": [
+      {
+        "id": "s1-0",
+        "text": "The mala is not a substance to be removed but ignorance to be seen through.",
+        "note": "",
+        "location": 380,
+        "at": "2026-06-04"
+      },
+      {
+        "id": "s1-1",
+        "text": "Modern yoga descends from Tantra, not from Patañjali.",
+        "note": "",
+        "location": 537,
+        "at": "2026-06-04"
+      }
+    ]
+  },
+  {
+    "id": "s2",
+    "title": "The Rasputin File",
+    "author": "Edvard Radzinsky",
+    "cover": "",
+    "numHighlights": 188,
+    "lastHighlightedAt": "2026-06-13",
+    "kind": "domain",
+    "domain": "history",
+    "genre": null,
+    "tag": "History",
+    "color": "#e6c068",
+    "activity": [
+      1,
+      2,
+      3,
+      1,
+      1,
+      3,
+      2,
+      1,
+      3,
+      2,
+      1,
+      3
+    ],
+    "highlights": [
+      {
+        "id": "s2-0",
+        "text": "The watch outlived the confession.",
+        "note": "",
+        "location": 380,
+        "at": "2026-06-13"
+      },
+      {
+        "id": "s2-1",
+        "text": "The File testimony was eighty percent unmined.",
+        "note": "",
+        "location": 537,
+        "at": "2026-06-13"
+      }
+    ]
+  },
+  {
+    "id": "s3",
+    "title": "The 48 Laws of Power",
+    "author": "Robert Greene",
+    "cover": "",
+    "numHighlights": 204,
+    "lastHighlightedAt": "2026-04-19",
+    "kind": "domain",
+    "domain": "behavioral-mechanics",
+    "genre": null,
+    "tag": "Behavioral Mechanics",
+    "color": "#a78bfa",
+    "activity": [
+      3,
+      2,
+      1,
+      3,
+      2,
+      0,
+      3,
+      3,
+      0,
+      3,
+      3,
+      0
+    ],
+    "highlights": [
+      {
+        "id": "s3-0",
+        "text": "Never outshine the master.",
+        "note": "",
+        "location": 380,
+        "at": "2026-04-19"
+      },
+      {
+        "id": "s3-1",
+        "text": "Conceal your intentions.",
+        "note": "",
+        "location": 537,
+        "at": "2026-04-19"
+      }
+    ]
+  },
+  {
+    "id": "s4",
+    "title": "Trauma and the Soul",
+    "author": "Donald Kalsched",
+    "cover": "",
+    "numHighlights": 97,
+    "lastHighlightedAt": "2026-05-31",
+    "kind": "domain",
+    "domain": "psychology",
+    "genre": null,
+    "tag": "Psychology",
+    "color": "#f59e0b",
+    "activity": [
+      3,
+      1,
+      2,
+      3,
+      1,
+      2,
+      3,
+      1,
+      1,
+      3,
+      2,
+      1
+    ],
+    "highlights": [
+      {
+        "id": "s4-0",
+        "text": "The self-care system becomes the very thing that imprisons the soul it set out to protect.",
+        "note": "",
+        "location": 380,
+        "at": "2026-05-31"
+      }
+    ]
+  },
+  {
+    "id": "s5",
+    "title": "The New Model of Selling",
+    "author": "Acuff & Miner",
+    "cover": "",
+    "numHighlights": 166,
+    "lastHighlightedAt": "2026-05-27",
+    "kind": "domain",
+    "domain": "business",
+    "genre": null,
+    "tag": "Business",
+    "color": "#e879a0",
+    "activity": [
+      0,
+      2,
+      3,
+      1,
+      2,
+      3,
+      1,
+      2,
+      3,
+      1,
+      2,
+      3
+    ],
+    "highlights": [
+      {
+        "id": "s5-0",
+        "text": "In the post-trust era, the old playbook actively repels the buyer.",
+        "note": "",
+        "location": 380,
+        "at": "2026-05-27"
+      }
+    ]
+  },
+  {
+    "id": "s6",
+    "title": "The War of Art",
+    "author": "Steven Pressfield",
+    "cover": "",
+    "numHighlights": 73,
+    "lastHighlightedAt": "2026-03-22",
+    "kind": "domain",
+    "domain": "creative-practice",
+    "genre": null,
+    "tag": "Creative Practice",
+    "color": "#14b8a6",
+    "activity": [
+      2,
+      3,
+      1,
+      2,
+      3,
+      1,
+      2,
+      3,
+      2,
+      1,
+      3,
+      2
+    ],
+    "highlights": [
+      {
+        "id": "s6-0",
+        "text": "Resistance is the most toxic force on the planet.",
+        "note": "",
+        "location": 380,
+        "at": "2026-03-22"
+      }
+    ]
+  },
+  {
+    "id": "s7",
+    "title": "Meditations",
+    "author": "Marcus Aurelius",
+    "cover": "",
+    "numHighlights": 142,
+    "lastHighlightedAt": "2026-06-02",
+    "kind": "genre",
+    "domain": null,
+    "genre": "Stoic Philosophy",
+    "tag": "Stoic Philosophy",
+    "color": "#8a7b9a",
+    "activity": [
+      3,
+      0,
+      2,
+      3,
+      1,
+      2,
+      3,
+      1,
+      2,
+      3,
+      2,
+      1
+    ],
+    "highlights": [
+      {
+        "id": "s7-0",
+        "text": "You have power over your mind — not outside events. Realize this, and you will find strength.",
+        "note": "",
+        "location": 380,
+        "at": "2026-06-02"
+      },
+      {
+        "id": "s7-1",
+        "text": "Waste no more time arguing about what a good man should be. Be one.",
+        "note": "",
+        "location": 537,
+        "at": "2026-06-02"
+      }
+    ]
+  },
+  {
+    "id": "s8",
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "cover": "",
+    "numHighlights": 58,
+    "lastHighlightedAt": "2026-02-14",
+    "kind": "genre",
+    "domain": null,
+    "genre": "Science Fiction",
+    "tag": "Science Fiction",
+    "color": "#b08552",
+    "activity": [
+      1,
+      2,
+      3,
+      1,
+      2,
+      3,
+      2,
+      1,
+      3,
+      2,
+      1,
+      3
+    ],
+    "highlights": [
+      {
+        "id": "s8-0",
+        "text": "Fear is the mind-killer.",
+        "note": "",
+        "location": 380,
+        "at": "2026-02-14"
+      }
+    ]
+  }
+]
