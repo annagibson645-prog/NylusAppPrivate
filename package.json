@@ -10,7 +10,9 @@
     "watch": "node watch-vault.mjs",
     "agent-start": "node -e \"require('fs').writeFileSync('.agent-lock','')\" && echo Agent lock set — watcher paused.",
     "lint-hubs": "node lint-hubs.mjs",
-    "sync": "npm run parse && node sync-once.mjs"
+    "highlights": "npx tsx build-highlights.ts",
+    "classify": "npx tsx classify-highlights.ts",
+    "sync": "npm run parse && npm run highlights && npm run classify && node sync-once.mjs"
   },
   "dependencies": {
     "force-graph": "^1.51.4",
@@ -22,11 +24,13 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.104.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "chokidar": "^5.0.0",
+    "dotenv": "^17.4.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
