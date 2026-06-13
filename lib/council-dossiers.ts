@@ -328,48 +328,45 @@ export const NICOLAS_COLE: MemberDossier = {
   cautions: [],
 };
 
-export const LEONARDO: MemberDossier = {
-  slug: "leonardo-da-vinci", name: "Leonardo da Vinci", councilKey: CRAFTSMAN.key, councilName: CRAFTSMAN.name, mode: CRAFTSMAN.mode,
-  emblem: CRAFTSMAN.emblem, color: CRAFTSMAN.color, colorRgb: CRAFTSMAN.colorRgb, living: false,
-  carries: "Seeing",
-  seatTitle: "The Seat of Integrative Observation — Saper Vedere",
-  question: "Have I truly looked — and will I finish this, or only abandon it?",
-  pullQuote: "Saper vedere — to know how to see. Then, for once, finish what you saw.",
+export const DAN_KOE: MemberDossier = {
+  slug: "dan-koe", name: "Dan Koe", councilKey: CRAFTSMAN.key, councilName: CRAFTSMAN.name, mode: CRAFTSMAN.mode,
+  emblem: CRAFTSMAN.emblem, color: CRAFTSMAN.color, colorRgb: CRAFTSMAN.colorRgb, living: true,
+  carries: "Shipping",
+  seatTitle: "The Seat of Shipping — Publishing Into the Void",
+  question: "Have I published it, or just perfected it where no one can see?",
+  pullQuote: "Ship anyway, consistently, until the void answers.",
   meta: [
-    { k: "Lived", v: "1452 – 1519" },
-    { k: "Origin", v: "Vinci, Tuscany" },
-    { k: "Holds", v: "Integrative seeing" },
-    { k: "Motto", v: "Ostinato rigore" },
+    { k: "Status", v: "Living figure" },
+    { k: "Known for", v: "The Art of Focus · one-person business" },
+    { k: "Holds", v: "Shipping" },
     { k: "Council", v: "Craftsmanship" },
   ],
   sections: [
     { label: "Life Arc", body: [
-      "Leonardo da Vinci (1452–1519), born near Vinci in Tuscany, was apprenticed under Verrocchio in Florence and worked across Florence, Milan, Rome, and finally France under Francis I. His signature works span four decades — the Vitruvian Man, the Last Supper, Lady with an Ermine, and the Mona Lisa, which he carried with him and never delivered.",
-      "Alongside the paintings he filled thousands of notebook pages on anatomy, engineering, optics, and hydraulics that he rarely published. He died at Amboise in 1519 — the archetype of the Renaissance mind.",
+      "Dan Koe is an American writer, creator, and entrepreneur who has become one of the most influential voices in the 'one-person business' and creator-economy world — a large following across YouTube, X, and a newsletter approaching two hundred thousand readers. His origin is explicitly a story of grinding through failure: before becoming a creator-economy figure he ran a web-design and digital-marketing freelance business and worked through years of failed ventures and ruts before things began to click. He has been unusually transparent that his success was not overnight — a fact worth holding against the genre's usual mythology.",
+      "He is the author of The Art of Focus (2024), which blends self-development, entrepreneurship, and a practical philosophy of attention, and he runs paid programs (Modern Mastery, the '2 Hour Writer') teaching the one-person-business model with writing as the core leverage skill. Notably for you, he co-founded Eden — the AI visual-canvas and knowledge tool that is already in your own stack.",
     ]},
     { label: "Psychology", body: [
-      "Leonardo is the seat of relentless curiosity fused with disciplined observation — what he called saper vedere, 'knowing how to see.' He treated sight as the highest sense and made observation a daily practice, refusing the line between art and science: how light hit a curve, how muscles moved, how water swirled all fed one project. His motto was ostinato rigore — obstinate rigor.",
-      "But the seat carries his paradox welded to the chair. The same boundless curiosity that made him great also pulled him off his commitments, leaving masterworks unfinished. The seat is both the looking and the warning about finishing.",
+      "Dan Koe is the seat of shipping as the engine of becoming — but the part that earns him a craft seat rather than merely a business one is his conviction that focus and consistent publishing are spiritual and creative disciplines, not just productivity tactics. His core idea is that attention is the scarce resource of the age, and that reclaiming your own focus and pointing it through consistent creative output is how you reinvent yourself and contribute value. He frames the one-person business and the daily creative practice as a kind of secular spiritual path — turning yourself into a creator who makes the immaterial material.",
+      "The reason he belongs on this council is the structure of his actual story: years of publishing, building, and failing before traction. Koe is the model of the person who kept shipping when no one was watching, who published into silence until the silence filled. That is the precise medicine for the fear of being seen trying and having it not land: ship anyway, consistently, into the void, and let consistency convert the void into an audience.",
     ]},
     { label: "Signature Moves", body: [
-      "Obsessive observation from life — carrying a notebook everywhere, studying everything for its own sake.",
-      "Integrating art and science — letting inquiry and craft continuously feed each other.",
-      "Ostinato rigore — obstinate rigor in pursuit and in method.",
-      "(Held as a warning, not a model:) the perfectionism and distraction that left works abandoned.",
+      "Publishing consistently before there is any audience or proof — shipping into the void as an act of faith and discipline.",
+      "Treating attention as the master resource — protecting and deliberately directing focus as the foundational skill.",
+      "The one-person business — using creative output (writing above all) as scalable leverage rather than trading time for money.",
+      "Transparency about the long grind — refusing the overnight-success myth, modeling the years of unrewarded reps.",
     ]},
     { label: "Personality", body: [
-      "Charming, physically striking, endlessly curious, and famously distractible — a genius driven to distraction. His breadth was both his glory and the engine of his non-completion.",
+      "Philosophical, disciplined, independent, depth-seeking, and somewhat austere — he advocates dopamine fasting, deep focus, and the cherishing of the 'boring fundamentals.' He positions himself as a thinker as much as an operator, and resonates with people who feel they are meant for more but need a practical philosophy and a shipping discipline to get there.",
     ]},
     { label: "Cultural Impact", body: [
-      "Leonardo is the archetypal 'Renaissance man,' the integrative maker who refused disciplinary boundaries — enduring precisely because of the tension between superhuman capability and unfinished masterpieces. His notebooks, more than the paintings, are now read as the truer monument: a mind modeling curiosity itself.",
+      "Koe has become a central, widely-imitated figure in the creator-economy and one-person-business movement, shaping how a large audience thinks about focus, leverage, writing as a skill, and building an independent creative livelihood. Through Eden he is also building infrastructure for that movement. To invoke him is to invoke the discipline of shipping consistently into the void until the void answers.",
     ]},
     { label: "How to Convene", body: [
-      "Convene Leonardo when you need to look harder before you make — to observe from life rather than from assumption, and to let different domains feed one another. But convene him with his paradox in view: use his seeing, and guard against his abandoning.",
+      "Convene Dan Koe when you have something to publish or send and you are afraid it won't land, or when you've stopped shipping because no one seemed to be watching. He is one of this council's completion guardians: where the other seats finish the object, Koe gets it out the door and keeps it going out, week after week, audience or no audience. When the void is silent — few readers, an email that might get no reply, work that might be ignored — he is the seat that says ship anyway, because consistency is what converts silence into an audience and reps into mastery. And he is a living operator whose tools you already use and whose moves you can study in real time.",
     ]},
   ],
-  cautions: [
-    "Leonardo left a trail of unfinished masterpieces — the Adoration of the Magi abandoned, the Sforza horse never cast. His perfectionism and his torrent of new interests pulled him off old commitments. Convene him for the seeing; do not catch his disease of non-completion. In this council, finishing is the faculty being guarded.",
-  ],
+  cautions: [],
 };
 
 export const TESLA: MemberDossier = {
@@ -424,7 +421,7 @@ export const DOSSIERS: Record<string, MemberDossier> = {
   kurukulla: KURUKULLA,
   "chase-hughes": CHASE_HUGHES,
   "nicolas-cole": NICOLAS_COLE,
-  "leonardo-da-vinci": LEONARDO,
+  "dan-koe": DAN_KOE,
   "nikola-tesla": TESLA,
 };
 

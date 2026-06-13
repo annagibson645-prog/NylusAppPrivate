@@ -144,13 +144,14 @@ export const CRAFTSMAN: Council = {
         "One of the most-read writers on the internet, who treats writing not as a mystical gift but as a learnable, reverse-engineerable system. The seat that demystifies the craft and keeps it oriented outward, toward the reader.",
     },
     {
-      slug: "leonardo-da-vinci",
-      name: "Leonardo da Vinci",
-      seat: "Integrative observation · saper vedere",
-      carries: "Seeing",
-      question: "Have I truly looked — and will I finish this, or only abandon it?",
+      slug: "dan-koe",
+      name: "Dan Koe",
+      seat: "Shipping · publishing into the void",
+      carries: "Shipping",
+      question: "Have I published it, or just perfected it where no one can see?",
+      living: true,
       blurb:
-        "The archetypal Renaissance maker, who refused the line between art and science and made obsessive observation a daily discipline. Convened with his own paradox welded to the chair: the genius of boundless looking, and the curse of the unfinished work.",
+        "One of the most influential voices in the one-person-business world, who published into silence for years before anyone listened. The seat that gets the work out the door — ship anyway, consistently, until the void answers.",
     },
     {
       slug: "nikola-tesla",
