@@ -1,7 +1,7 @@
 // lib/council-dossiers.ts
 // Full member dossiers (long-form) for all nine seats of The Inner Council.
 // Faithful to the user's uploaded Council dossiers (Influence + Craftsmanship)
-// and to researched public-source material (Leonardo, Tesla) and tradition
+// and to researched public-source material (living figures, Shivaji, Imhotep)
 // (Rama, Hanuman, Shivaji). One shape, rendered by the member-page route.
 
 export interface DossierSection {
@@ -373,50 +373,6 @@ export const DAN_KOE: MemberDossier = {
   cautions: [],
 };
 
-export const TESLA: MemberDossier = {
-  slug: "nikola-tesla", name: "Nikola Tesla", councilKey: CRAFTSMAN.key, councilName: CRAFTSMAN.name, mode: CRAFTSMAN.mode,
-  emblem: CRAFTSMAN.emblem, color: CRAFTSMAN.color, colorRgb: CRAFTSMAN.colorRgb, living: false,
-  carries: "Vision",
-  seatTitle: "The Seat of Visionary Invention — Mental Prototyping",
-  question: "Have I built and tested this completely in my mind before touching the tools?",
-  pullQuote: "Build it, run it, and perfect it in the mind — then, only then, in the world.",
-  meta: [
-    { k: "Lived", v: "1856 – 1943" },
-    { k: "Origin", v: "Smiljan (now Croatia)" },
-    { k: "Holds", v: "Mental prototyping" },
-    { k: "Source", v: "My Inventions, 1919" },
-    { k: "Council", v: "Craftsmanship" },
-  ],
-  sections: [
-    { label: "Life Arc", body: [
-      "Nikola Tesla (1856–1943), born in Smiljan to a Serbian family, emigrated to the United States in 1884 and briefly worked for Edison before going independent. He developed the AC induction motor (patented 1888), licensed to Westinghouse, whose polyphase system won the 'War of the Currents' and lit the 1893 Chicago Exposition and the 1895 Niagara plant.",
-      "His grandest venture, Wardenclyffe Tower (1901–05) — intended to transmit power and messages wirelessly — collapsed when funding fell through. He spent his last decades in New York hotels, accumulating debt, and died largely impoverished in 1943. The SI unit of magnetic flux density, the tesla, was named for him in 1960.",
-    ]},
-    { label: "Psychology", body: [
-      "Tesla is the seat of complete mental prototyping — the ability to build, run, test, and refine a machine entirely in the imagination before touching a tool. In his autobiography My Inventions (1919) he described learning to harness vivid involuntary visions into a disciplined design faculty: he claimed he needed 'no models, drawings or experiments,' and could picture devices as real in his mind.",
-      "His method inverted Edison's trial-and-error. He insisted on perfecting the design mentally first, holding that physically building an untested device was a waste — finding the faults in the mind, where they were cheap to fix.",
-    ]},
-    { label: "Signature Moves", body: [
-      "Building it in the mind first — running and improving the device in imagination until no fault remains, then committing it to form.",
-      "Perfecting the design before the build — refusing wasteful physical iteration.",
-      "Working from a clear inner vision rather than incremental tinkering.",
-      "(Held with clear eyes:) the showman's instinct — dramatizing the work to sell its wonder.",
-    ]},
-    { label: "Personality", body: [
-      "A theatrical, fastidious recluse — disciplined, idealistic, generous, and a poor businessman, which left him broke while others monetized his ideas. He lived by precise routines and was marked, in later years, by famous eccentricities.",
-    ]},
-    { label: "Cultural Impact", body: [
-      "Tesla is the enduring archetype of the visionary inventor — pure imagination, ahead of his time, undone by commerce. His arc — world-changing, then overshadowed and dying penniless — makes him a romantic figure, which is also why he attracts heavy mythology.",
-    ]},
-    { label: "How to Convene", body: [
-      "Convene Tesla when you are tempted to build before you have thought — to tinker your way forward instead of seeing the whole design first. Run it completely in your mind; find the faults there, where they are cheap to fix.",
-    ]},
-  ],
-  cautions: [
-    "Tesla attracts heavy mythology — the 'death ray,' free wireless energy, the claim that he 'invented radio.' Much of it is exaggeration or legend (the 1943 Supreme Court ruling invalidated Marconi's patent on prior-art grounds; it did not crown Tesla). And his great vision, untempered by business sense, left him broke and his grandest tower unbuilt. Convene the imagination; keep the clear eyes.",
-  ],
-};
-
 export const IMHOTEP: MemberDossier = {
   slug: "imhotep", name: "Imhotep", councilKey: CRAFTSMAN.key, councilName: CRAFTSMAN.name, mode: CRAFTSMAN.mode,
   emblem: CRAFTSMAN.emblem, color: CRAFTSMAN.color, colorRgb: CRAFTSMAN.colorRgb, living: false,
@@ -470,7 +426,6 @@ export const DOSSIERS: Record<string, MemberDossier> = {
   "chase-hughes": CHASE_HUGHES,
   "nicolas-cole": NICOLAS_COLE,
   "dan-koe": DAN_KOE,
-  "nikola-tesla": TESLA,
   imhotep: IMHOTEP,
 };
 

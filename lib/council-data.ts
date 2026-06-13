@@ -154,15 +154,6 @@ export const CRAFTSMAN: Council = {
         "One of the most influential voices in the one-person-business world, who published into silence for years before anyone listened. The seat that gets the work out the door — ship anyway, consistently, until the void answers.",
     },
     {
-      slug: "nikola-tesla",
-      name: "Nikola Tesla",
-      seat: "Visionary invention · mental prototyping",
-      carries: "Vision",
-      question: "Have I built and tested this completely in my mind before touching the tools?",
-      blurb:
-        "The visionary inventor who built, ran, and refined entire machines in his imagination before constructing a single part. The seat that perfects the design in the mind first — held with the clear eyes his own tragic, myth-wreathed arc demands.",
-    },
-    {
       slug: "imhotep",
       name: "Imhotep",
       seat: "The master builder · craft that outlives you",
