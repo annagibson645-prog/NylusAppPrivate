@@ -108,13 +108,13 @@ export const SOVEREIGNTY: Council = {
         "The monkey-god who forgot his own limitless power until he was reminded of it — and used it only in devotion. The seat that points your strength outward, at something larger than yourself.",
     },
     {
-      slug: "manjushri",
-      name: "Mañjuśrī",
-      seat: "Cutting wisdom · equanimity in suffering",
-      carries: "The clean cut",
-      question: "What's the one clean cut through this — and can I stay unmoved while it's hard?",
+      slug: "shivaji-maharaj",
+      name: "Shivaji Maharaj",
+      seat: "Sovereignty · self-rule (swarajya)",
+      carries: "Self-rule",
+      question: "Am I ruling my own life — or living as a vassal in someone else's order?",
       blurb:
-        "The bodhisattva of wisdom, who wields a flaming sword that severs ignorance in a single stroke. The seat that finds the one decisive cut — and the equanimity to hold steady while it lands.",
+        "The Maratha king who built a sovereign kingdom from frontier hill-forts against far larger empires, then crowned himself Chhatrapati rather than serve as anyone's landholder. The seat of swarajya — being ruled by no order but the one you build.",
     },
   ],
 };
@@ -161,6 +161,15 @@ export const CRAFTSMAN: Council = {
       question: "Have I built and tested this completely in my mind before touching the tools?",
       blurb:
         "The visionary inventor who built, ran, and refined entire machines in his imagination before constructing a single part. The seat that perfects the design in the mind first — held with the clear eyes his own tragic, myth-wreathed arc demands.",
+    },
+    {
+      slug: "imhotep",
+      name: "Imhotep",
+      seat: "The master builder · craft that outlives you",
+      carries: "Building to last",
+      question: "Am I building this to last — or only to get it done?",
+      blurb:
+        "The architect of the Step Pyramid — the first monumental building in dressed stone, still standing ~4,600 years on — and the first architect, engineer, and physician known by name. The seat that builds to endure, not just to ship.",
     },
   ],
 };

@@ -2,7 +2,7 @@
 // Full member dossiers (long-form) for all nine seats of The Inner Council.
 // Faithful to the user's uploaded Council dossiers (Influence + Craftsmanship)
 // and to researched public-source material (Leonardo, Tesla) and tradition
-// (Rama, Hanuman, Mañjuśrī). One shape, rendered by the member-page route.
+// (Rama, Hanuman, Shivaji). One shape, rendered by the member-page route.
 
 export interface DossierSection {
   label: string;
@@ -116,44 +116,48 @@ export const HANUMAN: MemberDossier = {
   cautions: [],
 };
 
-export const MANJUSHRI: MemberDossier = {
-  slug: "manjushri", name: "Mañjuśrī", councilKey: SOVEREIGNTY.key, councilName: SOVEREIGNTY.name, mode: SOVEREIGNTY.mode,
+export const SHIVAJI: MemberDossier = {
+  slug: "shivaji-maharaj", name: "Shivaji Maharaj", councilKey: SOVEREIGNTY.key, councilName: SOVEREIGNTY.name, mode: SOVEREIGNTY.mode,
   emblem: SOVEREIGNTY.emblem, color: SOVEREIGNTY.color, colorRgb: SOVEREIGNTY.colorRgb, living: false,
-  carries: "The clean cut",
-  seatTitle: "The Seat of Cutting Wisdom & Equanimity in Suffering",
-  question: "What's the one clean cut through this — and can I stay unmoved while it's hard?",
-  pullQuote: "The sword does not hack. It severs ignorance in a single clean stroke.",
+  carries: "Self-rule",
+  seatTitle: "The Seat of Sovereignty — Swarajya / Self-Rule",
+  question: "Am I ruling my own life — or living as a vassal in someone else's order?",
+  pullQuote: "Swarajya — to be ruled by no order but the one you build.",
   meta: [
-    { k: "Tradition", v: "Mahāyāna / Vajrayāna Buddhism" },
-    { k: "Holds", v: "Cutting wisdom" },
-    { k: "Emblem", v: "The flaming sword" },
+    { k: "Lived", v: "1630 – 1680" },
+    { k: "Origin", v: "Shivneri Fort, Maharashtra" },
+    { k: "Crowned", v: "Chhatrapati · Raigad, 1674" },
+    { k: "Holds", v: "Self-rule (Swarajya)" },
     { k: "Council", v: "Sovereignty" },
   ],
   sections: [
     { label: "Life Arc", body: [
-      "Mañjuśrī is the bodhisattva of wisdom (prajñā) in Mahāyāna and Vajrayāna Buddhism, depicted wielding a flaming sword in his right hand — the sword that cuts through ignorance — and holding a text of the Perfection of Wisdom in his left.",
-      "He is among the oldest and most significant bodhisattvas: the embodiment of transcendent insight — not knowledge accumulated, but the discriminating wisdom that severs confusion in a single stroke.",
+      "Chhatrapati Shivaji Maharaj (1630–1680) was born at Shivneri Fort to Shahaji Bhonsale — a Maratha general who served the Deccan sultanates — and Jijabai, and was raised largely around Pune. As a teenager he began seizing hill-forts (Torna around 1647, then Purandar, Kondhana, Chakan), carving an independent power base out of the frontier of the Bijapur sultanate.",
+      "Over the next three decades he fought both the Adil Shahi sultanate and the far larger Mughal Empire to build a sovereign Maratha kingdom from almost nothing. In 1674 he had himself crowned Chhatrapati at Raigad — a deliberate claim to be a recognized sovereign in his own right, not a rebel or a Mughal landholder. He died at Raigad in 1680, aged 50.",
     ]},
     { label: "Psychology", body: [
-      "Mañjuśrī is the seat of the clean cut — the discriminating wisdom that finds the one decisive distinction and acts on it, paired with the equanimity to remain unmoved while the cut is made.",
-      "The flaming sword does not hack; it severs delusion in one clean motion. This is clarity under difficulty: seeing the single thing that must be cut, and holding steady through the discomfort of cutting it.",
+      "Shivaji is the seat of self-rule — swarajya, being ruled by no order but the one you build. His defining disposition is strategic patience fused with audacious risk: he would feign submission, draw a stronger enemy onto his own terrain, and strike decisively, prizing mobility and asymmetry over the pitched battle he could not win.",
+      "But the deeper fact is his drive toward formal, legitimate sovereignty rather than mere wealth or raiding. The 1674 coronation is the clearest evidence — a mind that wanted to *be* a sovereign, to rule in his own name rather than be ruled. Tellingly, he even had to manufacture the legitimacy to do it (a contested Rajput genealogy, resistance to crowning a man of marginalized caste). That is the purest form of this seat: claiming, and if necessary engineering, the right to rule yourself.",
     ]},
     { label: "Signature Moves", body: [
-      "Finding the one decisive distinction — the single clean cut — rather than thrashing at the whole tangle.",
-      "Severing delusion in one stroke: clarity over accumulation.",
-      "Holding equanimity while the hard thing is done — staying unmoved in suffering.",
+      "Building sovereignty from almost nothing — turning frontier hill-forts into an independent state against far larger empires.",
+      "Ganimi kava — mobile, asymmetric war: light cavalry, cut supply lines, strike and retreat into the forts; refuse the battle you can't win on the enemy's ground.",
+      "The deliberate claim to legitimacy — the coronation as Chhatrapati: not just holding power, but being recognized as a sovereign who rules in his own name.",
+      "Statecraft over plunder — a navy and a fort network, the Ashta Pradhan eight-minister council, a working revenue system, Marathi restored at court.",
     ]},
     { label: "Personality", body: [
-      "Serene, incisive, luminous, unshakeable — wisdom personified as a youthful prince, calm and razor-clear.",
+      "Religiously observant yet administratively pragmatic and, in practice, notably tolerant — he employed Muslims at senior levels (his admiral; a Pathan contingent), endowed institutions of other faiths, and is documented protecting prisoners and non-combatants. Disciplined, mobile, calculating, and self-possessed — a builder more than a conqueror.",
     ]},
     { label: "Cultural Impact", body: [
-      "Mañjuśrī is venerated across Mahāyāna Buddhism — China, Tibet, Japan, Nepal — as the very personification of wisdom; his sword and text are among Buddhism's most recognizable images. To invoke him is to invoke the one clean cut.",
+      "Shivaji founded the Maratha polity that outlasted him and eventually rivaled the Mughals, and he remains intensely revered — especially in Maharashtra — as the archetype of self-rule and resistance to imperial domination. To invoke him is to invoke the refusal to live, by default, inside an order someone else built.",
     ]},
     { label: "How to Convene", body: [
-      "Convene Mañjuśrī when you are tangled — overthinking, thrashing, unable to find the decisive move, or flinching from a hard but necessary cut. He does not ask you to understand everything. He asks where the single stroke goes.",
+      "Convene Shivaji when you've forgotten you can build your own order — when you've become a vassal by habit, taking the terms you were handed. He doesn't ask whether you can win the pitched battle on someone else's ground; he asks whether you're fighting on your own terrain at all. Where Rama governs whether the action is right and Hanuman whether your strength serves something larger, Shivaji governs whose order you are living in — and whether you have the will to found your own.",
     ]},
   ],
-  cautions: [],
+  cautions: [
+    "Shivaji is revered to the point of myth and has been claimed by political movements he never knew. Take the documented man — a state-builder of marginalized caste, a pragmatic and often tolerant ruler, the architect of swarajya — not the flattened icon. And hold the coronation's real lesson honestly: sometimes sovereignty has to manufacture its own legitimacy. That's worth understanding, not hiding.",
+  ],
 };
 
 /* ════════════════════════ INFLUENCE ════════════════════════ */
@@ -343,8 +347,8 @@ export const DAN_KOE: MemberDossier = {
   ],
   sections: [
     { label: "Life Arc", body: [
-      "Dan Koe is an American writer, creator, and entrepreneur who has become one of the most influential voices in the 'one-person business' and creator-economy world — a large following across YouTube, X, and a newsletter approaching two hundred thousand readers. His origin is explicitly a story of grinding through failure: before becoming a creator-economy figure he ran a web-design and digital-marketing freelance business and worked through years of failed ventures and ruts before things began to click. He has been unusually transparent that his success was not overnight — a fact worth holding against the genre's usual mythology.",
-      "He is the author of The Art of Focus (2024), which blends self-development, entrepreneurship, and a practical philosophy of attention, and he runs paid programs (Modern Mastery, the '2 Hour Writer') teaching the one-person-business model with writing as the core leverage skill. Notably for you, he co-founded Eden — the AI visual-canvas and knowledge tool that is already in your own stack.",
+      "Dan Koe is an American writer, creator, and entrepreneur who has become one of the most influential voices in the 'one-person business' and creator-economy world — a following in the millions across platforms (YouTube around 300k) and a newsletter, The Koe Letter, of 175,000-plus readers. His origin is explicitly a story of grinding through failure: before becoming a creator-economy figure he freelanced in web design and digital marketing and worked through years of failed ventures before things began to click around 2022–23. He has been candid that his success was not overnight — a useful corrective to the genre's usual mythology (and worth holding lightly, since much of the headline reach and revenue is self-reported).",
+      "He is the author of The Art of Focus (2024), which blends self-development, entrepreneurship, and a practical philosophy of attention, and he runs paid programs — Modern Mastery and the '2 Hour Writer' — teaching the one-person-business model with writing as the core leverage skill. He also co-founded Eden, the AI knowledge tool that grew out of his earlier product Kortex (a second-brain / 'AI content strategist' that captures and connects your reading on a spatial canvas) — a tool already in your own stack.",
     ]},
     { label: "Psychology", body: [
       "Dan Koe is the seat of shipping as the engine of becoming — but the part that earns him a craft seat rather than merely a business one is his conviction that focus and consistent publishing are spiritual and creative disciplines, not just productivity tactics. His core idea is that attention is the scarce resource of the age, and that reclaiming your own focus and pointing it through consistent creative output is how you reinvent yourself and contribute value. He frames the one-person business and the daily creative practice as a kind of secular spiritual path — turning yourself into a creator who makes the immaterial material.",
@@ -413,16 +417,61 @@ export const TESLA: MemberDossier = {
   ],
 };
 
+export const IMHOTEP: MemberDossier = {
+  slug: "imhotep", name: "Imhotep", councilKey: CRAFTSMAN.key, councilName: CRAFTSMAN.name, mode: CRAFTSMAN.mode,
+  emblem: CRAFTSMAN.emblem, color: CRAFTSMAN.color, colorRgb: CRAFTSMAN.colorRgb, living: false,
+  carries: "Building to last",
+  seatTitle: "The Seat of the Master Builder — Craft That Outlives You",
+  question: "Am I building this to last — or only to get it done?",
+  pullQuote: "Craft mastered well enough becomes immortal — build accordingly.",
+  meta: [
+    { k: "Lived", v: "c. 27th century BCE" },
+    { k: "Served", v: "Pharaoh Djoser, 3rd Dynasty" },
+    { k: "Built", v: "The Step Pyramid, Saqqara" },
+    { k: "Holds", v: "Building to last" },
+    { k: "Council", v: "Craftsmanship" },
+  ],
+  sections: [
+    { label: "Life Arc", body: [
+      "Imhotep (c. 27th century BCE) was the vizier and chief architect to Pharaoh Djoser of Egypt's Third Dynasty — and one of the very few non-royal Egyptians named in contemporary inscriptions, which is how we know he was real and what he did. He designed the Step Pyramid at Saqqara: the first monumental building in history made entirely of dressed stone, a complete break from the mudbrick that came before.",
+      "Centuries after his death he was elevated from man to legend and finally to god — revered as a patron of wisdom, architecture, and medicine, and identified by the later Greeks with their own healer-god Asclepius. He stands, by name, as the first architect, engineer, and physician in recorded history.",
+    ]},
+    { label: "Psychology", body: [
+      "Imhotep is the seat of the master builder — craft pursued to the point where it outlives the maker. His defining move was inventing a medium: stone where everyone before had used mud, monumental permanence where there had only been the temporary. That is the psychology of building to last — treating the work not as something to finish and forget, but as something meant to stand.",
+      "He is the answer to the maker's temptation to do just-enough. He does not ask whether the thing is done; he asks whether it is built to endure. (The god-of-medicine, wisdom-text Imhotep is a later accretion — the documented man is the architect, and the seat takes the architect.)",
+    ]},
+    { label: "Signature Moves", body: [
+      "Inventing the medium — building in dressed stone where everyone before built in mud; choosing permanence over the temporary.",
+      "Building to last — making the thing that still stands some 4,600 years later, not the thing that merely works today.",
+      "The architect's discipline — structure, proportion, and engineering held to a standard that turns a building into a monument.",
+      "Mastery as legacy — craft so complete it carried his name across millennia and finally made him a god.",
+    ]},
+    { label: "Personality", body: [
+      "The documented Imhotep is drawn mostly from his works and titles — vizier, high priest, architect — and from the awe of those who came after. What survives is the impression of a mind of immense competence and originality, trusted with the highest offices and remembered, uniquely for a commoner, as more than human.",
+    ]},
+    { label: "Cultural Impact", body: [
+      "Imhotep's Step Pyramid changed what architecture could be, and his memory became one of the longest-running cults of a deified mortal in the ancient world — worshipped as a healer and sage for over two thousand years after his death. To invoke him is to invoke craft built to outlast its maker.",
+    ]},
+    { label: "How to Convene", body: [
+      "Convene Imhotep when you're tempted to build something that merely works — quick, disposable, good enough for now. He doesn't ask whether the thing is done; he asks whether it is built to last. Where Dan Koe gets the work out the door and Nicolas Cole keeps it clear, Imhotep asks whether what you're making is solid enough to still be standing long after you've moved on.",
+    ]},
+  ],
+  cautions: [
+    "Most of the 'Imhotep' of legend — god of medicine, author of lost wisdom texts, the figure the Greeks called Asclepius — is a deification that grew up centuries after he died. Take the documented man: the architect who invented monumental stone and built the thing that still stands. The seat is his craft, not his cult.",
+  ],
+};
+
 export const DOSSIERS: Record<string, MemberDossier> = {
   rama: RAMA,
   hanuman: HANUMAN,
-  manjushri: MANJUSHRI,
+  "shivaji-maharaj": SHIVAJI,
   rasputin: RASPUTIN,
   kurukulla: KURUKULLA,
   "chase-hughes": CHASE_HUGHES,
   "nicolas-cole": NICOLAS_COLE,
   "dan-koe": DAN_KOE,
   "nikola-tesla": TESLA,
+  imhotep: IMHOTEP,
 };
 
 export function getDossier(slug: string): MemberDossier | undefined {
