@@ -1,0 +1,882 @@
+{
+  "15410271": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Reference"
+  },
+  "15410273": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Tantra"
+  },
+  "15410275": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Philosophy"
+  },
+  "15410276": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Cosmology"
+  },
+  "15410277": {
+    "domain": "eastern-spirituality",
+    "genre": "Meditative Practice"
+  },
+  "15410279": {
+    "domain": "cross-domain",
+    "genre": "Norse Esotericism"
+  },
+  "15410283": {
+    "domain": null,
+    "genre": "Spiritual Fantasy"
+  },
+  "15410284": {
+    "domain": null,
+    "genre": "Fantasy Fiction"
+  },
+  "15410285": {
+    "domain": "creative-practice",
+    "genre": "Writing Craft"
+  },
+  "15410286": {
+    "domain": "psychology",
+    "genre": "Learning Optimization"
+  },
+  "15410287": {
+    "domain": "eastern-spirituality",
+    "genre": "Kabbalah & Mysticism"
+  },
+  "15410288": {
+    "domain": null,
+    "genre": "Literary Fiction"
+  },
+  "15410289": {
+    "domain": null,
+    "genre": "Fantasy Fiction"
+  },
+  "15410292": {
+    "domain": "cross-domain",
+    "genre": "Kabbalah Practice"
+  },
+  "15410296": {
+    "domain": null,
+    "genre": "Spiritual Fantasy"
+  },
+  "15410297": {
+    "domain": "cross-domain",
+    "genre": "Runology"
+  },
+  "15410300": {
+    "domain": "history",
+    "genre": "Espionage History"
+  },
+  "15410301": {
+    "domain": null,
+    "genre": "Progression Fantasy"
+  },
+  "15410302": {
+    "domain": "eastern-spirituality",
+    "genre": "Taoist Alchemy"
+  },
+  "15410304": {
+    "domain": "eastern-spirituality",
+    "genre": "Taoist Philosophy"
+  },
+  "15410306": {
+    "domain": null,
+    "genre": "Fringe Science & History"
+  },
+  "15410308": {
+    "domain": "cross-domain",
+    "genre": "Metaphysics & Cosmology"
+  },
+  "15410309": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Practice"
+  },
+  "15410310": {
+    "domain": "psychology",
+    "genre": "Cognitive Science"
+  },
+  "15410311": {
+    "domain": null,
+    "genre": "Progression Fantasy"
+  },
+  "15410312": {
+    "domain": "eastern-spirituality",
+    "genre": "Kabbalah & Mysticism"
+  },
+  "15410313": {
+    "domain": "cross-domain",
+    "genre": "Metaphysical Synthesis"
+  },
+  "15410314": {
+    "domain": "cross-domain",
+    "genre": "Magical Grimoire"
+  },
+  "15410315": {
+    "domain": "cross-domain",
+    "genre": "Norse Esotericism"
+  },
+  "15410316": {
+    "domain": "behavioral-mechanics",
+    "genre": "Self-Help & Productivity"
+  },
+  "15410317": {
+    "domain": "behavioral-mechanics",
+    "genre": "Performance Psychology"
+  },
+  "15410318": {
+    "domain": "cross-domain",
+    "genre": "Esoteric Philosophy"
+  },
+  "15410319": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Theology"
+  },
+  "15410321": {
+    "domain": "psychology",
+    "genre": "Human Nature & Behavior"
+  },
+  "15410323": {
+    "domain": "creative-practice",
+    "genre": "Writing Craft"
+  },
+  "15410324": {
+    "domain": "behavioral-mechanics",
+    "genre": "Social Psychology"
+  },
+  "15410325": {
+    "domain": "cross-domain",
+    "genre": "Occult Practice"
+  },
+  "15410327": {
+    "domain": "psychology",
+    "genre": "Spiritual Self-Help"
+  },
+  "15410329": {
+    "domain": "cross-domain",
+    "genre": "Occult Grimoire"
+  },
+  "15410331": {
+    "domain": "cross-domain",
+    "genre": "Modern Spirituality"
+  },
+  "15410335": {
+    "domain": "cross-domain",
+    "genre": "Chaos Magick Practice"
+  },
+  "15410337": {
+    "domain": "psychology",
+    "genre": "Self-Development"
+  },
+  "15410340": {
+    "domain": "cross-domain",
+    "genre": "Angelic Magic"
+  },
+  "15410345": {
+    "domain": "cross-domain",
+    "genre": "Occult Anthology"
+  },
+  "15410349": {
+    "domain": "cross-domain",
+    "genre": "Mystical Philosophy"
+  },
+  "15410351": {
+    "domain": "cross-domain",
+    "genre": "Practical Occultism"
+  },
+  "15410352": {
+    "domain": "business",
+    "genre": "Game Theory"
+  },
+  "15410353": {
+    "domain": "african-spirituality",
+    "genre": "Egyptian Magic"
+  },
+  "15410355": {
+    "domain": "psychology",
+    "genre": "Psychological Thriller"
+  },
+  "15410356": {
+    "domain": "african-spirituality",
+    "genre": "Self-Knowledge"
+  },
+  "15410357": {
+    "domain": "african-spirituality",
+    "genre": "Occult Practice"
+  },
+  "15410358": {
+    "domain": "cross-domain",
+    "genre": "Occult Demonology"
+  },
+  "15410359": {
+    "domain": "cross-domain",
+    "genre": "Occult Grimoire"
+  },
+  "15410361": {
+    "domain": "eastern-spirituality",
+    "genre": "Spiritual Ethnography"
+  },
+  "15410362": {
+    "domain": "creative-practice",
+    "genre": "Learning & Skill"
+  },
+  "15410363": {
+    "domain": "history",
+    "genre": "Religious History"
+  },
+  "15410364": {
+    "domain": "cross-domain",
+    "genre": "Occult History"
+  },
+  "15410365": {
+    "domain": null,
+    "genre": "Gothic Mystery Fiction"
+  },
+  "15410366": {
+    "domain": "cross-domain",
+    "genre": "Islamic Esotericism"
+  },
+  "15410367": {
+    "domain": "psychology",
+    "genre": "Memoir"
+  },
+  "15410369": {
+    "domain": "creative-practice",
+    "genre": "Educational Methodology"
+  },
+  "15410370": {
+    "domain": "cross-domain",
+    "genre": "Science & Spirituality"
+  },
+  "15410371": {
+    "domain": "eastern-spirituality",
+    "genre": "Esoteric Spirituality"
+  },
+  "15410372": {
+    "domain": "cross-domain",
+    "genre": "Parapsychology"
+  },
+  "15410373": {
+    "domain": "eastern-spirituality",
+    "genre": "Vedic Theology"
+  },
+  "15410374": {
+    "domain": "eastern-spirituality",
+    "genre": "Sufi Mysticism"
+  },
+  "15410375": {
+    "domain": null,
+    "genre": "Self-Help"
+  },
+  "15410377": {
+    "domain": "history",
+    "genre": "Folklore History"
+  },
+  "15410378": {
+    "domain": "eastern-spirituality",
+    "genre": "Taoist Practice"
+  },
+  "15410379": {
+    "domain": "cross-domain",
+    "genre": "Mythology Studies"
+  },
+  "15410380": {
+    "domain": "creative-practice",
+    "genre": "Demonology"
+  },
+  "15410381": {
+    "domain": "cross-domain",
+    "genre": "Transformative Philosophy"
+  },
+  "15410382": {
+    "domain": null,
+    "genre": "Dark Fantasy"
+  },
+  "15410383": {
+    "domain": "cross-domain",
+    "genre": "Parapsychology"
+  },
+  "15410384": {
+    "domain": "creative-practice",
+    "genre": "Occult Grimoire"
+  },
+  "15410385": {
+    "domain": "cross-domain",
+    "genre": "Occult Practice"
+  },
+  "15410386": {
+    "domain": "eastern-spirituality",
+    "genre": "Esoteric Philosophy"
+  },
+  "15410387": {
+    "domain": "creative-practice",
+    "genre": "DIY Occult Practice"
+  },
+  "15410389": {
+    "domain": "eastern-spirituality",
+    "genre": "Esoteric Philosophy"
+  },
+  "15410391": {
+    "domain": "african-spirituality",
+    "genre": "Grimoire Anthology"
+  },
+  "15410393": {
+    "domain": "eastern-spirituality",
+    "genre": "Occult Practice"
+  },
+  "15410394": {
+    "domain": "eastern-spirituality",
+    "genre": "Mantra Practice"
+  },
+  "15410397": {
+    "domain": "history",
+    "genre": "Philosophy Survey"
+  },
+  "15410398": {
+    "domain": "cross-domain",
+    "genre": "Left-Hand Path Mysticism"
+  },
+  "15410399": {
+    "domain": "creative-practice",
+    "genre": "Practical Occultism"
+  },
+  "15410400": {
+    "domain": "eastern-spirituality",
+    "genre": "Ceremonial Magick"
+  },
+  "15410401": {
+    "domain": "eastern-spirituality",
+    "genre": "Occult Practice"
+  },
+  "15410402": {
+    "domain": "psychology",
+    "genre": "Clinical Psychology"
+  },
+  "15410403": {
+    "domain": "cross-domain",
+    "genre": "Occult Practice"
+  },
+  "15410404": {
+    "domain": "african-spirituality",
+    "genre": "Occult Practice"
+  },
+  "15410405": {
+    "domain": "history",
+    "genre": "Ancient History"
+  },
+  "15410406": {
+    "domain": "psychology",
+    "genre": "Mental Health Memoir"
+  },
+  "15410407": {
+    "domain": "cross-domain",
+    "genre": "Occult Practice"
+  },
+  "15410408": {
+    "domain": "african-spirituality",
+    "genre": "Yoruba Spirituality"
+  },
+  "15410410": {
+    "domain": "history",
+    "genre": "Ancient Civilizations"
+  },
+  "15410411": {
+    "domain": "eastern-spirituality",
+    "genre": "Occult Practice"
+  },
+  "15410414": {
+    "domain": "psychology",
+    "genre": "Mental Health Critique"
+  },
+  "15410415": {
+    "domain": "creative-practice",
+    "genre": "Applied Magic"
+  },
+  "15410416": {
+    "domain": null,
+    "genre": "Dark Fantasy Fiction"
+  },
+  "15410417": {
+    "domain": "psychology",
+    "genre": "Psychology & Spirituality"
+  },
+  "15410418": {
+    "domain": "psychology",
+    "genre": "Memoir & Mental Health"
+  },
+  "15410420": {
+    "domain": null,
+    "genre": "Mythological Fantasy"
+  },
+  "15410421": {
+    "domain": null,
+    "genre": "Speculative Fiction Anthology"
+  },
+  "15410422": {
+    "domain": "creative-practice",
+    "genre": "Writing Productivity"
+  },
+  "15410424": {
+    "domain": "business",
+    "genre": "Career Guide"
+  },
+  "15410429": {
+    "domain": "cross-domain",
+    "genre": "Cultural Critique"
+  },
+  "15410430": {
+    "domain": "cross-domain",
+    "genre": "Spiritual Meditation"
+  },
+  "15410431": {
+    "domain": "history",
+    "genre": "Social History"
+  },
+  "15410432": {
+    "domain": "psychology",
+    "genre": "Self-Help"
+  },
+  "15410433": {
+    "domain": "psychology",
+    "genre": "Depth Psychology"
+  },
+  "15410487": {
+    "domain": "history",
+    "genre": "Stoic Philosophy"
+  },
+  "15456346": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Philosophy"
+  },
+  "15568718": {
+    "domain": "creative-practice",
+    "genre": "Practical Occultism"
+  },
+  "15568719": {
+    "domain": "cross-domain",
+    "genre": "Occult Philosophy"
+  },
+  "15568720": {
+    "domain": "creative-practice",
+    "genre": "Occult Grimoire"
+  },
+  "15645912": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Iconography"
+  },
+  "15646957": {
+    "domain": "eastern-spirituality",
+    "genre": "Taoist Practice"
+  },
+  "15695507": {
+    "domain": "cross-domain",
+    "genre": "Speculative Philosophy"
+  },
+  "15878130": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Practice"
+  },
+  "16003737": {
+    "domain": "history",
+    "genre": "Ancient History"
+  },
+  "16243674": {
+    "domain": "creative-practice",
+    "genre": "Creative Thinking"
+  },
+  "16286120": {
+    "domain": "cross-domain",
+    "genre": "Mental Models & Systems Thinking"
+  },
+  "16333507": {
+    "domain": "history",
+    "genre": "Esoteric History"
+  },
+  "16436687": {
+    "domain": "eastern-spirituality",
+    "genre": "Spiritual Guidance"
+  },
+  "16436688": {
+    "domain": "psychology",
+    "genre": "Cognitive Modeling"
+  },
+  "16512068": {
+    "domain": null,
+    "genre": "Worldbuilding Guide"
+  },
+  "16662406": {
+    "domain": "history",
+    "genre": "Religious History"
+  },
+  "16851967": {
+    "domain": "cross-domain",
+    "genre": "Metaphysical Energy"
+  },
+  "17082286": {
+    "domain": "cross-domain",
+    "genre": "Magick Troubleshooting"
+  },
+  "17246589": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Tantra"
+  },
+  "17969771": {
+    "domain": "history",
+    "genre": "Religious History"
+  },
+  "18851239": {
+    "domain": "eastern-spirituality",
+    "genre": "Martial Arts Philosophy"
+  },
+  "18994218": {
+    "domain": "eastern-spirituality",
+    "genre": "Meditation Practice"
+  },
+  "20972407": {
+    "domain": "eastern-spirituality",
+    "genre": "Martial Arts Philosophy"
+  },
+  "20998644": {
+    "domain": null,
+    "genre": "Fantasy Adventure"
+  },
+  "21016816": {
+    "domain": "creative-practice",
+    "genre": "Writing Workshop"
+  },
+  "21109351": {
+    "domain": "eastern-spirituality",
+    "genre": "Zen Buddhism"
+  },
+  "21212540": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Mysticism"
+  },
+  "21217110": {
+    "domain": "eastern-spirituality",
+    "genre": "Spiritual Instruction"
+  },
+  "21297595": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Practice Guide"
+  },
+  "22845043": {
+    "domain": "behavioral-mechanics",
+    "genre": "Contemplative Training"
+  },
+  "23118318": {
+    "domain": "cross-domain",
+    "genre": "Social Change & Spirituality"
+  },
+  "23196842": {
+    "domain": "eastern-spirituality",
+    "genre": "Sacred Acoustics"
+  },
+  "23847374": {
+    "domain": null,
+    "genre": "Fantasy Adventure"
+  },
+  "24258822": {
+    "domain": "history",
+    "genre": "Military History"
+  },
+  "24258823": {
+    "domain": "behavioral-mechanics",
+    "genre": "Physical Practice"
+  },
+  "25349818": {
+    "domain": "eastern-spirituality",
+    "genre": "Meditative Practice"
+  },
+  "25734660": {
+    "domain": "cross-domain",
+    "genre": "Martial Spirituality"
+  },
+  "25900830": {
+    "domain": null,
+    "genre": "Military Fiction"
+  },
+  "26313168": {
+    "domain": "african-spirituality",
+    "genre": "Comparative Spirituality"
+  },
+  "26509252": {
+    "domain": "african-spirituality",
+    "genre": "African Philosophy"
+  },
+  "26553184": {
+    "domain": "african-spirituality",
+    "genre": "African History & Spirituality"
+  },
+  "26929556": {
+    "domain": null,
+    "genre": "Fantasy Adventure"
+  },
+  "27390334": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Philosophy"
+  },
+  "27483016": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Philosophy & Purpose"
+  },
+  "27640415": {
+    "domain": "cross-domain",
+    "genre": "Religious History & Social Justice"
+  },
+  "28431391": {
+    "domain": "eastern-spirituality",
+    "genre": "Consciousness Studies"
+  },
+  "29882909": {
+    "domain": "cross-domain",
+    "genre": "Norse Warrior Path"
+  },
+  "30187072": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Scholarship"
+  },
+  "31436919": {
+    "domain": "african-spirituality",
+    "genre": "African Tradition"
+  },
+  "32901743": {
+    "domain": "cross-domain",
+    "genre": "Cognitive Development"
+  },
+  "33998726": {
+    "domain": "eastern-spirituality",
+    "genre": "Quranic Interpretation"
+  },
+  "33998727": {
+    "domain": "psychology",
+    "genre": "Theology & Philosophy"
+  },
+  "33998728": {
+    "domain": "eastern-spirituality",
+    "genre": "Sufi Mysticism"
+  },
+  "33998729": {
+    "domain": "eastern-spirituality",
+    "genre": "Islamic Mysticism"
+  },
+  "33998730": {
+    "domain": "eastern-spirituality",
+    "genre": "Bhakti Philosophy"
+  },
+  "34082220": {
+    "domain": "eastern-spirituality",
+    "genre": "Spiritual Prayer"
+  },
+  "34233426": {
+    "domain": "behavioral-mechanics",
+    "genre": "Self-Help & Mastery"
+  },
+  "34240115": {
+    "domain": "cross-domain",
+    "genre": "Martial Philosophy"
+  },
+  "36098755": {
+    "domain": "african-spirituality",
+    "genre": "Anthropological Spirituality"
+  },
+  "36098758": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Philosophy"
+  },
+  "36668696": {
+    "domain": "cross-domain",
+    "genre": "Sufi Wisdom"
+  },
+  "37362125": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Devotional Practice"
+  },
+  "42175909": {
+    "domain": "business",
+    "genre": "Productivity & Time Management"
+  },
+  "42175913": {
+    "domain": "cross-domain",
+    "genre": "Esoteric Anatomy"
+  },
+  "42175914": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Devotional Philosophy"
+  },
+  "42175916": {
+    "domain": "psychology",
+    "genre": "Cognitive Strategy"
+  },
+  "42905993": {
+    "domain": "cross-domain",
+    "genre": "Esoteric Consciousness"
+  },
+  "43006086": {
+    "domain": "creative-practice",
+    "genre": "Learning Methodology"
+  },
+  "44263925": {
+    "domain": "eastern-spirituality",
+    "genre": "Daoist Philosophy"
+  },
+  "44459412": {
+    "domain": "eastern-spirituality",
+    "genre": "Spiritual Philosophy"
+  },
+  "45684078": {
+    "domain": "eastern-spirituality",
+    "genre": "Mantra Spirituality"
+  },
+  "45929423": {
+    "domain": "behavioral-mechanics",
+    "genre": "Self-Discipline"
+  },
+  "46040070": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Philosophy"
+  },
+  "46169862": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Scripture"
+  },
+  "46203459": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Devotional"
+  },
+  "46384670": {
+    "domain": "history",
+    "genre": "Hindu Epic"
+  },
+  "46502396": {
+    "domain": "african-spirituality",
+    "genre": "Spiritual Fiction"
+  },
+  "48119742": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Theology"
+  },
+  "48119743": {
+    "domain": null,
+    "genre": "Historical Fiction"
+  },
+  "48901930": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Devotional"
+  },
+  "49091139": {
+    "domain": null,
+    "genre": "Historical Fiction"
+  },
+  "49941505": {
+    "domain": "business",
+    "genre": "Leadership & Command"
+  },
+  "49942363": {
+    "domain": null,
+    "genre": "Science Fiction"
+  },
+  "49951715": {
+    "domain": "business",
+    "genre": "Business Strategy"
+  },
+  "50171102": {
+    "domain": "eastern-spirituality",
+    "genre": "Bhakti Yoga Philosophy"
+  },
+  "50288780": {
+    "domain": null,
+    "genre": "Technical Manual"
+  },
+  "50692457": {
+    "domain": "behavioral-mechanics",
+    "genre": "Performance & Excellence"
+  },
+  "50764968": {
+    "domain": "psychology",
+    "genre": "Mental Architecture"
+  },
+  "51479769": {
+    "domain": "history",
+    "genre": "Military History"
+  },
+  "51574055": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Scripture"
+  },
+  "51622992": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Mythology"
+  },
+  "51624011": {
+    "domain": "psychology",
+    "genre": "Meditation"
+  },
+  "51624012": {
+    "domain": null,
+    "genre": "Sci-Fi Cultivation Epic"
+  },
+  "53515104": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Philosophy"
+  },
+  "53872515": {
+    "domain": null,
+    "genre": "Science Fiction"
+  },
+  "54430938": {
+    "domain": "creative-practice",
+    "genre": "Idea Generation Methods"
+  },
+  "54599327": {
+    "domain": null,
+    "genre": "Experimental Fiction"
+  },
+  "54723907": {
+    "domain": "creative-practice",
+    "genre": "Creative Psychology"
+  },
+  "54812489": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Mythology"
+  },
+  "54981483": {
+    "domain": "eastern-spirituality",
+    "genre": "Buddhist Philosophy"
+  },
+  "55196379": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Devotional"
+  },
+  "55780064": {
+    "domain": "creative-practice",
+    "genre": "Creative Development"
+  },
+  "56108643": {
+    "domain": "eastern-spirituality",
+    "genre": "Sufi Mysticism"
+  },
+  "56108646": {
+    "domain": "behavioral-mechanics",
+    "genre": "Learning Science"
+  },
+  "56292180": {
+    "domain": "behavioral-mechanics",
+    "genre": "Martial Arts Training"
+  },
+  "56482074": {
+    "domain": "creative-practice",
+    "genre": "Creative Philosophy"
+  },
+  "56482076": {
+    "domain": "eastern-spirituality",
+    "genre": "Islamic Mysticism"
+  },
+  "57292466": {
+    "domain": "creative-practice",
+    "genre": "Writing & Craft"
+  },
+  "57439534": {
+    "domain": "eastern-spirituality",
+    "genre": "Hindu Scripture"
+  }
+}

@@ -183,7 +183,8 @@ function C2Header({ P, page, setPage, tweaks, onCyclePalette, light, onToggleThe
     { n: 'Essays',    idx: '04', route: '/essays' },
     { n: 'Collisions',idx: '05', route: '/collisions' },
     { n: 'Sparks',    idx: '06', route: '/sparks' },
-    { n: 'Council',   idx: '07', route: '/council' },
+    { n: 'Tones',     idx: '07', route: '/tones' },
+    { n: 'Council',   idx: '08', route: '/council' },
   ];
   return (
     <>
