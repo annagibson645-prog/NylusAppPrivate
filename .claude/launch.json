@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["next", "dev", "-p", "3100"],
       "port": 3100
+    },
+    {
+      "name": "tomes-prototypes",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["prototypes/tomes/_serve.js"],
+      "port": 4488
     }
   ]
 }
