@@ -12,7 +12,8 @@
     "lint-hubs": "node lint-hubs.mjs",
     "highlights": "npx tsx build-highlights.ts",
     "classify": "npx tsx classify-highlights.ts",
-    "sync": "npm run parse && npm run highlights && npm run classify && node sync-once.mjs"
+    "stubs": "npx tsx build-highlight-stubs.ts",
+    "sync": "npm run parse && npm run highlights && npm run classify && npm run stubs && node sync-once.mjs"
   },
   "dependencies": {
     "force-graph": "^1.51.4",
