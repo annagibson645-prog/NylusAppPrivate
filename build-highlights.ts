@@ -48,6 +48,11 @@ function toClassifiedBook(b: RWBook, now: Date): ClassifiedBook {
     location: h.location ?? 0,
     at: h.highlighted_at || "",
   }));
+  // Readwise's export puts dates on highlights, not reliably on the book, so
+  // derive "last seen" from the latest highlight date (fall back to the book
+  // field if present).
+  const dates = highlights.map((h) => h.at).filter(Boolean).sort();
+  const lastHighlightedAt = (dates[dates.length - 1] || b.last_highlight_at || "").slice(0, 10);
   // Layer 1 leaves classification empty → "Unclassified" until Layer 2 runs.
   const { kind, tag, color } = resolveTag(null, null);
   return {
@@ -56,7 +61,7 @@ function toClassifiedBook(b: RWBook, now: Date): ClassifiedBook {
     author: b.author || "Unknown",
     cover: b.cover_image_url || "",
     numHighlights: b.num_highlights ?? highlights.length,
-    lastHighlightedAt: (b.last_highlight_at || "").slice(0, 10),
+    lastHighlightedAt,
     kind, domain: null, genre: null, tag, color,
     activity: bucketActivity(highlights.map((h) => h.at), now),
     highlights,
