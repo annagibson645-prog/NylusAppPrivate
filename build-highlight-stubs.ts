@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { ClassifiedBook, RawHighlight } from "./lib/highlights";
+import { writeFileRetry } from "./write-retry";
 
 const SRC = path.resolve(__dirname, "public/data/highlights.json");
 const VAULT_PATH = path.resolve(__dirname, "../NylusS"); // mirror build-vault.ts
@@ -113,7 +114,7 @@ function main() {
   for (const b of books) {
     const slug = slugs.get(b.id)!;
     wanted.add(`${slug}.md`);
-    fs.writeFileSync(path.join(OUT_DIR, `${slug}.md`), renderStub(b));
+    writeFileRetry(path.join(OUT_DIR, `${slug}.md`), renderStub(b));
   }
 
   const idx: string[] = [];
@@ -121,8 +122,8 @@ function main() {
     const slug = slugs.get(b.id)!;
     for (const h of b.highlights) idx.push(indexLine(b, slug, h));
   }
-  fs.writeFileSync(path.join(OUT_DIR, "_index.jsonl"), `${idx.join("\n")}\n`);
-  fs.writeFileSync(path.join(OUT_DIR, "_books.md"), renderCatalog(books, slugs));
+  writeFileRetry(path.join(OUT_DIR, "_index.jsonl"), `${idx.join("\n")}\n`);
+  writeFileRetry(path.join(OUT_DIR, "_books.md"), renderCatalog(books, slugs));
 
   let pruned = 0;
   for (const f of fs.readdirSync(OUT_DIR)) {

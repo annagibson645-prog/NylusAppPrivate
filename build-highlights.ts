@@ -11,6 +11,7 @@ import {
   type ClassifiedBook,
   type RawHighlight,
 } from "./lib/highlights";
+import { writeFileRetry } from "./write-retry";
 
 const OUT = path.resolve(__dirname, "public/data/highlights.json");
 const TOKEN = process.env.READWISE_TOKEN;
@@ -112,7 +113,7 @@ async function main() {
       return;
     }
     console.warn("[highlights] No READWISE_TOKEN — writing sample data.");
-    fs.writeFileSync(OUT, JSON.stringify(sampleBooks(), null, 2));
+    writeFileRetry(OUT, JSON.stringify(sampleBooks(), null, 2));
     return;
   }
 
@@ -138,7 +139,7 @@ async function main() {
     } catch { /* ignore malformed prior file */ }
   }
 
-  fs.writeFileSync(OUT, JSON.stringify(books, null, 2));
+  writeFileRetry(OUT, JSON.stringify(books, null, 2));
   console.log(`[highlights] Wrote ${books.length} books to ${path.relative(__dirname, OUT)}.`);
 }
 

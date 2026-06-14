@@ -9,6 +9,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import {
   DOMAIN_SLUGS, resolveTag, type ClassifiedBook,
 } from "./lib/highlights";
+import { writeFileRetry } from "./write-retry";
 
 const DATA = path.resolve(__dirname, "public/data");
 const HL = path.join(DATA, "highlights.json");
@@ -74,7 +75,7 @@ async function main() {
         console.warn(`[classify] Batch ${i / BATCH + 1} failed, skipping:`, (e as Error).message);
       }
     }
-    fs.writeFileSync(CACHE, JSON.stringify(cache, null, 2));
+    writeFileRetry(CACHE, JSON.stringify(cache, null, 2));
   }
 
   // Merge: overrides win over cache; re-resolve tag/color for every book.
@@ -87,7 +88,7 @@ async function main() {
     b.domain = domain; b.genre = genre; b.kind = kind; b.tag = tag; b.color = color;
   }
 
-  fs.writeFileSync(HL, JSON.stringify(books, null, 2));
+  writeFileRetry(HL, JSON.stringify(books, null, 2));
   console.log(`[classify] Merged classification into ${books.length} book(s).`);
 }
 

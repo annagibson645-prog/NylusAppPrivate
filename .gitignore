@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local scratch — Tomes design prototypes (kept out of the repo)
+prototypes/
