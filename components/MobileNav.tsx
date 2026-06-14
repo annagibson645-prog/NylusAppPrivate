@@ -10,7 +10,7 @@ const TABS = [
   { href: '/research',   label: 'Research'   },
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
-  { href: '/tones',      label: 'Tones'      },
+  { href: '/tones',      label: 'Tomes'      },
   { href: '/council',    label: 'Council'    },
 ] as const;
 
@@ -188,7 +188,7 @@ export default function MobileNav() {
               {label === 'Collisions' && <IconCollisions active={isActive} />}
               {label === 'Hubs'       && <IconHubs       active={isActive} />}
               {label === 'Research'   && <IconResearch   active={isActive} />}
-              {label === 'Tones'      && <IconTones      active={isActive} />}
+              {label === 'Tomes'      && <IconTones      active={isActive} />}
               {label === 'Council'    && <IconCouncil    active={isActive} />}
             </span>
             <span className="mnav-label">{label}</span>

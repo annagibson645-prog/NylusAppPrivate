@@ -83,7 +83,7 @@ export default function TonesPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <NavG active="Tones" count={{ value: books.length || "—", label: books.length ? "tomes" : "loading", color: ACCENT }} />
+      <NavG active="Tomes" count={{ value: books.length || "—", label: books.length ? "tomes" : "loading", color: ACCENT }} />
 
       <main className="tns-root">
         <div className="tns-glow" aria-hidden />
