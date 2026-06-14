@@ -125,12 +125,11 @@ export default function TonesPage() {
                   <th className="tns-num" onClick={() => sortBy("numHighlights")}>Highlights{arrow("numHighlights")}</th>
                   <th onClick={() => sortBy("lastHighlightedAt")}>Last seen{arrow("lastHighlightedAt")}</th>
                   <th>Density</th>
-                  <th>90-day</th>
                 </tr>
               </thead>
               <tbody>
                 {loaded && filtered.length === 0 && (
-                  <tr><td colSpan={8} className="tns-empty">No tomes match.</td></tr>
+                  <tr><td colSpan={7} className="tns-empty">No tomes match.</td></tr>
                 )}
                 {shown.map((b, i) => (
                   <BookRow key={b.id} b={b} i={i} isOpen={open.has(b.id)} maxN={maxN} onToggle={() => toggleRow(b.id)} />
@@ -153,7 +152,6 @@ export default function TonesPage() {
 function BookRow({ b, i, isOpen, maxN, onToggle }: {
   b: Book; i: number; isOpen: boolean; maxN: number; onToggle: () => void;
 }) {
-  const maxA = Math.max(1, ...b.activity);
   return (
     <>
       <tr className={`tns-bk${isOpen ? " open" : ""}`} onClick={onToggle}>
@@ -168,14 +166,9 @@ function BookRow({ b, i, isOpen, maxN, onToggle }: {
         <td className="tns-num" style={{ color: ACCENT }}>{b.numHighlights}</td>
         <td className="tns-date">{b.lastHighlightedAt || "—"}</td>
         <td><div className="tns-track"><div className="tns-fill" style={{ width: `${Math.round((b.numHighlights / maxN) * 100)}%`, background: b.color }} /></div></td>
-        <td>
-          <div className="tns-spark" aria-hidden>
-            {b.activity.map((v, j) => <i key={j} style={{ height: `${4 + (v / maxA) * 12}px`, background: b.color }} />)}
-          </div>
-        </td>
       </tr>
       <tr className="tns-det">
-        <td colSpan={8}>
+        <td colSpan={7}>
           <div className={`tns-detin${isOpen ? " open" : ""}`}>
             <div className="tns-detpad">
               <div className="tns-detlbl" style={{ color: b.color }}>{b.tag} · {b.numHighlights} highlights</div>
