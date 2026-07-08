@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { existsSync, writeFileSync, unlinkSync } from "fs";
 
-const VAULT_PATH = "C:/Users/apgib/Desktop/NylusS";
+const VAULT_PATH = "C:/Users/apgib/OneDrive/Desktop/NylusS";
 const APP_PATH = path.dirname(fileURLToPath(import.meta.url));
 const LOCK_FILE = path.join(APP_PATH, ".agent-lock");
 const DEBOUNCE_MS = 60000;
