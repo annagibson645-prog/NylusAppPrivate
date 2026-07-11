@@ -7982,8 +7982,8 @@
     "title": "The Complete Shiva Purana",
     "author": "Dr Bhaskar Bora",
     "cover": "https://m.media-amazon.com/images/I/714sM1T+UdL._SL2000_.jpg",
-    "numHighlights": 154,
-    "lastHighlightedAt": "2026-07-05",
+    "numHighlights": 156,
+    "lastHighlightedAt": "2026-07-09",
     "kind": "unclassified",
     "domain": null,
     "genre": null,
@@ -8001,7 +8001,7 @@
       0,
       0,
       0,
-      154
+      156
     ],
     "highlights": [
       {
@@ -9081,6 +9081,20 @@
         "note": "",
         "location": 5291,
         "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1033081039",
+        "text": "The ash-marked forehead is, in the Indian visual vocabulary, the mark of the Shaiva — an identification so consistent and so publicly visible that it functions as a kind of theological declaration, worn on the face, available to every eye that encounters it. Understanding what that declaration actually says — what the person wearing the Tripundra is asserting about themselves and about the nature of the reality they inhabit — is the question this section examines.",
+        "note": "",
+        "location": 5324,
+        "at": "2026-07-09T04:56:00Z"
+      },
+      {
+        "id": "1033081040",
+        "text": "Vibhuti addresses the body: the gross physical form that the practitioner inhabits, that will become ash, that the daily application of ash reminds the practitioner is already in the process of becoming what the marking declares. It operates at the level of Annamaya Kosha — the food body, the gross physical instrument — and it operates there through the Dharana mode, directly on the skin, at the body's primary sensory and cognitive interface with the world.",
+        "note": "",
+        "location": 5379,
+        "at": "2026-07-09T04:56:00Z"
       }
     ]
   },
@@ -31049,8 +31063,8 @@
       0,
       0,
       0,
-      0,
       6,
+      0,
       0,
       0
     ],
