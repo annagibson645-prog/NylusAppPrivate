@@ -6717,8 +6717,8 @@
     "activity": [
       0,
       0,
-      0,
       178,
+      0,
       0,
       0,
       0,
@@ -7982,8 +7982,8 @@
     "title": "The Complete Shiva Purana",
     "author": "Dr Bhaskar Bora",
     "cover": "https://m.media-amazon.com/images/I/714sM1T+UdL._SL2000_.jpg",
-    "numHighlights": 156,
-    "lastHighlightedAt": "2026-07-09",
+    "numHighlights": 160,
+    "lastHighlightedAt": "2026-07-11",
     "kind": "unclassified",
     "domain": null,
     "genre": null,
@@ -8000,8 +8000,8 @@
       0,
       0,
       0,
-      0,
-      156
+      154,
+      6
     ],
     "highlights": [
       {
@@ -9095,6 +9095,34 @@
         "note": "",
         "location": 5379,
         "at": "2026-07-09T04:56:00Z"
+      },
+      {
+        "id": "1033534645",
+        "text": "The theological category that underwrites Uma's non-secondary status is Shakti (शक्ति, śakti) — and understanding Shakti with the precision the Shiva Purana requires is the necessary foundation for everything this chapter develops. The word means power, energy, capacity, the principle of dynamic activity. In the Shiva Purana's systematic theology, Shakti is not a quality that Shiva possesses or exercises. It is the inseparable dimension of Shiva's own being through which any of the five cosmic acts become possible.",
+        "note": "",
+        "location": 5490,
+        "at": "2026-07-11T04:56:00Z"
+      },
+      {
+        "id": "1033534646",
+        "text": "The philosophical implication of this analysis is that Shakti is not derived from Shiva. It is not something he generates and then exercises. It is the dimension of his own being without which he is definitionally incomplete — or rather, without which he is definitionally the Nishkala, which is real and ultimate but unable to enter into any relationship with the manifest world, unable to perform any of the five cosmic acts, unable to be the Pashupati who shepherds souls toward liberation, unable to be the loving husband of Parvati on Kailash.",
+        "note": "",
+        "location": 5497,
+        "at": "2026-07-11T04:56:00Z"
+      },
+      {
+        "id": "1033534647",
+        "text": "Parvati (पार्वती, pārvatī) — daughter of the mountain — is the name that emphasizes Uma's embodied origin, her connection to the physical world through the mountain that is her father, and her achievement of divine recognition through the earned path of tapas rather than through spontaneous revelation. Parvati is the dimension of Uma that is most directly available to the human practitioner as a model: the being who begins where most practitioners begin, who faces genuine uncertainty about whether the practice will lead anywhere, who endures the loving opposition of those who do not understand her orientation, and who arrives at the recognition that the practice was always already the recognition beginning to know itself.",
+        "note": "",
+        "location": 5575,
+        "at": "2026-07-11T04:56:00Z"
+      },
+      {
+        "id": "1033534648",
+        "text": "The technique is the same technique the Shiva Purana deploys in its treatment of Vishnu: absorption that honors the rival tradition's genuine theological insight while insisting that the insight is most fully visible within the Shaiva frame.",
+        "note": "",
+        "location": 5690,
+        "at": "2026-07-11T04:56:00Z"
       }
     ]
   },
@@ -19356,8 +19384,8 @@
       0,
       0,
       0,
-      0,
       95,
+      0,
       0,
       0,
       0
@@ -41986,8 +42014,8 @@
       0,
       0,
       0,
-      0,
-      10
+      10,
+      0
     ],
     "highlights": [
       {
@@ -45724,8 +45752,8 @@
     "color": "#9aa0a6",
     "activity": [
       0,
-      0,
       3,
+      0,
       0,
       0,
       0,
