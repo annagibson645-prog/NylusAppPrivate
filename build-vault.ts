@@ -41,7 +41,7 @@ const HUB_SKIP_SECTIONS = new Set([
 ]);
 const HUB_LEVEL_ORDER: Record<string, number> = { foundational: 0, intermediate: 1, advanced: 2, thematic: 3 };
 const HUB_LEVEL_BADGE: Record<string, string> = { foundational: 'Foundational', intermediate: 'Intermediate', advanced: 'Advanced', thematic: '' };
-const HUB_LEVEL_COLOR: Record<string, string> = { foundational: '#6bab8a', intermediate: '#c8a460', advanced: '#9f7ec0', thematic: '#4a4468' };
+const HUB_LEVEL_COLOR: Record<string, string> = { foundational: '#5a8fd6', intermediate: '#d6c14a', advanced: '#d65a5a', thematic: '#4a4468' };
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface VaultNode {

@@ -248,7 +248,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                 <div className="hs-sec-mark" />
                 <button className={`hs-sec-header${isCollapsed ? ' collapsed' : ''}`} onClick={() => toggleSection(sec.key)} aria-expanded={!isCollapsed}>
                   <span className="hs-sec-name">{sec.label}</span>
-                  {sec.badge && <span className="hs-sec-badge">{sec.badge}</span>}
+                  {sec.badge && <span className="hs-sec-badge" style={{ color: sec.color }}>{sec.badge}</span>}
                   <span className="hs-sec-count">· {sec.concepts.length}</span>
                   <span className="hs-sec-chevron" aria-hidden="true">▾</span>
                 </button>
