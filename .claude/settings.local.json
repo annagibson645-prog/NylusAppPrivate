@@ -28,7 +28,11 @@
       "Bash(curl -s \"http://localhost:3000/orb-prototypes.html\")",
       "Bash(curl -s \"http://localhost:3000/research/the-warrior-who-dies-into-the-sun\")",
       "Bash(grep -oE 'void-link|/concept/white-yoga|class=\\\\\\\\\"void-link')",
-      "Bash(cd \"/c/Users/apgib/Desktop/NylusS\" && echo \"=== .claude/skills copy ===\" && grep -n \"synopsis\" \".claude/skills/vault-research-console/SKILL.md\"; echo \"=== root copy ===\" && grep -n \"synopsis\" \"vault-research-console/SKILL.md\")"
+      "Bash(cd \"/c/Users/apgib/Desktop/NylusS\" && echo \"=== .claude/skills copy ===\" && grep -n \"synopsis\" \".claude/skills/vault-research-console/SKILL.md\"; echo \"=== root copy ===\" && grep -n \"synopsis\" \"vault-research-console/SKILL.md\")",
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)",
+      "Bash(taskkill //F //IM python.exe)",
+      "Bash(taskkill //F //IM python3.exe)"
     ]
   }
 }
