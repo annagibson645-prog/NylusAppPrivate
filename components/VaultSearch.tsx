@@ -19,6 +19,7 @@ const TYPE_ROUTE: Record<string, string> = {
   collision:  '/collision',
   spark:      '/spark',
   research:   '/research',
+  craft:      '/craft',
   source:     '/source',
   essay:      '/essay',
 };
@@ -29,6 +30,7 @@ const TYPE_LABEL: Record<string, string> = {
   collision: 'collision',
   spark:     'spark',
   research:  'research',
+  craft:     'craft',
   source:    'source',
   'essay-seed': 'essay seed',
 };

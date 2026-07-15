@@ -20,7 +20,7 @@ function routeForType(type: string, slug: string): string {
   if (type === "source") return `/source/${slug}`;
   if (type === "spark") return `/spark/${slug}`;
   if (type === "collision") return `/collision/${slug}`;
-  if (type === "essay" || type === "research") return `/${type}/${slug}`;
+  if (type === "essay" || type === "research" || type === "craft") return `/${type}/${slug}`;
   return `/concept/${slug}`;
 }
 
@@ -433,11 +433,11 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
 
           {/* Connections */}
           {hasConnections && (() => {
-            const essayBacks = backlinkedNodes.filter((n) => n.type === "essay" || n.type === "research");
-            const otherBacks = backlinkedNodes.filter((n) => n.type !== "essay" && n.type !== "research");
+            const essayBacks = backlinkedNodes.filter((n) => n.type === "essay" || n.type === "research" || n.type === "craft");
+            const otherBacks = backlinkedNodes.filter((n) => n.type !== "essay" && n.type !== "research" && n.type !== "craft");
             return (
               <>
-                {/* Essays / research that grew from this node */}
+                {/* Essays / research / craft reports that grew from this node */}
                 {essayBacks.length > 0 && (
                   <>
                     <div className="void-section-label">developed into</div>
@@ -445,7 +445,7 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
                       {essayBacks.map((n) => (
                         <Link key={n.id} href={typeRoute(n)} className="void-conn-cell">
                           <div className="void-conn-domain" style={{ color: n.color }}>
-                            {n.type === "research" ? "⊹ research" : "✦ essay"}
+                            {n.type === "research" ? "⊹ research" : n.type === "craft" ? "✎ craft" : "✦ essay"}
                           </div>
                           <div className="void-conn-title">{n.title}</div>
                         </Link>

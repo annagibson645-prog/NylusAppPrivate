@@ -9,6 +9,7 @@ const TABS = [
   { href: '/hubs',       label: 'Hubs'       },
   { href: '/research',   label: 'Research'   },
   { href: '/essays',     label: 'Essays'     },
+  { href: '/craft',      label: 'Craft'      },
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
   { href: '/tones',      label: 'Tomes'      },
@@ -102,6 +103,21 @@ function IconEssays({ active }: { active: boolean }) {
         fill={active ? 'currentColor' : 'none'}
         stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" opacity={active ? 1 : 0.7}/>
       <line x1="10.1" y1="4.5" x2="13.5" y2="7.9" stroke="currentColor" strokeWidth="1.1" opacity={active ? 0.9 : 0.6}/>
+    </svg>
+  );
+}
+
+function IconCraft({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      {/* margin spine + note lines — a ledger of sessions */}
+      <line x1="3" y1="2.5" x2="3" y2="15.5" stroke="currentColor" strokeWidth="1.3" opacity={active ? 0.9 : 0.6}/>
+      <circle cx="3" cy="5" r="1.4" fill="currentColor" opacity={active ? 1 : 0.7}/>
+      <line x1="7" y1="5" x2="15" y2="5" stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7}/>
+      <circle cx="3" cy="9.5" r="1.4" fill="currentColor" opacity={active ? 1 : 0.7}/>
+      <line x1="7" y1="9.5" x2="13" y2="9.5" stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7}/>
+      <circle cx="3" cy="14" r="1.4" fill="currentColor" opacity={active ? 1 : 0.7}/>
+      <line x1="7" y1="14" x2="14" y2="14" stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7}/>
     </svg>
   );
 }
@@ -202,6 +218,7 @@ export default function MobileNav() {
               {label === 'Hubs'       && <IconHubs       active={isActive} />}
               {label === 'Research'   && <IconResearch   active={isActive} />}
               {label === 'Essays'     && <IconEssays     active={isActive} />}
+              {label === 'Craft'      && <IconCraft      active={isActive} />}
               {label === 'Tomes'      && <IconTones      active={isActive} />}
               {label === 'Council'    && <IconCouncil    active={isActive} />}
             </span>

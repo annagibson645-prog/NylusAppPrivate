@@ -7,7 +7,8 @@ export type VaultNodeType =
   | "source"
   | "question"
   | "essay"
-  | "research";
+  | "research"
+  | "craft";
 
 export type VaultNodeStatus =
   | "stub"
@@ -44,6 +45,8 @@ export interface VaultNode {
   pressure_score?: number;
   word_count?: number;
   research_domains?: Record<string, number>;
+  source_material?: string;
+  techniques?: string[];
 }
 
 export interface VaultEdge {

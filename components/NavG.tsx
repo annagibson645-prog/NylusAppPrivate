@@ -9,14 +9,15 @@ import VaultSearch from "@/components/VaultSearch";
 // Theme toggle is built-in — works on all screen sizes.
 
 const NAV_ITEMS = [
-  { label: "Dashboard",  idx: "01", href: "/"           },
-  { label: "Hubs",       idx: "02", href: "/hubs"       },
-  { label: "Research",   idx: "03", href: "/research"   },
-  { label: "Essays",     idx: "04", href: "/essays"     },
-  { label: "Collisions", idx: "05", href: "/collisions" },
-  { label: "Sparks",     idx: "06", href: "/sparks"     },
-  { label: "Tomes",      idx: "07", href: "/tones"      },
-  { label: "The Council", idx: "08", href: "/council"   },
+  { label: "Dashboard",     idx: "01", href: "/"           },
+  { label: "Hubs",          idx: "02", href: "/hubs"       },
+  { label: "Research",      idx: "03", href: "/research"   },
+  { label: "Essays",        idx: "04", href: "/essays"     },
+  { label: "Craft Reports", idx: "05", href: "/craft"      },
+  { label: "Collisions",    idx: "06", href: "/collisions" },
+  { label: "Sparks",        idx: "07", href: "/sparks"     },
+  { label: "Tomes",         idx: "08", href: "/tones"      },
+  { label: "The Council",   idx: "09", href: "/council"    },
 ] as const;
 
 const STYLES = `

@@ -19,6 +19,7 @@ const INCLUDED_DIRS = [
   "LAB/Threads",
   "The Platform/Essays",
   "The Platform/Research",
+  "The Platform/Craft",
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -72,6 +73,8 @@ interface VaultNode {
   research_domains?: Record<string, number>;
   concepts?: string[];
   sections?: HubSection[];
+  source_material?: string;
+  techniques?: string[];
 }
 
 interface HubSection {
@@ -451,7 +454,7 @@ async function buildVault() {
     if (type === "spark") {
       node.live_wire = extractSection(content, "The Live Wire");
     }
-    if (type === "essay" || type === "research") {
+    if (type === "essay" || type === "research" || type === "craft") {
       const bodyText = content.replace(/^---[\s\S]*?---\n?/, "").replace(/[#*`\[\]]/g, "");
       node.word_count = bodyText.trim().split(/\s+/).filter(Boolean).length;
       // Connect an essay to the spark(s) it grew from. Declare in frontmatter:
@@ -468,6 +471,12 @@ async function buildVault() {
     }
     if (type === "research" && fm.domains && typeof fm.domains === "object" && !Array.isArray(fm.domains)) {
       node.research_domains = fm.domains as Record<string, number>;
+    }
+
+    // Craft-specific fields
+    if (type === "craft") {
+      if (fm.source_material) node.source_material = String(fm.source_material);
+      if (Array.isArray(fm.techniques)) node.techniques = fm.techniques.map(String);
     }
 
     nodes.set(slug, node);
@@ -706,6 +715,15 @@ async function buildVault() {
     JSON.stringify(research, null, 0)
   );
 
+  // craft.json — Craft coaching reports (craft-coach skill)
+  const craft = nodeArray
+    .filter((n) => n.type === "craft")
+    .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+  fs.writeFileSync(
+    path.join(OUT_DIR, "craft.json"),
+    JSON.stringify(craft, null, 0)
+  );
+
   // stats.json — dashboard counters
   const stats = {
     total_concepts: nodeArray.filter((n) => n.type === "concept").length,
@@ -758,6 +776,7 @@ function inferType(relPath: string): string {
   if (relPath.includes("LAB/Sparks")) return "spark";
   if (relPath.includes("LAB/Threads")) return "thread";
   if (relPath.includes("The Platform/Research")) return "research";
+  if (relPath.includes("The Platform/Craft")) return "craft";
   if (relPath.includes("ARCHIVES/sources")) return "source";
   if (relPath.includes("concepts/hubs")) return "hub";
   if (relPath.includes("ARCHIVES/concepts")) return "concept";

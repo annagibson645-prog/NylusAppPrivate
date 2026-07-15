@@ -44,7 +44,7 @@ function routeForType(type: string, slug: string): string {
   if (type === "source") return `/source/${slug}`;
   if (type === "spark") return `/spark/${slug}`;
   if (type === "collision") return `/collision/${slug}`;
-  if (type === "research" || type === "essay") return `/${type}/${slug}`;
+  if (type === "research" || type === "essay" || type === "craft") return `/${type}/${slug}`;
   return `/concept/${slug}`;
 }
 
