@@ -33,7 +33,10 @@
       "Skill(artifact-design:*)",
       "Bash(taskkill //F //IM python.exe)",
       "Bash(taskkill //F //IM python3.exe)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(ls \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\NylusS\\\\LAB\\\\Sparks\" 2>&1 | head -20)",
+      "Bash(rm \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\NylusS\\\\The Platform\\\\Essays\\\\the-manual-that-couldnt-read-itself.md\")",
+      "Bash(rm \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\NylusS\\\\The Platform\\\\Essays\\\\the-empire-that-taught-its-conquerors-to-win.md\")"
     ]
   }
 }

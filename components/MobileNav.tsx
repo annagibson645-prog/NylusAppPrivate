@@ -8,6 +8,7 @@ const TABS = [
   { href: '/',           label: 'Dashboard'  },
   { href: '/hubs',       label: 'Hubs'       },
   { href: '/research',   label: 'Research'   },
+  { href: '/essays',     label: 'Essays'     },
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
   { href: '/tones',      label: 'Tomes'      },
@@ -89,6 +90,18 @@ function IconResearch({ active }: { active: boolean }) {
       <path d="M9 4v10M9 4C9 4 6 3 3 4v10c3-1 6 0 6 0M9 4c0 0 3-1 6 0v10c-3-1-6 0-6 0"
         stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"
         fill="none" opacity={active ? 1 : 0.7}/>
+    </svg>
+  );
+}
+
+function IconEssays({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      {/* pen nib writing a line */}
+      <path d="M12.3 2.3L15.7 5.7L7.2 14.2L3 15L3.8 10.8L12.3 2.3Z"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" opacity={active ? 1 : 0.7}/>
+      <line x1="10.1" y1="4.5" x2="13.5" y2="7.9" stroke="currentColor" strokeWidth="1.1" opacity={active ? 0.9 : 0.6}/>
     </svg>
   );
 }
@@ -188,6 +201,7 @@ export default function MobileNav() {
               {label === 'Collisions' && <IconCollisions active={isActive} />}
               {label === 'Hubs'       && <IconHubs       active={isActive} />}
               {label === 'Research'   && <IconResearch   active={isActive} />}
+              {label === 'Essays'     && <IconEssays     active={isActive} />}
               {label === 'Tomes'      && <IconTones      active={isActive} />}
               {label === 'Council'    && <IconCouncil    active={isActive} />}
             </span>
