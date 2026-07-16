@@ -8000,8 +8000,8 @@
       0,
       0,
       0,
-      154,
-      6
+      156,
+      4
     ],
     "highlights": [
       {
@@ -45928,6 +45928,56 @@
     ]
   },
   {
+    "id": "62066719",
+    "title": "Call Hanuman",
+    "author": "Ananta Sivam",
+    "cover": "https://m.media-amazon.com/images/I/71xbhpTYiyL._SL2000_.jpg",
+    "numHighlights": 3,
+    "lastHighlightedAt": "2026-07-15",
+    "kind": "unclassified",
+    "domain": null,
+    "genre": null,
+    "tag": "Unclassified",
+    "color": "#9aa0a6",
+    "activity": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ],
+    "highlights": [
+      {
+        "id": "1034528972",
+        "text": "He who speaks thus cannot be other than great. This is the first test Hanuman passes without effort: the test of right speech, of a tongue trained by genuine learning and held in the discipline of honest purpose.",
+        "note": "",
+        "location": 131,
+        "at": "2026-07-15T04:56:00Z"
+      },
+      {
+        "id": "1034528973",
+        "text": "When Hanuman reveals himself, Rama embraces him. From that moment, Hanuman's life belongs entirely to Rama's work. He becomes the great general of the Vanara army, the one who crosses the ocean to find Sita, the destroyer of Lanka's military capacity, and the being who saves Lakshmana's life at the cost of considerable personal risk and effort.",
+        "note": "",
+        "location": 132,
+        "at": "2026-07-15T04:56:00Z"
+      },
+      {
+        "id": "1034528974",
+        "text": "The lesson the tradition draws from this episode is precise: even when captured, even when attacked, the servant of God becomes the instrument of divine fire.",
+        "note": "",
+        "location": 145,
+        "at": "2026-07-15T04:56:00Z"
+      }
+    ]
+  },
+  {
     "id": "61910261",
     "title": "Mini Book Model",
     "author": "Chris Stanley",
@@ -47981,8 +48031,8 @@
       0,
       0,
       0,
-      0,
       1,
+      0,
       0
     ],
     "highlights": [
