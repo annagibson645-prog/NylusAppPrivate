@@ -12,6 +12,7 @@ const TABS = [
   { href: '/craft',      label: 'Craft'      },
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
+  { href: '/threads',    label: 'Threads'    },
   { href: '/tones',      label: 'Tomes'      },
   { href: '/council',    label: 'Council'    },
 ] as const;
@@ -103,6 +104,18 @@ function IconEssays({ active }: { active: boolean }) {
         fill={active ? 'currentColor' : 'none'}
         stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" opacity={active ? 1 : 0.7}/>
       <line x1="10.1" y1="4.5" x2="13.5" y2="7.9" stroke="currentColor" strokeWidth="1.1" opacity={active ? 0.9 : 0.6}/>
+    </svg>
+  );
+}
+
+function IconThreads({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      {/* two interwoven strands */}
+      <path d="M2.5 4.5C6 4.5 6 13.5 9.5 13.5C13 13.5 13 4.5 15.5 4.5"
+        stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7} strokeLinecap="round"/>
+      <path d="M2.5 13.5C6 13.5 6 4.5 9.5 4.5C13 4.5 13 13.5 15.5 13.5"
+        stroke="currentColor" strokeWidth="1.3" opacity={active ? 0.6 : 0.4} strokeLinecap="round"/>
     </svg>
   );
 }
@@ -219,6 +232,7 @@ export default function MobileNav() {
               {label === 'Research'   && <IconResearch   active={isActive} />}
               {label === 'Essays'     && <IconEssays     active={isActive} />}
               {label === 'Craft'      && <IconCraft      active={isActive} />}
+              {label === 'Threads'    && <IconThreads    active={isActive} />}
               {label === 'Tomes'      && <IconTones      active={isActive} />}
               {label === 'Council'    && <IconCouncil    active={isActive} />}
             </span>

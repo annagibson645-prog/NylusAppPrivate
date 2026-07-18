@@ -454,7 +454,7 @@ async function buildVault() {
     if (type === "spark") {
       node.live_wire = extractSection(content, "The Live Wire");
     }
-    if (type === "essay" || type === "research" || type === "craft") {
+    if (type === "essay" || type === "research" || type === "craft" || type === "thread") {
       const bodyText = content.replace(/^---[\s\S]*?---\n?/, "").replace(/[#*`\[\]]/g, "");
       node.word_count = bodyText.trim().split(/\s+/).filter(Boolean).length;
       // Connect an essay to the spark(s) it grew from. Declare in frontmatter:
@@ -722,6 +722,15 @@ async function buildVault() {
   fs.writeFileSync(
     path.join(OUT_DIR, "craft.json"),
     JSON.stringify(craft, null, 0)
+  );
+
+  // threads.json — LAB/Threads thread-generator output (private /threads section)
+  const threads = nodeArray
+    .filter((n) => n.type === "thread")
+    .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+  fs.writeFileSync(
+    path.join(OUT_DIR, "threads.json"),
+    JSON.stringify(threads, null, 0)
   );
 
   // stats.json — dashboard counters

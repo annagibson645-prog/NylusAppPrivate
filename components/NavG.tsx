@@ -16,8 +16,9 @@ const NAV_ITEMS = [
   { label: "Craft Reports", idx: "05", href: "/craft"      },
   { label: "Collisions",    idx: "06", href: "/collisions" },
   { label: "Sparks",        idx: "07", href: "/sparks"     },
-  { label: "Tomes",         idx: "08", href: "/tones"      },
-  { label: "The Council",   idx: "09", href: "/council"    },
+  { label: "Threads",       idx: "08", href: "/threads"    },
+  { label: "Tomes",         idx: "09", href: "/tones"      },
+  { label: "The Council",   idx: "10", href: "/council"    },
 ] as const;
 
 const STYLES = `
