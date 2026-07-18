@@ -8000,8 +8000,8 @@
       0,
       0,
       0,
-      156,
-      4
+      160,
+      0
     ],
     "highlights": [
       {
@@ -19369,8 +19369,8 @@
     "title": "Imitation",
     "author": "Cristian Mihai",
     "cover": "https://m.media-amazon.com/images/I/713L4xK3VIL._SL2000_.jpg",
-    "numHighlights": 100,
-    "lastHighlightedAt": "2026-07-17",
+    "numHighlights": 102,
+    "lastHighlightedAt": "2026-07-18",
     "kind": "unclassified",
     "domain": null,
     "genre": null,
@@ -19388,7 +19388,7 @@
       0,
       0,
       0,
-      100
+      102
     ],
     "highlights": [
       {
@@ -20090,6 +20090,20 @@
         "note": "",
         "location": 1085,
         "at": "2026-07-17T04:56:00Z"
+      },
+      {
+        "id": "1035299337",
+        "text": "Here is the protocol: Take a story or chapter you've written. Wait at least two weeks after completing the draft. The distance matters. You need enough separation to read your own work with fresh eyes. Mark every paragraph as you did with the published work. Count the functions. Calculate your average.",
+        "note": "",
+        "location": 1112,
+        "at": "2026-07-18T04:56:00Z"
+      },
+      {
+        "id": "1035299338",
+        "text": "This exercise takes the Function Markup a step further. It trains you to see differences in craft quality. Select five pages from a literary novel you admire. A book that won major awards. A book whose prose style is celebrated. Mark the paragraph functions. Select five pages from a competent but unremarkable novel. A genre bestseller, perhaps. A book that entertains but doesn't linger. Mark the paragraph functions. Compare the tallies. You will find the celebrated prose has higher average functions per paragraph. You will find fewer single-function paragraphs. You will find more instances of four-function and five-function paragraphs. The comparison makes visible what you sensed but couldn't name. The celebrated prose feels richer because it is richer. The efficiency is measurable. Apply this analysis to your own work. Select five pages of your recent writing. Mark the paragraph functions as you did with the published work. Compare your tallies to the celebrated prose. The gap, if there is one, is your curriculum. The gap points to what you need to learn.",
+        "note": "",
+        "location": 1126,
+        "at": "2026-07-18T04:56:00Z"
       }
     ]
   },
@@ -31819,8 +31833,8 @@
       0,
       0,
       0,
-      0,
       6,
+      0,
       0,
       0,
       0
