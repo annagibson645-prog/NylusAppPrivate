@@ -26,7 +26,7 @@ export default function ThreadsPage() {
       <div style={{ position: "relative", zIndex: 2, maxWidth: "1100px", margin: "0 auto", padding: "64px clamp(20px, 5vw, 64px) 160px" }}>
 
         <div style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "11px", letterSpacing: "0.28em", color: "#c084fc", textTransform: "uppercase", marginBottom: "24px", opacity: 0.75 }}>
-          private · thread generator output
+          thread generator output
         </div>
 
         <h1 className="void-title">The Loom</h1>
