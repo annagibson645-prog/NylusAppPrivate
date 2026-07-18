@@ -17,14 +17,15 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/threads") && pathname !== "/threads/login") {
+    // Fail CLOSED: if THREADS_PIN isn't configured in this environment,
+    // token is null and cookie can never match it, so every request gets
+    // sent to the login wall instead of silently passing through unlocked.
     const token = expectedToken();
-    if (token) {
-      const cookie = request.cookies.get(COOKIE_NAME)?.value;
-      if (cookie !== token) {
-        const loginUrl = new URL("/threads/login", request.url);
-        loginUrl.searchParams.set("next", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
+    const cookie = request.cookies.get(COOKIE_NAME)?.value;
+    if (!token || cookie !== token) {
+      const loginUrl = new URL("/threads/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
