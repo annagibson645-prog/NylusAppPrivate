@@ -7999,8 +7999,8 @@
       0,
       0,
       0,
-      154,
-      6,
+      160,
+      0,
       3
     ],
     "highlights": [
@@ -19390,8 +19390,8 @@
     "title": "Imitation",
     "author": "Cristian Mihai",
     "cover": "https://m.media-amazon.com/images/I/713L4xK3VIL._SL2000_.jpg",
-    "numHighlights": 105,
-    "lastHighlightedAt": "2026-07-18",
+    "numHighlights": 112,
+    "lastHighlightedAt": "2026-07-21",
     "kind": "unclassified",
     "domain": null,
     "genre": null,
@@ -19408,8 +19408,8 @@
       0,
       0,
       0,
-      0,
-      105
+      105,
+      7
     ],
     "highlights": [
       {
@@ -20146,6 +20146,55 @@
         "note": "",
         "location": 1262,
         "at": "2026-07-18T04:56:00Z"
+      },
+      {
+        "id": "1036060224",
+        "text": "Morrison bristled at comparisons for decades. \"I am not like James Joyce; I am not like Thomas Hardy; I am not like Faulkner,\" she told Nellie McKay in 1983. \"I am not like in that sense.\" The irritation made sense. Critics who compared her to Faulkner often meant something reductive: that Black writers must borrow from white ones, that influence runs in only one direction, that the apprentice never escapes the master's shadow.",
+        "note": "",
+        "location": 1321,
+        "at": "2026-07-20T04:56:00Z"
+      },
+      {
+        "id": "1036060225",
+        "text": "Morrison engineered her synthesis of Faulkner, Woolf, and Zora Neale Hurston. She chose these sources with intention, extracted what she needed from each, discarded what would distort her vision. Her influence map ran on strategy. And because it ran on strategy, she transcended every writer on it.",
+        "note": "",
+        "location": 1330,
+        "at": "2026-07-20T04:56:00Z"
+      },
+      {
+        "id": "1036060226",
+        "text": "Writers who map their influences gain three advantages. First, they identify the specific techniques they've absorbed and can deploy those techniques with intent rather than by reflex. Second, they recognize the gaps in their training and can fill those gaps by targeting new influences. Third, they understand the particular combination that makes their voice distinctive and can lean into that combination rather than fighting it.",
+        "note": "",
+        "location": 1336,
+        "at": "2026-07-20T04:56:00Z"
+      },
+      {
+        "id": "1036060227",
+        "text": "This moves from general admiration to concrete craft. King learned from Chandler how to write descriptive similes that do double duty: \"The muzzle of the Luger looked like the mouth of the Second Street tunnel\" gives you both visual precision and geographical specificity in a single image. You can study and replicate that technique. \"Good prose style\" names nothing you can practice. The phrase gestures toward something you cannot yet analyze.",
+        "note": "",
+        "location": 1359,
+        "at": "2026-07-20T04:56:00Z"
+      },
+      {
+        "id": "1036060228",
+        "text": "This is strategic influence acquisition. If you tend toward long sentences, study writers who achieve power through brevity. If you tend toward interiority, study writers who create character through action alone. The gap in your influence map represents a skill you have not yet developed, and the way to develop it is to add a model.",
+        "note": "",
+        "location": 1399,
+        "at": "2026-07-20T04:56:00Z"
+      },
+      {
+        "id": "1036060229",
+        "text": "For each of your Big Ten influences, rate their strength on each skill from one to ten. Some writers will score high on dialogue and low on plot construction. Some will score high on prose rhythm and low on emotional precision. The uneven distribution is the point. Now look at the aggregate. If eight of your ten influences score above seven on prose rhythm but below four on plot construction, your training has emphasized sound over story. If seven score high on interiority but low on dialogue, you have absorbed techniques for rendering thought but not speech.",
+        "note": "",
+        "location": 1412,
+        "at": "2026-07-20T04:56:00Z"
+      },
+      {
+        "id": "1036178831",
+        "text": "Frank Herbert arrived first. At fourteen, reading Dune, the ambition of the thing hit me: a single novel that contained ecology, politics, religion, linguistics, and the interior lives of a dozen characters. Herbert taught scope, the belief that a story could hold an entire world. The technique was structural complexity, the way chapters wove military strategy, mystical prophecy, and family drama without pausing to explain how the pieces connected.",
+        "note": "",
+        "location": 1420,
+        "at": "2026-07-21T04:56:00Z"
       }
     ]
   },
@@ -23343,8 +23392,8 @@
       0,
       0,
       0,
-      0,
       75,
+      0,
       0,
       0,
       0,
@@ -30645,8 +30694,8 @@
       0,
       0,
       0,
-      0,
       56,
+      0,
       0,
       0,
       0,
@@ -31874,8 +31923,8 @@
       0,
       0,
       0,
-      0,
       6,
+      0,
       0,
       0,
       0,
@@ -41945,8 +41994,8 @@
       0,
       0,
       0,
-      0,
       11,
+      0,
       0,
       0,
       0,
@@ -45340,7 +45389,7 @@
     "tag": "Unclassified",
     "color": "#9aa0a6",
     "activity": [
-      5,
+      0,
       0,
       0,
       0,
@@ -46496,8 +46545,8 @@
       0,
       0,
       0,
-      0,
-      3
+      3,
+      0
     ],
     "highlights": [
       {
@@ -46640,8 +46689,8 @@
       0,
       0,
       0,
-      0,
       3,
+      0,
       0,
       0,
       0,
@@ -48532,7 +48581,7 @@
     "tag": "Unclassified",
     "color": "#9aa0a6",
     "activity": [
-      1,
+      0,
       0,
       0,
       0,
@@ -48576,8 +48625,8 @@
       0,
       0,
       0,
-      0,
       1,
+      0,
       0,
       0
     ],
