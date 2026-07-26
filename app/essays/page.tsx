@@ -16,7 +16,9 @@ export default function EssaysPage() {
   } catch { /* no essays yet */ }
 
   const essays: EssayNode[] = raw
-    .filter((e) => e.status === "complete" || e.status === "draft")
+    // Only finished, hand-placed essays belong here. Essay *seeds* live under
+    // LAB/Sparks (type: spark, subtype: essay-seed) and must never surface here.
+    .filter((e) => e.status === "complete")
     .map((e) => ({
       id: e.id,
       title: e.title,
