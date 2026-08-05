@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import NavG from "./NavG";
 import VaultSearch from "./VaultSearch";
+import { pickHubIcon } from "@/lib/hubIcons";
 
 // ─── Palettes (mirrors ConstellationV2 + collisions) ─────────────────────────
 const HUB_PALETTES = {
@@ -321,6 +322,28 @@ const STYLES = `
   }
   .h-card:hover  { background: var(--h-bg3); }
   .h-card:active { background: var(--h-bg3); }
+  .h-icon-halo { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
+  @keyframes hHaloSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .h-icon-halo-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 1px dashed color-mix(in srgb, var(--dc) 42%, transparent);
+    animation: hHaloSpin 26s linear infinite;
+    transition: border-color 0.3s ease;
+  }
+  .h-icon-halo-fill {
+    position: absolute; inset: 5px; border-radius: 50%;
+    background: color-mix(in srgb, var(--dc) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--dc) 35%, transparent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; opacity: 0.78;
+    transition: box-shadow 0.35s ease, opacity 0.25s ease, background 0.25s ease;
+  }
+  .h-card:hover .h-icon-halo-ring { border-color: color-mix(in srgb, var(--dc) 68%, transparent); animation-duration: 7s; }
+  .h-card:hover .h-icon-halo-fill {
+    opacity: 1;
+    background: color-mix(in srgb, var(--dc) 20%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--dc) 45%, transparent);
+  }
   @media (max-width: 1080px) {
     .h-hub-grid { grid-template-columns: repeat(2, 1fr) !important; }
   }
@@ -404,6 +427,7 @@ function DharmaBackground({ activeColor }: { activeColor: string | null }) {
 }
 
 function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: string }) {
+  const glyph = pickHubIcon(hub.title, hub.domain, index);
   return (
     <Link href={`/hub/${hub.id}`} className="h-card" style={{ borderLeftColor: color }}>
       <div style={{ display: "flex", gap: 14, alignItems: "baseline", marginBottom: 12 }}>
@@ -420,6 +444,10 @@ function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: st
         }}>
           {hub.title}
         </span>
+      </div>
+      <div className="h-icon-halo" style={{ marginBottom: 14, "--dc": color } as React.CSSProperties}>
+        <div className="h-icon-halo-ring" />
+        <div className="h-icon-halo-fill"><span>{glyph}</span></div>
       </div>
       {hub.excerpt && (
         <p style={{
