@@ -321,6 +321,9 @@ const STYLES = `
   }
   .h-card:hover  { background: var(--h-bg3); }
   .h-card:active { background: var(--h-bg3); }
+  @media (max-width: 1080px) {
+    .h-hub-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
   @media (max-width: 700px) {
     .h-card { padding: 20px 20px; }
     .h-hub-grid { grid-template-columns: 1fr !important; }
@@ -654,7 +657,7 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
           })}
         </svg>
 
-        <section style={{ width: "100%", maxWidth: 720, padding: "0 24px 80px" }}>
+        <section style={{ width: "100%", maxWidth: 1140, padding: "0 24px 80px" }}>
           {!selected && (
             <p style={{ textAlign: "center",
               fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)",
@@ -678,7 +681,7 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
                 </span>
               </div>
               <div className="h-hub-grid" style={{ display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
+                gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
                 {activeHubs.map((h, i) => (
                   <HubCard key={h.id} hub={h} index={i} color={listDomain.color} />
                 ))}
