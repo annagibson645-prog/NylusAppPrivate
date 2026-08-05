@@ -5,6 +5,8 @@ import Link from "next/link";
 import NavG from "./NavG";
 import VaultSearch from "./VaultSearch";
 import { pickHubIcon } from "@/lib/hubIcons";
+import { DomainEmblem } from "@/components/DomainEmblems";
+import { hubCardDescription } from "@/lib/hubCardDescriptions";
 
 // ─── Palettes (mirrors ConstellationV2 + collisions) ─────────────────────────
 const HUB_PALETTES = {
@@ -76,6 +78,17 @@ const DOMAIN_META = [
   { key: "business",              label: "Business",             short: "Business",     color: "#e879a0", angle: 180  },
   { key: "african-spirituality",  label: "African Spirituality", short: "African",      color: "#34d399", angle: -135 },
 ] as const;
+
+const DOMAIN_DESC: Record<string, string> = {
+  "psychology":            "What's happening inside a person — drives, wounds, and the architecture of the self.",
+  "history":                "How power, empires, and ideas actually rose and fell.",
+  "cross-domain":           "Territory that cannot be understood through one domain alone.",
+  "behavioral-mechanics":   "Tactics — influence, compliance, and the machinery of persuasion.",
+  "eastern-spirituality":   "Practice, cosmology, and the traditions built to transform a person.",
+  "creative-practice":      "Craft, voice, and the discipline of making things well.",
+  "business":               "How work actually gets done — tools, systems, and operators.",
+  "african-spirituality":   "Cosmology, healing, and spirit architecture across African traditions.",
+};
 
 const CX      = 320;
 const CY      = 260;
@@ -309,40 +322,137 @@ const STYLES = `
   }
   .h-card {
     background: var(--h-bg2);
-    border-top:    1px solid var(--h-border);
-    border-right:  1px solid var(--h-border);
-    border-bottom: 1px solid var(--h-border);
-    border-left-width: 3px;
-    border-left-style: solid;
-    padding: 28px 28px;
-    transition: background 0.2s;
+    border: 1px solid var(--h-border);
+    padding: 40px 28px 30px;
+    transition: background 0.2s, border-color 0.2s;
     text-decoration: none;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     height: 100%;
   }
-  .h-card:hover  { background: var(--h-bg3); }
+  .h-card:hover  { background: var(--h-bg3); border-color: var(--h-border2, var(--h-border)); }
   .h-card:active { background: var(--h-bg3); }
-  .h-icon-halo { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
+  .h-icon-halo { position: relative; width: 72px; height: 72px; flex-shrink: 0; margin: 2px 0 0; }
   @keyframes hHaloSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .h-icon-halo-ring {
-    position: absolute; inset: 0; border-radius: 50%;
-    border: 1px dashed color-mix(in srgb, var(--dc) 42%, transparent);
-    animation: hHaloSpin 26s linear infinite;
+    position: absolute; inset: -7px; border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--dc) 32%, transparent);
+    animation: hHaloSpin 30s linear infinite;
     transition: border-color 0.3s ease;
   }
   .h-icon-halo-fill {
-    position: absolute; inset: 5px; border-radius: 50%;
-    background: color-mix(in srgb, var(--dc) 13%, transparent);
-    border: 1px solid color-mix(in srgb, var(--dc) 35%, transparent);
+    position: absolute; inset: 0; border-radius: 50%;
+    background: color-mix(in srgb, var(--dc) 15%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--dc) 50%, transparent);
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; opacity: 0.78;
+    font-size: 28px; opacity: 0.9;
     transition: box-shadow 0.35s ease, opacity 0.25s ease, background 0.25s ease;
   }
-  .h-card:hover .h-icon-halo-ring { border-color: color-mix(in srgb, var(--dc) 68%, transparent); animation-duration: 7s; }
+  .h-card:hover .h-icon-halo-ring { border-color: color-mix(in srgb, var(--dc) 68%, transparent); animation-duration: 8s; }
   .h-card:hover .h-icon-halo-fill {
     opacity: 1;
-    background: color-mix(in srgb, var(--dc) 20%, transparent);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--dc) 45%, transparent);
+    background: color-mix(in srgb, var(--dc) 22%, transparent);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--dc) 45%, transparent);
+  }
+  .h-wheel-wrap {
+    width: 100%; display: flex; justify-content: center;
+    overflow: hidden;
+    max-height: 650px;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: max-height 0.65s cubic-bezier(.4,0,.2,1),
+                opacity 0.4s ease,
+                transform 0.5s cubic-bezier(.4,0,.2,1),
+                margin 0.65s cubic-bezier(.4,0,.2,1);
+  }
+  .h-wheel-wrap.is-hidden {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-48px) scale(0.96);
+    margin-top: -8px;
+    pointer-events: none;
+  }
+  .h-domhero-wrap {
+    width: 100%;
+    overflow: hidden;
+    max-height: 900px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: max-height 0.6s cubic-bezier(.4,0,.2,1) 0.12s,
+                opacity 0.45s ease 0.15s,
+                transform 0.55s cubic-bezier(.4,0,.2,1) 0.12s;
+  }
+  .h-domhero-wrap.is-hidden {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-28px);
+    transition: max-height 0.5s cubic-bezier(.4,0,.2,1),
+                opacity 0.3s ease,
+                transform 0.4s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .h-wheel-wrap, .h-wheel-wrap.is-hidden, .h-domhero-wrap, .h-domhero-wrap.is-hidden { transition: opacity 0.2s ease; transform: none; }
+  }
+  .h-domhero {
+    position: relative; min-height: 52vh; display: flex; flex-direction: column;
+    justify-content: center; padding: 40px 24px 48px; overflow: hidden; width: 100%;
+  }
+  .h-domhero-glow {
+    position: absolute; top: 42%; left: 68%; width: 60vw; height: 60vw;
+    max-width: 760px; max-height: 760px; transform: translate(-50%, -50%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--dc) 22%, transparent) 0%, color-mix(in srgb, var(--dc) 6%, transparent) 40%, transparent 70%);
+    pointer-events: none; z-index: 1;
+    animation: hDomGlowIn 1.8s cubic-bezier(.16,1,.3,1) both;
+  }
+  .h-domhero-emblem {
+    position: absolute; top: 50%; right: -4vw; transform: translateY(-50%);
+    color: var(--dc); opacity: 0.12; z-index: 1; pointer-events: none;
+    animation: hDomEmblemIn 2s cubic-bezier(.16,1,.3,1) both;
+  }
+  .h-domhero-emblem svg { width: 40vh; height: 40vh; max-width: 380px; max-height: 380px; display: block; }
+  .h-domhero-scrim {
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: linear-gradient(90deg, var(--h-bg) 14%, transparent 66%); opacity: 0.85;
+  }
+  .h-domhero-inner { position: relative; z-index: 3; max-width: 720px; margin: 0 auto; width: 100%; }
+  .h-domhero-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-jetbrains, 'JetBrains Mono', monospace); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--h-text3); background: none; border: none; cursor: pointer;
+    padding: 0; margin-bottom: 28px; transition: color 0.2s, transform 0.2s;
+    animation: hDomRise 0.7s cubic-bezier(.16,1,.3,1) both; animation-delay: .03s;
+  }
+  .h-domhero-back:hover { color: var(--dc); transform: translateX(-3px); }
+  .h-domhero-kicker {
+    font-family: var(--font-jetbrains, 'JetBrains Mono', monospace); font-size: 11px; letter-spacing: 0.26em;
+    text-transform: uppercase; color: var(--dc); margin-bottom: 18px;
+    animation: hDomRise 0.8s cubic-bezier(.16,1,.3,1) both; animation-delay: .1s;
+  }
+  .h-domhero-title {
+    font-family: var(--font-cormorant, 'Cormorant Garamond', Georgia, serif); font-style: italic; font-weight: 500;
+    font-size: clamp(38px, 6vw, 64px); line-height: 1; color: var(--h-text); margin: 0 0 18px;
+    animation: hDomRise 0.9s cubic-bezier(.16,1,.3,1) both; animation-delay: .18s;
+  }
+  .h-domhero-desc {
+    font-family: var(--font-cormorant, 'Cormorant Garamond', Georgia, serif); font-style: italic;
+    font-size: clamp(16px, 1.8vw, 19px); color: var(--h-text2); line-height: 1.6; max-width: 520px; margin: 0 0 26px;
+    animation: hDomRise 0.95s cubic-bezier(.16,1,.3,1) both; animation-delay: .28s;
+  }
+  .h-domhero-meta {
+    font-family: var(--font-jetbrains, 'JetBrains Mono', monospace); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--h-text3);
+    animation: hDomRise 1s cubic-bezier(.16,1,.3,1) both; animation-delay: .38s;
+  }
+  .h-domhero-meta b { color: var(--dc); }
+  @keyframes hDomRise    { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes hDomGlowIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes hDomEmblemIn{ from { opacity: 0; transform: translateY(-50%) scale(0.88); } to { opacity: 0.12; transform: translateY(-50%) scale(1); } }
+  @media (max-width: 700px) {
+    .h-domhero { min-height: 40vh; padding: 28px 20px 36px; }
+    .h-domhero-emblem svg { width: 60vw; height: 60vw; }
   }
   @media (max-width: 1080px) {
     .h-hub-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -428,40 +538,40 @@ function DharmaBackground({ activeColor }: { activeColor: string | null }) {
 
 function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: string }) {
   const glyph = pickHubIcon(hub.title, hub.domain, index);
+  const description = hubCardDescription(hub.id, hub.excerpt);
   return (
-    <Link href={`/hub/${hub.id}`} className="h-card" style={{ borderLeftColor: color }}>
-      <div style={{ display: "flex", gap: 14, alignItems: "baseline", marginBottom: 12 }}>
-        <span style={{
-          fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 18, color, opacity: 0.6,
-          minWidth: 32, flexShrink: 0, fontVariantNumeric: "tabular-nums",
-        }}>
-          {toRoman(index + 1)}.
-        </span>
-        <span style={{
-          fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 32, color: "var(--h-text)", lineHeight: 1.2, fontWeight: 400,
-        }}>
-          {hub.title}
-        </span>
-      </div>
-      <div className="h-icon-halo" style={{ marginBottom: 14, "--dc": color } as React.CSSProperties}>
+    <Link href={`/hub/${hub.id}`} className="h-card">
+      <span style={{
+        fontFamily: "var(--font-jetbrains, 'JetBrains Mono', monospace)",
+        fontSize: 11, color, opacity: 0.7, letterSpacing: "0.2em",
+        marginBottom: 16, fontVariantNumeric: "tabular-nums",
+      }}>
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <h3 style={{
+        fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
+        fontSize: 26, color: "var(--h-text)", lineHeight: 1.28, fontWeight: 400,
+        margin: "0 0 22px", maxWidth: 260,
+      }}>
+        {hub.title}
+      </h3>
+      <div className="h-icon-halo" style={{ "--dc": color } as React.CSSProperties}>
         <div className="h-icon-halo-ring" />
         <div className="h-icon-halo-fill"><span>{glyph}</span></div>
       </div>
-      {hub.excerpt && (
+      {description && (
         <p style={{
           fontFamily: "var(--font-cormorant, 'Cormorant Garamond', Georgia, serif)",
-          fontSize: 20, color: "var(--h-text2)", lineHeight: 1.65,
-          fontStyle: "italic", margin: "0 0 16px",
+          fontSize: 17, color: "var(--h-text2)", lineHeight: 1.6,
+          fontStyle: "italic", margin: "20px 0 22px", maxWidth: 280,
         }}>
-          {hub.excerpt.length > 160 ? hub.excerpt.slice(0, 160) + "\u2026" : hub.excerpt}
+          {description}
         </p>
       )}
       {hub.covers > 0 && (
         <div style={{
           fontFamily: "var(--font-jetbrains, 'JetBrains Mono', monospace)",
-          fontSize: 12, color: "var(--h-text3)", letterSpacing: "0.14em",
+          fontSize: 11, color: "var(--h-text3)", letterSpacing: "0.16em", marginTop: "auto", paddingTop: 6,
         }}>
           {hub.covers} concepts
         </div>
@@ -473,6 +583,7 @@ function HubCard({ hub, index, color }: { hub: SlimHub; index: number; color: st
 export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHub[]; ungrouped?: UngroupedConcept[] }) {
   const searchParams = useSearchParams();
   const [selected,      setSelected]      = useState<string | null>(null);
+  const [lastDomain,    setLastDomain]    = useState<string | null>(null);
   const [hovered,       setHovered]       = useState<string | null>(null);
   const [drawerOpen,    setDrawerOpen]    = useState(false);
   const [paletteKey,    setPaletteKey]    = useState<PaletteKey>("ember");
@@ -527,12 +638,19 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
     return map;
   }, [ungrouped]);
 
+  // Keep the last-selected domain around after deselect so the hero can play
+  // its exit transition instead of unmounting instantly.
+  useEffect(() => {
+    if (selected) setLastDomain(selected);
+  }, [selected]);
+  const heroKey           = selected ?? lastDomain;
+
   const activeKey        = hovered ?? selected;
   const activeDomain     = DOMAIN_META.find(d => d.key === activeKey) ?? null;
   const activeColor      = activeDomain?.color ?? null;
-  const listDomain       = DOMAIN_META.find(d => d.key === selected) ?? null;
-  const activeHubs       = selected ? (byDomain[selected] ?? []) : [];
-  const activeUngrouped  = selected ? (ungroupedByDomain[selected] ?? []) : [];
+  const listDomain       = DOMAIN_META.find(d => d.key === heroKey) ?? null;
+  const activeHubs       = heroKey ? (byDomain[heroKey] ?? []) : [];
+  const activeUngrouped  = heroKey ? (ungroupedByDomain[heroKey] ?? []) : [];
 
   return (
     <div className="hubs-page" style={{
@@ -607,6 +725,7 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
           />
         </div>
 
+        <div className={`h-wheel-wrap${selected ? " is-hidden" : ""}`} aria-hidden={!!selected}>
         <svg viewBox="0 0 640 520" style={{ width: "100%", maxWidth: 720, display: "block" }}
           xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Compass rose — 8 knowledge domains">
           <defs>
@@ -684,6 +803,28 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
             );
           })}
         </svg>
+        </div>
+
+        {listDomain && (
+          <div className={`h-domhero-wrap${!selected ? " is-hidden" : ""}`} aria-hidden={!selected}>
+            <div className="h-domhero" style={{ "--dc": listDomain.color } as React.CSSProperties}>
+              <div className="h-domhero-glow" aria-hidden />
+              <div className="h-domhero-emblem" aria-hidden><DomainEmblem domain={listDomain.key} /></div>
+              <div className="h-domhero-scrim" aria-hidden />
+              <div className="h-domhero-inner">
+                <button className="h-domhero-back" onClick={() => setSelected(null)}>
+                  ← All Domains
+                </button>
+                <div className="h-domhero-kicker">Maps of Content</div>
+                <h1 className="h-domhero-title">{listDomain.label}</h1>
+                {DOMAIN_DESC[listDomain.key] && (
+                  <p className="h-domhero-desc">{DOMAIN_DESC[listDomain.key]}</p>
+                )}
+                <div className="h-domhero-meta"><b>{activeHubs.length}</b> hub{activeHubs.length !== 1 ? "s" : ""}</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <section style={{ width: "100%", maxWidth: 1140, padding: "0 24px 80px" }}>
           {!selected && (
@@ -696,18 +837,6 @@ export default function HubsCompassRose({ hubs, ungrouped = [] }: { hubs: SlimHu
           )}
           {listDomain && activeHubs.length > 0 && (
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline",
-                borderTop: `1px solid ${listDomain.color}`, paddingTop: 22, marginBottom: 20 }}>
-                <h2 style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)",
-                  fontSize: 24, fontWeight: 400, fontStyle: "italic",
-                  color: "var(--h-text)", letterSpacing: "0.05em", margin: 0 }}>
-                  {listDomain.label}
-                </h2>
-                <span style={{ fontFamily: "var(--font-jetbrains,'JetBrains Mono',monospace)",
-                  fontSize: 9, color: "var(--h-text3)", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-                  {activeHubs.length} hubs
-                </span>
-              </div>
               <div className="h-hub-grid" style={{ display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
                 {activeHubs.map((h, i) => (
