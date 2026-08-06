@@ -43,8 +43,26 @@ const LEVEL_LABEL: Record<'foundational' | 'intermediate' | 'advanced', string> 
 };
 const COLOR_LEVELS = new Set(['foundational', 'intermediate', 'advanced']);
 
+/* Measured render width ÷ font-size for each word, in the Fraunces italic 900
+   watermark face — lets the watermark shrink to fit its own zone instead of
+   getting clipped mid-word (was rendering as "tional…ermediate" fragments). */
+const WATERMARK_WPX: Record<'foundational' | 'intermediate' | 'advanced', number> = {
+  foundational: 5.85, intermediate: 5.45, advanced: 4.3,
+};
+const WATERMARK_MIN_PX = 16;
+const WATERMARK_MAX_PX = 52;
+
 const STATUS_COLOR: Record<string, string> = { stable:'#6bab8a', developing:'#c8a460', stub:'#9f7ec0' };
 const circled = (n: number): string => (n >= 1 && n <= 20 ? String.fromCharCode(0x245F + n) : String(n));
+
+function hexToRgb(hex: string): string {
+  const m = hex.replace('#', '');
+  const n = m.length === 3 ? m.split('').map(c => c + c).join('') : m;
+  const r = parseInt(n.slice(0, 2), 16) || 0;
+  const g = parseInt(n.slice(2, 4), 16) || 0;
+  const b = parseInt(n.slice(4, 6), 16) || 0;
+  return `${r}, ${g}, ${b}`;
+}
 
 /* ── PaletteDot ─────────────────────────────────────────────────── */
 function PaletteDot({ active, color, onClick }: { active: boolean; color: string; onClick: () => void }) {
@@ -59,7 +77,7 @@ function PaletteDot({ active, color, onClick }: { active: boolean; color: string
 }
 
 /* ── Sparks (comet field), ported from HubSpineClient's SparksCanvas ──── */
-function RailSparks({ width, isSepia }: { width: number; isSepia: boolean }) {
+function RailSparks({ width, isSepia, colorRgb }: { width: number; isSepia: boolean; colorRgb: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current; if (!canvas || width <= 0) return;
@@ -69,7 +87,7 @@ function RailSparks({ width, isSepia }: { width: number; isSepia: boolean }) {
     const sparks = Array.from({ length: 34 }, () => ({
       x: Math.random(), vy: (0.24 + Math.random() * 0.4) * 0.0009,
       vx: (Math.random() - 0.5) * 0.0004, r: Math.random() * 1.4 + 0.4,
-      life: Math.random(), maxLife: 0.6 + Math.random() * 0.35, gold: Math.random() < 0.55,
+      life: Math.random(), maxLife: 0.6 + Math.random() * 0.35, bright: Math.random() < 0.55,
     }));
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const draw = () => {
@@ -82,14 +100,16 @@ function RailSparks({ width, isSepia }: { width: number; isSepia: boolean }) {
         const op = t < 0.1 ? t / 0.1 : t > 0.8 ? (1 - t) / 0.2 : 1;
         ctx.beginPath();
         ctx.arc(s.x * canvas.width, (1 - s.life) * canvas.height, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = s.gold ? `rgba(255,200,60,${op * (isSepia ? 0.16 : 0.34)})` : `rgba(239,90,111,${op * (isSepia ? 0.16 : 0.34)})`;
+        const base = isSepia ? 0.16 : 0.34;
+        const mult = s.bright ? 1 : 0.7;
+        ctx.fillStyle = `rgba(${colorRgb},${op * base * mult})`;
         ctx.fill();
       });
       if (!reduceMotion) rafId = requestAnimationFrame(draw);
     };
     draw();
     return () => cancelAnimationFrame(rafId);
-  }, [width, isSepia]);
+  }, [width, isSepia, colorRgb]);
   return <canvas ref={ref} className="htp-sparks" aria-hidden="true" />;
 }
 
@@ -98,6 +118,7 @@ type ZoneGeom = {
   segLeft: number; segWidth: number;
   zoneLeft: number; zoneWidth: number;
   boundaryX: number; showTick: boolean;
+  watermarkPx: number; showWatermark: boolean;
 };
 type RailLayout = { markY: number; totalWidth: number; zones: ZoneGeom[] };
 
@@ -205,12 +226,18 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
       const zoneLeft = i > 0 ? (segLeft + centers[i - 1]) / 2 : segLeft - OUTER_PAD;
       const hasNext = end < sections.length - 1;
       const zoneRight = hasNext ? (segRight + centers[end + 1]) / 2 : segRight + OUTER_PAD;
+      const zoneWidth = zoneRight - zoneLeft;
+
+      const levelKey = lvl as 'foundational' | 'intermediate' | 'advanced';
+      const fitPx = (zoneWidth - 24) / WATERMARK_WPX[levelKey];
+      const watermarkPx = Math.max(WATERMARK_MIN_PX, Math.min(WATERMARK_MAX_PX, fitPx));
 
       zones.push({
-        level: lvl as 'foundational' | 'intermediate' | 'advanced',
+        level: levelKey,
         segLeft, segWidth: segRight - segLeft,
-        zoneLeft, zoneWidth: zoneRight - zoneLeft,
+        zoneLeft, zoneWidth,
         boundaryX: zoneRight, showTick: hasNext,
+        watermarkPx, showWatermark: fitPx >= WATERMARK_MIN_PX,
       });
       i = end + 1;
     }
@@ -292,7 +319,7 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
 
         <div className="htp-scroll">
           <div className="htp-inner" ref={railInnerRef}>
-            {layout && layout.totalWidth > 0 && <RailSparks width={layout.totalWidth} isSepia={!P.dark} />}
+            {layout && layout.totalWidth > 0 && <RailSparks width={layout.totalWidth} isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />}
             {layout && <div className="htp-track" style={{ top: layout.markY }} />}
             {layout && layout.zones.map((z, zi) => {
               const dc = LEVEL_COLORS[z.level][P.dark ? 'dark' : 'light'];
@@ -300,9 +327,14 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
                 <div key={zi}>
                   <div className="htp-zone-glow" style={{ left: z.zoneLeft, width: z.zoneWidth, top: layout.markY - 96, ['--dc' as any]: dc }} />
                   <div className="htp-seg" style={{ left: z.segLeft, width: z.segWidth, top: layout.markY - 1.5, ['--dc' as any]: dc }} />
-                  <div className="htp-watermark-clip" style={{ left: z.zoneLeft, width: z.zoneWidth, top: layout.markY - 96 }}>
-                    <span className="htp-watermark" style={{ ['--dc' as any]: dc }}>{LEVEL_LABEL[z.level]}</span>
-                  </div>
+                  {z.showWatermark && (
+                    <div
+                      className="htp-watermark"
+                      style={{ left: z.boundaryX, top: layout.markY - 18, fontSize: z.watermarkPx, ['--dc' as any]: dc }}
+                    >
+                      {LEVEL_LABEL[z.level]}
+                    </div>
+                  )}
                   {z.showTick && <div className="htp-tick" style={{ left: z.boundaryX, top: layout.markY - 11 }} />}
                 </div>
               );
@@ -427,8 +459,10 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
         .htp-legend{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
         .htp-legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-jetbrains,monospace);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .htp-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 7px 1px var(--dc);display:inline-block}
-        .htp-scroll{position:relative;overflow-x:auto;overflow-y:visible;scroll-behavior:smooth;padding:112px 4px 10px;margin-top:8px;scrollbar-width:thin;
+        .htp-scroll{position:relative;overflow-x:auto;overflow-y:visible;scroll-behavior:smooth;padding:112px 4px 10px;margin-top:8px;
+          scrollbar-width:none;-ms-overflow-style:none;
           -webkit-mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
+        .htp-scroll::-webkit-scrollbar{display:none;width:0;height:0}
         .htp-inner{position:relative;display:inline-flex;min-width:100%}
         .htp-sparks{position:absolute;left:0;top:-96px;z-index:0;pointer-events:none}
         .htp-track{position:absolute;left:0;right:0;height:1px;background:var(--hs-border,rgba(255,255,255,.09));z-index:1}
@@ -436,8 +470,7 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
         .htp-seg{position:absolute;height:3px;border-radius:2px;z-index:1;background:var(--dc);animation:htp-breathe 3.6s ease-in-out infinite}
         @media (prefers-reduced-motion:reduce){.htp-seg{animation:none;box-shadow:0 0 12px 2px color-mix(in srgb, var(--dc) 50%, transparent)}}
         @keyframes htp-breathe{0%,100%{box-shadow:0 0 9px 1px color-mix(in srgb, var(--dc) 38%, transparent)}50%{box-shadow:0 0 20px 4px color-mix(in srgb, var(--dc) 70%, transparent)}}
-        .htp-watermark-clip{position:absolute;height:96px;overflow:hidden;z-index:1;pointer-events:none;display:flex;align-items:flex-end;justify-content:flex-end}
-        .htp-watermark{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(20px,4.6vw,52px);letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;padding-bottom:2px;color:var(--dc);opacity:.22;user-select:none}
+        .htp-watermark{position:absolute;transform:translate(-100%,-100%);font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;color:var(--dc);opacity:.22;user-select:none;z-index:1;pointer-events:none}
         .htp-tick{position:absolute;width:1px;height:22px;background:var(--hs-ink3,#565278);opacity:.55;z-index:1}
         .htp-dots{position:relative;z-index:3;display:flex;gap:44px;padding:0 20px}
         .htp-dot{flex:0 0 168px;background:none;border:none;cursor:pointer;padding:0;display:flex;flex-direction:column;align-items:center;gap:12px;font-family:inherit;color:inherit;scroll-snap-align:center}
