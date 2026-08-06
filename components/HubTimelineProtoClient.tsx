@@ -525,7 +525,14 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
         .htp-arr{color:var(--domain-color,#ef5a6f);opacity:.85;font-size:13px}
         .htp-dp-btn-name{font-family:var(--font-fraunces,serif);font-style:italic;font-size:13px;color:var(--hs-ink,#f0eeff);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
         .htp-dp-next{margin-left:auto}
-        @media(max-width:680px){.htp-wrap{padding:72px 16px 120px}.htp-dp-btn-name{display:none}}
+        @media(max-width:680px){
+          .htp-nav-link,.htp-nav-bread,.htp-nav-sep{display:none}
+          .htp-wrap{padding:72px 16px 120px}
+          .htp-dp-btn-name{display:none}
+          .htp-lead{padding:22px 18px}
+          .htp-card{padding:14px 16px}
+          .htp-panel-head{padding:12px 16px}
+        }
       `}</style>
     </div>
   );
