@@ -242,6 +242,14 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
       i = end + 1;
     }
 
+    /* All visible watermarks share one uniform size — the smallest that still
+       fits its own zone — rather than each word scaling independently. */
+    const visible = zones.filter(z => z.showWatermark);
+    if (visible.length > 0) {
+      const uniformPx = Math.min(...visible.map(z => z.watermarkPx));
+      zones.forEach(z => { if (z.showWatermark) z.watermarkPx = uniformPx; });
+    }
+
     setLayout({ markY, totalWidth: inner.scrollWidth, zones });
   }, [sections]);
 
