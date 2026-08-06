@@ -127,7 +127,7 @@ function RailSparks({ width, isSepia, colorRgb }: { width: number; isSepia: bool
     let rafId: number;
     /* Density scales with rail width — a fixed count read as nearly invisible
        on wide hubs (12+ sections can run 2500px+) and cramped on narrow ones. */
-    const count = Math.round(Math.min(160, Math.max(34, width / 18)));
+    const count = Math.round(Math.min(900, Math.max(40, width / 13)));
     const sparks = Array.from({ length: count }, () => ({
       x: Math.random(), vy: (0.24 + Math.random() * 0.4) * 0.0009,
       vx: (Math.random() - 0.5) * 0.0004, r: Math.random() * 1.4 + 0.4,
@@ -272,6 +272,39 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     dotRefs.current[key]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }, []);
 
+  /* Level map: on a wide hub the rail can run many screens long, so the whole
+     level structure is compressed into one always-visible strip with a
+     "you are here" window that tracks scroll. */
+  const railScrollRef = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState({ left: 0, width: 0 });
+  useEffect(() => {
+    const el = railScrollRef.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      setView({ left: el.scrollLeft, width: el.clientWidth });
+    };
+    update();
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [layout]);
+
+  const jumpToFraction = useCallback((frac: number) => {
+    const el = railScrollRef.current;
+    if (!el) return;
+    const target = frac * el.scrollWidth - el.clientWidth / 2;
+    el.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+  }, []);
+
+  const railOverflows = !!layout && layout.totalWidth > view.width + 8;
+
   const bookmarkKey = `nylus-bookmark-${path ?? title}`;
   const [bookmarkId, setBookmarkId] = useState<string | null>(null);
   useEffect(() => {
@@ -394,8 +427,44 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           />
         </div>
 
+        {/* Level map — the whole rail compressed to one strip, so the level
+            structure is legible even when the rail runs several screens wide */}
+        {layout && railOverflows && (
+          <div
+            className="hs-levelmap"
+            onClick={e => {
+              const r = e.currentTarget.getBoundingClientRect();
+              jumpToFraction((e.clientX - r.left) / r.width);
+            }}
+            role="presentation"
+          >
+            {layout.zones.length === 0 && (
+              <div className="hs-levelmap-seg" style={{ left: '0%', width: '100%', ['--dc' as any]: domainColor }} />
+            )}
+            {layout.zones.map((z, zi) => (
+              <div
+                key={zi}
+                className="hs-levelmap-seg"
+                style={{
+                  left: `${(z.zoneLeft / layout.totalWidth) * 100}%`,
+                  width: `${(z.zoneWidth / layout.totalWidth) * 100}%`,
+                  ['--dc' as any]: LEVEL_COLORS[z.level][P.dark ? 'dark' : 'light'],
+                }}
+                title={LEVEL_LABEL[z.level]}
+              />
+            ))}
+            <div
+              className="hs-levelmap-view"
+              style={{
+                left: `${(view.left / layout.totalWidth) * 100}%`,
+                width: `${Math.min(100, (view.width / layout.totalWidth) * 100)}%`,
+              }}
+            />
+          </div>
+        )}
+
         {/* Horizontal, level-colored rail — replaces the old vertical spine */}
-        <div className="hs-rail-scroll">
+        <div className="hs-rail-scroll" ref={railScrollRef}>
           <div className="hs-rail-inner" ref={railInnerRef}>
             {layout && layout.totalWidth > 0 && <RailSparks width={layout.totalWidth} isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />}
             {layout && <div className="hs-rail-track" style={{ top: layout.markY }} />}
@@ -590,6 +659,9 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-legend{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
         .hs-rail-legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-jetbrains,monospace);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .hs-rail-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 7px 1px var(--dc);display:inline-block}
+        .hs-levelmap{position:relative;height:8px;border-radius:4px;margin:0 4px 4px;cursor:pointer;background:color-mix(in srgb,var(--hs-ink,#f0eeff) 6%,transparent);overflow:hidden}
+        .hs-levelmap-seg{position:absolute;top:0;bottom:0;background:var(--dc);opacity:.5}
+        .hs-levelmap-view{position:absolute;top:0;bottom:0;border:1px solid color-mix(in srgb,var(--hs-ink,#f0eeff) 55%,transparent);border-radius:4px;background:color-mix(in srgb,var(--hs-ink,#f0eeff) 12%,transparent);transition:left .12s linear,width .12s linear;pointer-events:none}
         .hs-rail-scroll{position:relative;overflow-x:auto;overflow-y:visible;scroll-behavior:smooth;padding:112px 4px 10px;margin-top:8px;
           scrollbar-width:none;-ms-overflow-style:none;
           -webkit-mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
@@ -597,7 +669,14 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-inner{position:relative;display:inline-flex;min-width:100%}
         .hs-rail-sparks{position:absolute;left:0;top:-96px;z-index:0;pointer-events:none}
         .hs-rail-track{position:absolute;left:0;right:0;height:1px;background:var(--hs-border,rgba(255,255,255,.09));z-index:1}
-        .hs-rail-zone{position:absolute;height:190px;border-radius:20px;z-index:1;pointer-events:none;background:radial-gradient(ellipse 62% 100% at 50% 38%,color-mix(in srgb, var(--dc) 20%, transparent),transparent 74%)}
+        /* Horizontal fade uses fixed px insets and the vertical falloff lives in
+           the mask, so the wash reads identically on a 200px zone and a 4000px
+           one — a percentage-based radial gradient concentrated all its color in
+           the middle and left the visible edges of wide zones looking empty. */
+        .hs-rail-zone{position:absolute;height:190px;z-index:1;pointer-events:none;
+          background:linear-gradient(90deg,transparent 0,color-mix(in srgb, var(--dc) 17%, transparent) 70px,color-mix(in srgb, var(--dc) 17%, transparent) calc(100% - 70px),transparent 100%);
+          -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%)}
         .hs-rail-seg{position:absolute;height:3px;border-radius:2px;z-index:1;background:var(--dc);animation:hs-rail-breathe 3.6s ease-in-out infinite}
         @media (prefers-reduced-motion:reduce){.hs-rail-seg{animation:none;box-shadow:0 0 12px 2px color-mix(in srgb, var(--dc) 50%, transparent)}}
         @keyframes hs-rail-breathe{0%,100%{box-shadow:0 0 9px 1px color-mix(in srgb, var(--dc) 38%, transparent)}50%{box-shadow:0 0 20px 4px color-mix(in srgb, var(--dc) 70%, transparent)}}

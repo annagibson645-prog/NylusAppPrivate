@@ -84,7 +84,7 @@ function RailSparks({ width, isSepia, colorRgb }: { width: number; isSepia: bool
     const ctx = canvas.getContext('2d'); if (!ctx) return;
     canvas.width = width; canvas.height = 190;
     let rafId: number;
-    const count = Math.round(Math.min(160, Math.max(34, width / 18)));
+    const count = Math.round(Math.min(900, Math.max(40, width / 13)));
     const sparks = Array.from({ length: count }, () => ({
       x: Math.random(), vy: (0.24 + Math.random() * 0.4) * 0.0009,
       vx: (Math.random() - 0.5) * 0.0004, r: Math.random() * 1.4 + 0.4,
@@ -478,7 +478,10 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
         .htp-inner{position:relative;display:inline-flex;min-width:100%}
         .htp-sparks{position:absolute;left:0;top:-96px;z-index:0;pointer-events:none}
         .htp-track{position:absolute;left:0;right:0;height:1px;background:var(--hs-border,rgba(255,255,255,.09));z-index:1}
-        .htp-zone-glow{position:absolute;height:190px;border-radius:20px;z-index:1;pointer-events:none;background:radial-gradient(ellipse 62% 100% at 50% 38%,color-mix(in srgb, var(--dc) 20%, transparent),transparent 74%)}
+        .htp-zone-glow{position:absolute;height:190px;z-index:1;pointer-events:none;
+          background:linear-gradient(90deg,transparent 0,color-mix(in srgb, var(--dc) 17%, transparent) 70px,color-mix(in srgb, var(--dc) 17%, transparent) calc(100% - 70px),transparent 100%);
+          -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%)}
         .htp-seg{position:absolute;height:3px;border-radius:2px;z-index:1;background:var(--dc);animation:htp-breathe 3.6s ease-in-out infinite}
         @media (prefers-reduced-motion:reduce){.htp-seg{animation:none;box-shadow:0 0 12px 2px color-mix(in srgb, var(--dc) 50%, transparent)}}
         @keyframes htp-breathe{0%,100%{box-shadow:0 0 9px 1px color-mix(in srgb, var(--dc) 38%, transparent)}50%{box-shadow:0 0 20px 4px color-mix(in srgb, var(--dc) 70%, transparent)}}
