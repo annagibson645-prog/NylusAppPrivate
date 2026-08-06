@@ -300,7 +300,9 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
                 <div key={zi}>
                   <div className="htp-zone-glow" style={{ left: z.zoneLeft, width: z.zoneWidth, top: layout.markY - 96, ['--dc' as any]: dc }} />
                   <div className="htp-seg" style={{ left: z.segLeft, width: z.segWidth, top: layout.markY - 1.5, ['--dc' as any]: dc }} />
-                  <div className="htp-watermark" style={{ left: z.boundaryX, top: layout.markY - 22, ['--dc' as any]: dc }}>{LEVEL_LABEL[z.level]}</div>
+                  <div className="htp-watermark-clip" style={{ left: z.zoneLeft, width: z.zoneWidth, top: layout.markY - 96 }}>
+                    <span className="htp-watermark" style={{ ['--dc' as any]: dc }}>{LEVEL_LABEL[z.level]}</span>
+                  </div>
                   {z.showTick && <div className="htp-tick" style={{ left: z.boundaryX, top: layout.markY - 11 }} />}
                 </div>
               );
@@ -434,7 +436,8 @@ export default function HubTimelineProtoClient({ title, domain, domainLabel, dom
         .htp-seg{position:absolute;height:3px;border-radius:2px;z-index:1;background:var(--dc);animation:htp-breathe 3.6s ease-in-out infinite}
         @media (prefers-reduced-motion:reduce){.htp-seg{animation:none;box-shadow:0 0 12px 2px color-mix(in srgb, var(--dc) 50%, transparent)}}
         @keyframes htp-breathe{0%,100%{box-shadow:0 0 9px 1px color-mix(in srgb, var(--dc) 38%, transparent)}50%{box-shadow:0 0 20px 4px color-mix(in srgb, var(--dc) 70%, transparent)}}
-        .htp-watermark{position:absolute;transform:translate(-100%,-100%);font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(30px,4.6vw,52px);letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;color:var(--dc);opacity:.22;user-select:none;z-index:1;pointer-events:none}
+        .htp-watermark-clip{position:absolute;height:96px;overflow:hidden;z-index:1;pointer-events:none;display:flex;align-items:flex-end;justify-content:flex-end}
+        .htp-watermark{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(20px,4.6vw,52px);letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;padding-bottom:2px;color:var(--dc);opacity:.22;user-select:none}
         .htp-tick{position:absolute;width:1px;height:22px;background:var(--hs-ink3,#565278);opacity:.55;z-index:1}
         .htp-dots{position:relative;z-index:3;display:flex;gap:44px;padding:0 20px}
         .htp-dot{flex:0 0 168px;background:none;border:none;cursor:pointer;padding:0;display:flex;flex-direction:column;align-items:center;gap:12px;font-family:inherit;color:inherit;scroll-snap-align:center}
