@@ -125,7 +125,10 @@ function RailSparks({ width, isSepia, colorRgb }: { width: number; isSepia: bool
     const ctx = canvas.getContext('2d'); if (!ctx) return;
     canvas.width = width; canvas.height = 190;
     let rafId: number;
-    const sparks = Array.from({ length: 34 }, () => ({
+    /* Density scales with rail width — a fixed count read as nearly invisible
+       on wide hubs (12+ sections can run 2500px+) and cramped on narrow ones. */
+    const count = Math.round(Math.min(160, Math.max(34, width / 18)));
+    const sparks = Array.from({ length: count }, () => ({
       x: Math.random(), vy: (0.24 + Math.random() * 0.4) * 0.0009,
       vx: (Math.random() - 0.5) * 0.0004, r: Math.random() * 1.4 + 0.4,
       life: Math.random(), maxLife: 0.6 + Math.random() * 0.35, bright: Math.random() < 0.55,
@@ -141,7 +144,7 @@ function RailSparks({ width, isSepia, colorRgb }: { width: number; isSepia: bool
         const op = t < 0.1 ? t / 0.1 : t > 0.8 ? (1 - t) / 0.2 : 1;
         ctx.beginPath();
         ctx.arc(s.x * canvas.width, (1 - s.life) * canvas.height, s.r, 0, Math.PI * 2);
-        const base = isSepia ? 0.16 : 0.34;
+        const base = isSepia ? 0.22 : 0.42;
         const mult = s.bright ? 1 : 0.7;
         ctx.fillStyle = `rgba(${colorRgb},${op * base * mult})`;
         ctx.fill();
@@ -396,6 +399,12 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           <div className="hs-rail-inner" ref={railInnerRef}>
             {layout && layout.totalWidth > 0 && <RailSparks width={layout.totalWidth} isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />}
             {layout && <div className="hs-rail-track" style={{ top: layout.markY }} />}
+            {layout && layout.zones.length === 0 && (
+              /* No foundational/intermediate/advanced sections on this hub (all
+                 thematic) — still give the rail a domain-colored backdrop rather
+                 than leaving it bare, matching hubs that do have graded zones. */
+              <div className="hs-rail-zone" style={{ left: 0, width: layout.totalWidth, top: layout.markY - 96, ['--dc' as any]: domainColor }} />
+            )}
             {layout && layout.zones.map((z, zi) => {
               const dc = LEVEL_COLORS[z.level][P.dark ? 'dark' : 'light'];
               return (
