@@ -117,43 +117,65 @@ function SparksCanvas({ isSepia }: { isSepia: boolean }) {
   return <canvas ref={ref} style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }} aria-hidden="true" />;
 }
 
-/* ── RailSparks: comet field behind the rail, tinted to the hub's own domain color ── */
-function RailSparks({ width, isSepia, colorRgb }: { width: number; isSepia: boolean; colorRgb: string }) {
+/* ── RailSparks: comet field behind the rail, tinted to the hub's own domain color.
+   Lives OUTSIDE the horizontal scroller and sizes itself to the visible frame, not
+   the full rail width. A canvas as wide as the content (10,000px+ on a large hub)
+   is a multi-megabyte texture the compositor has to move every scroll frame, which
+   is what made the rail wobble on mobile. Sized to the viewport it stays put and
+   costs nothing to scroll past. */
+function RailSparks({ isSepia, colorRgb }: { isSepia: boolean; colorRgb: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const canvas = ref.current; if (!canvas || width <= 0) return;
+    const canvas = ref.current; if (!canvas) return;
+    const parent = canvas.parentElement; if (!parent) return;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
-    canvas.width = width; canvas.height = 190;
-    let rafId: number;
-    /* Density scales with rail width — a fixed count read as nearly invisible
-       on wide hubs (12+ sections can run 2500px+) and cramped on narrow ones. */
-    const count = Math.round(Math.min(900, Math.max(40, width / 13)));
-    const sparks = Array.from({ length: count }, () => ({
-      x: Math.random(), vy: (0.24 + Math.random() * 0.4) * 0.0009,
-      vx: (Math.random() - 0.5) * 0.0004, r: Math.random() * 1.4 + 0.4,
-      life: Math.random(), maxLife: 0.6 + Math.random() * 0.35, bright: Math.random() < 0.55,
-    }));
+
+    let rafId = 0;
+    let sparks: { x: number; vy: number; vx: number; r: number; life: number; maxLife: number; bright: boolean }[] = [];
+    let w = 0, h = 0;
+
+    const size = () => {
+      const rect = parent.getBoundingClientRect();
+      const nw = Math.max(1, Math.round(rect.width));
+      const nh = Math.max(1, Math.round(rect.height));
+      if (nw === w && nh === h) return;
+      w = nw; h = nh;
+      canvas.width = w; canvas.height = h;
+      const count = Math.round(Math.min(220, Math.max(40, w / 9)));
+      sparks = Array.from({ length: count }, () => ({
+        x: Math.random(), vy: (0.24 + Math.random() * 0.4) * 0.0009,
+        vx: (Math.random() - 0.5) * 0.0004, r: Math.random() * 1.4 + 0.4,
+        life: Math.random(), maxLife: 0.6 + Math.random() * 0.35, bright: Math.random() < 0.55,
+      }));
+    };
+    size();
+
+    /* Width-only observer: on mobile, scrolling shows/hides the browser chrome,
+       which fires height-only resizes constantly. Reacting to those mid-scroll is
+       another source of visible jitter. */
+    const ro = new ResizeObserver(() => size());
+    ro.observe(parent);
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const draw = () => {
-      if (!canvas || !ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!ctx) return;
+      ctx.clearRect(0, 0, w, h);
+      const base = isSepia ? 0.22 : 0.42;
       sparks.forEach(s => {
         s.life += s.vy; s.x += s.vx + Math.sin(s.life * 20) * 0.0002;
         if (s.life > s.maxLife) { s.x = Math.random(); s.life = 0; s.vx = (Math.random() - 0.5) * 0.0004; }
         const t = s.life / s.maxLife;
         const op = t < 0.1 ? t / 0.1 : t > 0.8 ? (1 - t) / 0.2 : 1;
         ctx.beginPath();
-        ctx.arc(s.x * canvas.width, (1 - s.life) * canvas.height, s.r, 0, Math.PI * 2);
-        const base = isSepia ? 0.22 : 0.42;
-        const mult = s.bright ? 1 : 0.7;
-        ctx.fillStyle = `rgba(${colorRgb},${op * base * mult})`;
+        ctx.arc(s.x * w, (1 - s.life) * h, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${colorRgb},${op * base * (s.bright ? 1 : 0.7)})`;
         ctx.fill();
       });
       if (!reduceMotion) rafId = requestAnimationFrame(draw);
     };
     draw();
-    return () => cancelAnimationFrame(rafId);
-  }, [width, isSepia, colorRgb]);
+    return () => { ro.disconnect(); cancelAnimationFrame(rafId); };
+  }, [isSepia, colorRgb]);
   return <canvas ref={ref} className="hs-rail-sparks" aria-hidden="true" />;
 }
 
@@ -261,9 +283,18 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     setLayout({ markY, totalWidth: inner.scrollWidth, zones });
   }, [allSections]);
 
+  /* Recompute on WIDTH changes only. On mobile, scrolling shows/hides the browser
+     chrome, which fires a stream of height-only resize events; re-running the
+     layout mid-scroll repositions every absolutely-placed zone/watermark and is
+     what made the rail visibly wobble. Height changes can't affect this layout. */
   useEffect(() => {
     computeLayout();
-    const onResize = () => computeLayout();
+    let lastW = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
+      computeLayout();
+    };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, [computeLayout]);
@@ -396,10 +427,13 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           />
         </div>
 
-        {/* Horizontal, level-colored rail — replaces the old vertical spine */}
-        <div className="hs-rail-scroll" ref={railScrollRef}>
+        {/* Horizontal, level-colored rail — replaces the old vertical spine.
+            The comet canvas sits in the frame, outside the scroller, so it stays
+            fixed while the rail scrolls under it. */}
+        <div className="hs-rail-frame">
+          <RailSparks isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />
+          <div className="hs-rail-scroll" ref={railScrollRef}>
           <div className="hs-rail-inner" ref={railInnerRef}>
-            {layout && layout.totalWidth > 0 && <RailSparks width={layout.totalWidth} isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />}
             {layout && <div className="hs-rail-track" style={{ top: layout.markY }} />}
             {layout && layout.zones.length === 0 && (
               /* No foundational/intermediate/advanced sections on this hub (all
@@ -444,6 +478,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                 );
               })}
             </div>
+          </div>
           </div>
         </div>
 
@@ -592,12 +627,18 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-legend{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
         .hs-rail-legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-jetbrains,monospace);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .hs-rail-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 7px 1px var(--dc);display:inline-block}
-        .hs-rail-scroll{position:relative;overflow-x:auto;overflow-y:visible;scroll-behavior:smooth;padding:112px 4px 10px;margin-top:8px;
+        /* The frame holds the fixed comet layer; only .hs-rail-scroll inside it moves. */
+        .hs-rail-frame{position:relative;margin-top:8px;isolation:isolate}
+        .hs-rail-scroll{position:relative;z-index:1;overflow-x:auto;overflow-y:visible;padding:112px 4px 10px;
           scrollbar-width:none;-ms-overflow-style:none;
+          -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
           -webkit-mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
         .hs-rail-scroll::-webkit-scrollbar{display:none;width:0;height:0}
-        .hs-rail-inner{position:relative;display:inline-flex;min-width:100%}
-        .hs-rail-sparks{position:absolute;left:0;top:-96px;z-index:0;pointer-events:none}
+        /* translateZ promotes the scrolling content to its own layer so the browser
+           can move it without repainting — without this, mobile scroll repaints the
+           whole rail every frame and the absolutely-placed zones visibly shimmer. */
+        .hs-rail-inner{position:relative;display:inline-flex;min-width:100%;transform:translateZ(0);backface-visibility:hidden}
+        .hs-rail-sparks{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
         .hs-rail-track{position:absolute;left:0;right:0;height:1px;background:var(--hs-border,rgba(255,255,255,.09));z-index:1}
         /* Horizontal fade uses fixed px insets and the vertical falloff lives in
            the mask, so the wash reads identically on a 200px zone and a 4000px
@@ -607,9 +648,16 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           background:linear-gradient(90deg,transparent 0,color-mix(in srgb, var(--dc) 17%, transparent) 70px,color-mix(in srgb, var(--dc) 17%, transparent) calc(100% - 70px),transparent 100%);
           -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%);
           mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%)}
-        .hs-rail-seg{position:absolute;height:3px;border-radius:2px;z-index:1;background:var(--dc);animation:hs-rail-breathe 3.6s ease-in-out infinite}
-        @media (prefers-reduced-motion:reduce){.hs-rail-seg{animation:none;box-shadow:0 0 12px 2px color-mix(in srgb, var(--dc) 50%, transparent)}}
-        @keyframes hs-rail-breathe{0%,100%{box-shadow:0 0 9px 1px color-mix(in srgb, var(--dc) 38%, transparent)}50%{box-shadow:0 0 20px 4px color-mix(in srgb, var(--dc) 70%, transparent)}}
+        /* The glow was an animated box-shadow, which is not compositor-accelerated:
+           it forced a full repaint every frame on a bar that can be thousands of px
+           wide. Now the shadow is painted once and only a sibling layer's opacity
+           animates, which runs entirely on the compositor. */
+        .hs-rail-seg{position:absolute;height:3px;border-radius:2px;z-index:1;background:var(--dc);
+          box-shadow:0 0 10px 1px color-mix(in srgb, var(--dc) 42%, transparent)}
+        .hs-rail-seg::after{content:'';position:absolute;inset:-5px -1px;border-radius:6px;background:var(--dc);
+          opacity:.22;filter:blur(6px);will-change:opacity;animation:hs-rail-breathe 3.6s ease-in-out infinite}
+        @media (prefers-reduced-motion:reduce){.hs-rail-seg::after{animation:none;opacity:.3}}
+        @keyframes hs-rail-breathe{0%,100%{opacity:.16}50%{opacity:.46}}
         .hs-rail-watermark{position:absolute;transform:translate(-100%,-100%);font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;color:var(--dc);opacity:.22;user-select:none;z-index:1;pointer-events:none}
         .hs-rail-tick{position:absolute;width:1px;height:22px;background:var(--hs-ink3,#565278);opacity:.55;z-index:1}
         .hs-rail-dots{position:relative;z-index:3;display:flex;gap:44px;padding:0 20px}
