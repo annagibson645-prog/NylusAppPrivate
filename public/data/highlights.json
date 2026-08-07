@@ -13279,8 +13279,8 @@
     "title": "Imitation",
     "author": "Cristian Mihai",
     "cover": "https://m.media-amazon.com/images/I/713L4xK3VIL._SL2000_.jpg",
-    "numHighlights": 132,
-    "lastHighlightedAt": "2026-07-28",
+    "numHighlights": 133,
+    "lastHighlightedAt": "2026-08-06",
     "kind": "unclassified",
     "domain": null,
     "genre": null,
@@ -13298,7 +13298,7 @@
       100,
       12,
       20,
-      0
+      1
     ],
     "highlights": [
       {
@@ -14224,6 +14224,13 @@
         "note": "",
         "location": 2044,
         "at": "2026-07-28T04:56:00Z"
+      },
+      {
+        "id": "1041613971",
+        "text": "In the automaticity phase, the constraint stops registering as constraint. You write within its limits without conscious effort. The solutions have hardened into habits. This phase arrives near the end of extended practice. The automaticity phase is the goal. Skills that require conscious attention cannot be deployed in the heat of composition.",
+        "note": "",
+        "location": 2058,
+        "at": "2026-08-06T04:56:00Z"
       }
     ]
   },
