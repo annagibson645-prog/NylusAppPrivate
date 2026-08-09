@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
 import VaultSearch from '@/components/VaultSearch';
@@ -47,19 +47,14 @@ const LEVEL_COLORS: Record<'foundational' | 'intermediate' | 'advanced', { dark:
   intermediate: { dark: '#e8c34a', light: '#a97e12' },
   advanced:     { dark: '#e2483f', light: '#c23c33' },
 };
-const LEVEL_LABEL: Record<'foundational' | 'intermediate' | 'advanced', string> = {
-  foundational: 'Foundational', intermediate: 'Intermediate', advanced: 'Advanced',
+/* The rail is one vertical line per level, left to right. Thematic sections
+   (and the "Other Concepts" catch-all) collect into a trailing lane that uses
+   the hub's own domain color instead of a traffic-light one. */
+type LaneKey = 'foundational' | 'intermediate' | 'advanced' | 'thematic';
+const LANE_ORDER: LaneKey[] = ['foundational', 'intermediate', 'advanced', 'thematic'];
+const LEVEL_LABEL: Record<LaneKey, string> = {
+  foundational: 'Foundational', intermediate: 'Intermediate', advanced: 'Advanced', thematic: 'Other',
 };
-const COLOR_LEVELS = new Set(['foundational', 'intermediate', 'advanced']);
-
-/* Measured render width ÷ font-size for each word in the Fraunces italic 900
-   watermark face — lets the watermark shrink to fit its own zone instead of
-   getting clipped mid-word or bleeding into the next zone. */
-const WATERMARK_WPX: Record<'foundational' | 'intermediate' | 'advanced', number> = {
-  foundational: 5.85, intermediate: 5.45, advanced: 4.3,
-};
-const WATERMARK_MIN_PX = 16;
-const WATERMARK_MAX_PX = 52;
 
 function hexToRgb(hex: string): string {
   const m = hex.replace('#', '');
@@ -179,14 +174,20 @@ function RailSparks({ isSepia, colorRgb }: { isSepia: boolean; colorRgb: string 
   return <canvas ref={ref} className="hs-rail-sparks" aria-hidden="true" />;
 }
 
-type ZoneGeom = {
-  level: 'foundational' | 'intermediate' | 'advanced';
-  segTop: number; segHeight: number;
-  zoneTop: number; zoneHeight: number;
-  boundaryY: number; showTick: boolean;
-  watermarkPx: number; showWatermark: boolean;
-};
-type RailLayout = { markX: number; totalHeight: number; zones: ZoneGeom[] };
+/* Per-lane geometry, measured from the real dots so the colored line starts at
+   the first mark and ends at the last one rather than floating past either. */
+type LaneGeom = { markX: number; segTop: number; segHeight: number };
+type RailLayout = Record<string, LaneGeom>;
+
+function sameLayout(a: RailLayout | null, b: RailLayout): boolean {
+  if (!a) return false;
+  const ka = Object.keys(a), kb = Object.keys(b);
+  if (ka.length !== kb.length) return false;
+  return ka.every(k => {
+    const x = a[k], y = b[k];
+    return y && x.markX === y.markX && x.segTop === y.segTop && x.segHeight === y.segHeight;
+  });
+}
 
 /* ── HubSpineClient ─────────────────────────────────────────────── */
 export default function HubSpineClient({ title, domain, domainLabel, domainColor, excerpt, path, sections, unplaced }: HubSpineProps) {
@@ -213,80 +214,67 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     try { localStorage.setItem('nylus-hub-palette', k); } catch {}
   }, []);
 
-  const allSections: SpineSection[] = unplaced.length > 0
+  /* Memoized: these feed the layout effect's dependency chain, and rebuilding
+     them on every render would make that effect re-measure and re-set state in
+     a loop on any hub that has unplaced concepts. */
+  const rawSections: SpineSection[] = useMemo(() => unplaced.length > 0
     ? [...sections, { key:'__unplaced__', label:'Other Concepts', level:'thematic' as const, color:domainColor, badge:'', concepts:unplaced }]
-    : sections;
+    : sections, [sections, unplaced, domainColor]);
 
-  const ORDER = allSections.flatMap(s => s.concepts);
-  const conceptMap = new Map(ORDER.map(c => [c.id, c]));
+  /* One lane per level, in fixed left-to-right order, each holding every
+     section of that level regardless of where it sat in the vault. */
+  const lanes = useMemo(() => LANE_ORDER
+    .map(level => ({ level, sections: rawSections.filter(s => s.level === level) }))
+    .filter(l => l.sections.length > 0), [rawSections]);
 
-  /* All sections start collapsed */
-  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(allSections.map(s => s.key)));
+  /* Reading order follows the lanes, so prev/next walks the rail as it reads:
+     all of Foundational, then Intermediate, then Advanced, then Other. */
+  const allSections = useMemo(() => lanes.flatMap(l => l.sections), [lanes]);
+  const ORDER = useMemo(() => allSections.flatMap(s => s.concepts), [allSections]);
+  const conceptMap = useMemo(() => new Map(ORDER.map(c => [c.id, c])), [ORDER]);
+  const allKeys = useMemo(() => allSections.map(s => s.key), [allSections]);
+
+  /* All sections start collapsed. The rail behaves as an accordion: opening a
+     dot closes whichever one was open, so a click on any line always swaps the
+     concepts below instead of stacking another section onto them. */
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(allKeys));
+  const openOnly = useCallback((key: string | null) => {
+    setCollapsed(new Set(key === null ? allKeys : allKeys.filter(k => k !== key)));
+  }, [allKeys]);
   const toggleSection = useCallback((key: string) => {
-    setCollapsed(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
-  }, []);
+    setCollapsed(prev => new Set(prev.has(key) ? allKeys.filter(k => k !== key) : allKeys));
+  }, [allKeys]);
 
-  /* ── Rail layout: computed from real dot geometry ──────────────────── */
-  const railInnerRef = useRef<HTMLDivElement>(null);
+  /* ── Rail layout: each lane's line measured from its own dots ──────── */
+  const laneRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const dotRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [layout, setLayout] = useState<RailLayout | null>(null);
 
   const computeLayout = useCallback(() => {
-    const inner = railInnerRef.current;
-    if (!inner) return;
-    const innerRect = inner.getBoundingClientRect();
-    const marks = allSections.map(s => dotRefs.current[s.key]?.querySelector<HTMLElement>('.hs-rail-mark') ?? null);
-    if (marks.some(m => !m)) return;
-    const rects = marks.map(m => m!.getBoundingClientRect());
-    const centers = rects.map(r => r.top - innerRect.top + r.height / 2);
-    const markX = rects[0].left - innerRect.left + rects[0].width / 2;
-    const OUTER_PAD = 34;
-
-    const zones: ZoneGeom[] = [];
-    let i = 0;
-    while (i < allSections.length) {
-      const lvl = allSections[i].level;
-      if (!COLOR_LEVELS.has(lvl)) { i++; continue; }
-      let end = i;
-      while (end + 1 < allSections.length && allSections[end + 1].level === lvl) end++;
-
-      const segTop = centers[i];
-      const segBottom = centers[end];
-      const zoneTop = i > 0 ? (segTop + centers[i - 1]) / 2 : segTop - OUTER_PAD;
-      const hasNext = end < allSections.length - 1;
-      const zoneBottom = hasNext ? (segBottom + centers[end + 1]) / 2 : segBottom + OUTER_PAD;
-      const zoneHeight = zoneBottom - zoneTop;
-
-      const levelKey = lvl as 'foundational' | 'intermediate' | 'advanced';
-      const fitPx = (zoneHeight - 24) / WATERMARK_WPX[levelKey];
-      const watermarkPx = Math.max(WATERMARK_MIN_PX, Math.min(WATERMARK_MAX_PX, fitPx));
-
-      zones.push({
-        level: levelKey,
-        segTop, segHeight: segBottom - segTop,
-        zoneTop, zoneHeight,
-        boundaryY: zoneBottom, showTick: hasNext,
-        watermarkPx, showWatermark: fitPx >= WATERMARK_MIN_PX,
-      });
-      i = end + 1;
+    const next: RailLayout = {};
+    for (const lane of lanes) {
+      const el = laneRefs.current[lane.level];
+      if (!el) return;
+      const marks = lane.sections.map(s => dotRefs.current[s.key]?.querySelector<HTMLElement>('.hs-rail-mark') ?? null);
+      if (marks.some(m => !m)) return;
+      const rects = marks.map(m => m!.getBoundingClientRect());
+      const box = el.getBoundingClientRect();
+      const first = rects[0], last = rects[rects.length - 1];
+      next[lane.level] = {
+        markX:     first.left - box.left + first.width / 2,
+        segTop:    first.top - box.top + first.height / 2,
+        /* A lane holding a single section still gets a short stub of line so it
+           reads as part of the rail rather than as a loose dot. */
+        segHeight: Math.max(3, (last.top + last.height / 2) - (first.top + first.height / 2)),
+      };
     }
-
-    /* All visible watermarks share one uniform size — the smallest that still
-       fits its own zone — rather than each word scaling independently, which
-       read as three mismatched sizes across the rail. */
-    const visible = zones.filter(z => z.showWatermark);
-    if (visible.length > 0) {
-      const uniformPx = Math.min(...visible.map(z => z.watermarkPx));
-      zones.forEach(z => { if (z.showWatermark) z.watermarkPx = uniformPx; });
-    }
-
-    setLayout({ markX, totalHeight: inner.scrollHeight, zones });
-  }, [allSections]);
+    setLayout(prev => sameLayout(prev, next) ? prev : next);
+  }, [lanes]);
 
   /* Recompute on WIDTH changes only. On mobile, scrolling shows/hides the browser
      chrome, which fires a stream of height-only resize events; re-running the
-     layout mid-scroll repositions every absolutely-placed zone/watermark and is
-     what made the rail visibly wobble. Height changes can't affect this layout. */
+     layout mid-scroll repositions every absolutely-placed line and is what made
+     the rail visibly wobble. Height changes can't affect this layout. */
   useEffect(() => {
     computeLayout();
     let lastW = window.innerWidth;
@@ -314,7 +302,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         setBookmarkId(saved);
         const sec = allSections.find(s => s.concepts.some(c => c.id === saved));
         if (sec) {
-          setCollapsed(prev => { const n = new Set(prev); n.delete(sec.key); return n; });
+          openOnly(sec.key);
           setTimeout(() => scrollDotIntoView(sec.key), 250);
         }
       }
@@ -342,11 +330,11 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     setActiveId(nextId);
     const sec = allSections.find(s => s.concepts.some(c => c.id === nextId));
     if (sec) {
-      setCollapsed(prev => { const n = new Set(prev); n.delete(sec.key); return n; });
+      openOnly(sec.key);
       scrollDotIntoView(sec.key);
     }
     setTimeout(() => document.querySelector(`[data-cid="${nextId}"]`)?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
-  }, [activeIdx, ORDER, allSections, scrollDotIntoView]);
+  }, [activeIdx, ORDER, allSections, scrollDotIntoView, openOnly]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -427,57 +415,51 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           />
         </div>
 
-        {/* Vertical, level-colored rail. The comet canvas sits in the frame,
-            outside the scroller, so it stays fixed while the rail scrolls
-            under it. */}
+        {/* One vertical, level-colored line per lane — Foundational on the far
+            left, then Intermediate, then Advanced — each carrying its own
+            sections top to bottom. The comet canvas sits in the frame, outside
+            the scroller, so it stays fixed while the lanes scroll under it. */}
         <div className="hs-rail-frame">
           <RailSparks isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />
           <div className="hs-rail-scroll" ref={railScrollRef}>
-          <div className="hs-rail-inner" ref={railInnerRef}>
-            {layout && <div className="hs-rail-track" style={{ left: layout.markX }} />}
-            {layout && layout.zones.length === 0 && (
-              /* No foundational/intermediate/advanced sections on this hub (all
-                 thematic) — still give the rail a domain-colored backdrop rather
-                 than leaving it bare, matching hubs that do have graded zones. */
-              <div className="hs-rail-zone" style={{ top: 0, height: layout.totalHeight, left: layout.markX - 96, ['--dc' as any]: domainColor }} />
-            )}
-            {layout && layout.zones.map((z, zi) => {
-              const dc = LEVEL_COLORS[z.level][P.dark ? 'dark' : 'light'];
+          <div className="hs-rail-inner" style={{ ['--lanes' as any]: lanes.length }}>
+            {lanes.map(lane => {
+              const dc = lane.level === 'thematic'
+                ? domainColor
+                : LEVEL_COLORS[lane.level][P.dark ? 'dark' : 'light'];
+              const g = layout?.[lane.level];
               return (
-                <div key={zi}>
-                  <div className="hs-rail-zone" style={{ top: z.zoneTop, height: z.zoneHeight, left: layout.markX - 96, ['--dc' as any]: dc }} />
-                  <div className="hs-rail-seg" style={{ top: z.segTop, height: z.segHeight, left: layout.markX - 1.5, ['--dc' as any]: dc }} />
-                  {z.showWatermark && (
-                    <div className="hs-rail-watermark" style={{ top: z.boundaryY, left: layout.markX - 18, fontSize: z.watermarkPx, ['--dc' as any]: dc }}>
-                      {LEVEL_LABEL[z.level]}
+                <div key={lane.level} className="hs-rail-lane" style={{ ['--dc' as any]: dc }}>
+                  <div className="hs-rail-lane-head">
+                    <span className="hs-rail-lane-name">{LEVEL_LABEL[lane.level]}</span>
+                    <span className="hs-rail-lane-count">{lane.sections.length} {lane.sections.length === 1 ? 'section' : 'sections'}</span>
+                  </div>
+                  <div className="hs-rail-lane-body" ref={el => { laneRefs.current[lane.level] = el; }}>
+                    <div className="hs-rail-zone" />
+                    {g && <div className="hs-rail-track" style={{ left: g.markX }} />}
+                    {g && <div className="hs-rail-seg" style={{ top: g.segTop, height: g.segHeight, left: g.markX - 1.5 }} />}
+                    <div className="hs-rail-dots">
+                      {lane.sections.map(sec => {
+                        const isOpen = !collapsed.has(sec.key);
+                        return (
+                          <button
+                            key={sec.key}
+                            ref={el => { dotRefs.current[sec.key] = el; }}
+                            className={`hs-rail-dot${isOpen ? ' active' : ''}`}
+                            onClick={() => toggleSection(sec.key)}
+                            aria-expanded={isOpen}
+                          >
+                            <span className="hs-rail-mark" />
+                            <span className="hs-rail-name">{sec.label}</span>
+                            <span className="hs-rail-count">{sec.concepts.length} concepts</span>
+                          </button>
+                        );
+                      })}
                     </div>
-                  )}
-                  {z.showTick && <div className="hs-rail-tick" style={{ top: z.boundaryY, left: layout.markX - 11 }} />}
+                  </div>
                 </div>
               );
             })}
-            <div className="hs-rail-dots">
-              {allSections.map(sec => {
-                const dc = COLOR_LEVELS.has(sec.level)
-                  ? LEVEL_COLORS[sec.level as 'foundational' | 'intermediate' | 'advanced'][P.dark ? 'dark' : 'light']
-                  : sec.color;
-                const isOpen = !collapsed.has(sec.key);
-                return (
-                  <button
-                    key={sec.key}
-                    ref={el => { dotRefs.current[sec.key] = el; }}
-                    className={`hs-rail-dot${isOpen ? ' active' : ''}`}
-                    style={{ ['--dc' as any]: dc }}
-                    onClick={() => toggleSection(sec.key)}
-                    aria-expanded={isOpen}
-                  >
-                    <span className="hs-rail-mark" />
-                    <span className="hs-rail-name">{sec.label}</span>
-                    <span className="hs-rail-count">{sec.concepts.length} concepts</span>
-                  </button>
-                );
-              })}
-            </div>
           </div>
           </div>
         </div>
@@ -571,7 +553,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                     setActiveId(lid);
                     const sec = allSections.find(s => s.concepts.some(c => c.id === lid));
                     if (sec) {
-                      setCollapsed(prev => { const n = new Set(prev); n.delete(sec.key); return n; });
+                      openOnly(sec.key);
                       scrollDotIntoView(sec.key);
                     }
                   }}>{lc.title}</button>
@@ -628,27 +610,37 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-jetbrains,monospace);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .hs-rail-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 7px 1px var(--dc);display:inline-block}
         /* The frame holds the fixed comet layer; only .hs-rail-scroll inside it moves. */
-        .hs-rail-frame{position:relative;margin:8px auto 0;max-width:520px;isolation:isolate}
-        .hs-rail-scroll{position:relative;z-index:1;overflow-y:auto;overflow-x:hidden;padding:10px 10px 10px 112px;
+        .hs-rail-frame{position:relative;margin:8px auto 0;max-width:1000px;isolation:isolate}
+        .hs-rail-scroll{position:relative;z-index:1;overflow-y:auto;overflow-x:hidden;padding:10px 4px;
           max-height:min(62vh,720px);
           scrollbar-width:none;-ms-overflow-style:none;
           -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
           -webkit-mask-image:linear-gradient(180deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(180deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
         .hs-rail-scroll::-webkit-scrollbar{display:none;width:0;height:0}
-        /* translateZ promotes the scrolling content to its own layer so the browser
-           can move it without repainting — without this, mobile scroll repaints the
-           whole rail every frame and the absolutely-placed zones visibly shimmer. */
-        .hs-rail-inner{position:relative;display:flex;flex-direction:column;min-height:100%;transform:translateZ(0);backface-visibility:hidden}
+        /* Lanes sit side by side and share one scroller, so the three levels stay
+           aligned to each other as you move down them. translateZ promotes the
+           scrolling content to its own layer so the browser can move it without
+           repainting — without this, mobile scroll repaints the whole rail every
+           frame and the absolutely-placed lines visibly shimmer. */
+        .hs-rail-inner{position:relative;display:grid;grid-template-columns:repeat(var(--lanes,3),minmax(0,1fr));gap:20px;
+          align-items:start;min-height:100%;transform:translateZ(0);backface-visibility:hidden}
         .hs-rail-sparks{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        /* Each lane is its own positioning context: its line, wash, and dots are
+           measured and placed against the lane, not the rail as a whole. */
+        .hs-rail-lane{padding-left:14px}
+        .hs-rail-lane-body{position:relative}
+        .hs-rail-lane-head{position:relative;z-index:3;display:flex;flex-direction:column;gap:3px;padding:0 0 12px 2px;
+          border-bottom:1px solid color-mix(in srgb, var(--dc) 40%, transparent)}
+        .hs-rail-lane-name{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(15px,1.9vw,21px);letter-spacing:-.02em;line-height:1;color:var(--dc)}
+        .hs-rail-lane-count{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .hs-rail-track{position:absolute;top:0;bottom:0;width:1px;background:var(--hs-border,rgba(255,255,255,.09));z-index:1}
-        /* The along-rail fade uses fixed px insets and the cross-rail falloff lives
-           in the mask, so the wash reads identically on a 200px zone and a 4000px
-           one — a percentage-based radial gradient concentrated all its color in
-           the middle and left the visible edges of long zones looking empty. */
-        .hs-rail-zone{position:absolute;width:190px;z-index:1;pointer-events:none;
+        /* The wash fills the lane and fades out to the right across the labels, so
+           the color reads strongest at the line itself and never turns the section
+           names into low-contrast text. */
+        .hs-rail-zone{position:absolute;inset:0;z-index:1;pointer-events:none;
           background:linear-gradient(180deg,transparent 0,color-mix(in srgb, var(--dc) 17%, transparent) 70px,color-mix(in srgb, var(--dc) 17%, transparent) calc(100% - 70px),transparent 100%);
-          -webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%,#000 52%,transparent 100%);
-          mask-image:linear-gradient(to right,transparent 0,#000 30%,#000 52%,transparent 100%)}
+          -webkit-mask-image:linear-gradient(to right,#000 0,#000 30%,transparent 100%);
+          mask-image:linear-gradient(to right,#000 0,#000 30%,transparent 100%)}
         /* The glow was an animated box-shadow, which is not compositor-accelerated:
            it forced a full repaint every frame on a bar that can be thousands of px
            long. Now the shadow is painted once and only a sibling layer's opacity
@@ -659,13 +651,9 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           opacity:.22;filter:blur(6px);will-change:opacity;animation:hs-rail-breathe 3.6s ease-in-out infinite}
         @media (prefers-reduced-motion:reduce){.hs-rail-seg::after{animation:none;opacity:.3}}
         @keyframes hs-rail-breathe{0%,100%{opacity:.16}50%{opacity:.46}}
-        /* Rotated a quarter turn so the word runs along the rail and still ends at
-           its zone boundary, exactly as it did when the rail was horizontal. */
-        .hs-rail-watermark{position:absolute;transform-origin:0 0;transform:rotate(90deg) translate(-100%,0);font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;color:var(--dc);opacity:.22;user-select:none;z-index:1;pointer-events:none}
-        .hs-rail-tick{position:absolute;height:1px;width:22px;background:var(--hs-ink3,#565278);opacity:.55;z-index:1}
-        .hs-rail-dots{position:relative;z-index:3;display:flex;flex-direction:column;gap:64px;padding:20px 0}
-        .hs-rail-dot{flex:0 0 auto;min-height:60px;width:200px;background:none;border:none;cursor:pointer;padding:0;
-          display:grid;grid-template-columns:14px 1fr;column-gap:12px;align-items:center;justify-items:start;
+        .hs-rail-dots{position:relative;z-index:3;display:flex;flex-direction:column;gap:30px;padding:26px 0 20px}
+        .hs-rail-dot{flex:0 0 auto;width:100%;background:none;border:none;cursor:pointer;padding:0;
+          display:grid;grid-template-columns:14px minmax(0,1fr);column-gap:12px;align-items:center;justify-items:start;
           text-align:left;font-family:inherit;color:inherit;scroll-snap-align:center}
         .hs-rail-mark{grid-row:1 / 3;align-self:center;width:14px;height:14px;border-radius:50%;border:2px solid var(--dc);background:var(--hs-bg,#03020a);transition:transform .25s cubic-bezier(.16,1,.3,1),background .2s,box-shadow .25s;position:relative;z-index:2}
         .hs-rail-mark::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--dc);opacity:0;transform:scale(.7);pointer-events:none}
@@ -675,10 +663,13 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-name{grid-column:2;grid-row:1;font-family:var(--font-newsreader,serif);font-style:italic;font-size:14px;color:var(--hs-ink2,#b4acd0);text-align:left;line-height:1.28;transition:color .15s}
         .hs-rail-dot.active .hs-rail-name{color:var(--hs-ink,#f0eeff)}
         .hs-rail-count{grid-column:2;grid-row:2;font-family:var(--font-jetbrains,monospace);font-size:9px;color:var(--hs-ink3,#565278)}
-        @media(max-width:680px){
-          .hs-rail-scroll{padding-left:92px;max-height:min(58vh,560px)}
-          .hs-rail-dot{width:auto;min-height:52px}
-          .hs-rail-dots{gap:52px}
+        /* Three lanes side by side get too narrow to read on a phone, so they
+           stack into three color-coded groups instead — same lines, same colors,
+           one under the other. */
+        @media(max-width:760px){
+          .hs-rail-inner{grid-template-columns:1fr;gap:34px}
+          .hs-rail-scroll{max-height:min(58vh,560px)}
+          .hs-rail-dots{gap:26px;padding:20px 0 16px}
         }
         .hs-panels{margin-top:32px;display:flex;flex-direction:column;gap:24px}
         /* Panels mount only while their rail dot is open, so these run once on
