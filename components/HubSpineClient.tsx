@@ -56,13 +56,43 @@ const LEVEL_LABEL: Record<LaneKey, string> = {
   foundational: 'Foundational', intermediate: 'Intermediate', advanced: 'Advanced', thematic: 'Other',
 };
 
-function hexToRgb(hex: string): string {
+/* Domain colors are picked to glow on a near-black page. On the sepia palette
+   they sit almost the same value as the paper and vanish, so `darken` pulls
+   them toward ink for light mode instead of just fading them out. */
+function hexToRgb(hex: string, darken = 0): string {
   const m = hex.replace('#', '');
   const n = m.length === 3 ? m.split('').map(c => c + c).join('') : m;
-  const r = parseInt(n.slice(0, 2), 16) || 0;
-  const g = parseInt(n.slice(2, 4), 16) || 0;
-  const b = parseInt(n.slice(4, 6), 16) || 0;
+  const k = 1 - darken;
+  const r = Math.round((parseInt(n.slice(0, 2), 16) || 0) * k);
+  const g = Math.round((parseInt(n.slice(2, 4), 16) || 0) * k);
+  const b = Math.round((parseInt(n.slice(4, 6), 16) || 0) * k);
   return `${r}, ${g}, ${b}`;
+}
+
+/* ── Domain sigils ──────────────────────────────────────────────────
+   A geometric mark per domain, stroked in the domain color, to anchor the
+   top of the page — the header was a title floating in empty space. */
+const DOMAIN_GLYPH: Record<string, React.ReactNode> = {
+  psychology: <><circle cx="32" cy="32" r="16" /><circle cx="32" cy="32" r="7" /><path d="M32 16V9M32 55v-7M16 32H9M55 32h-7" /></>,
+  history: <><path d="M18 13h28M18 51h28M22 13l20 38M42 13L22 51" /></>,
+  'behavioral-mechanics': <><circle cx="32" cy="15" r="4" /><circle cx="16" cy="45" r="4" /><circle cx="48" cy="45" r="4" /><path d="M30 19 18 41m16-22 12 22M20 45h24" /></>,
+  'eastern-spirituality': <><circle cx="32" cy="32" r="17" strokeDasharray="88 19" transform="rotate(-38 32 32)" /><circle cx="32" cy="32" r="3.5" /></>,
+  'cross-domain': <><circle cx="25" cy="32" r="13" /><circle cx="39" cy="32" r="13" /></>,
+  'creative-practice': <><path d="M32 11 47 47H17z" /><path d="M32 29v18" /></>,
+  business: <><path d="M13 49h38" /><path d="M18 41l9-11 8 6 12-17" /><path d="M40 19h7v7" /></>,
+  'african-spirituality': <><path d="M32 11 47 32 32 53 17 32z" /><path d="M32 21v22M21 32h22" /></>,
+};
+const DEFAULT_GLYPH = <><circle cx="32" cy="32" r="16" /><circle cx="32" cy="32" r="3.5" /></>;
+
+function DomainSigil({ domain }: { domain: string }) {
+  return (
+    <div className="hs-sigil" aria-hidden="true">
+      <svg viewBox="0 0 64 64">
+        <circle className="hs-sigil-ring" cx="32" cy="32" r="30" />
+        <g className="hs-sigil-glyph">{DOMAIN_GLYPH[domain] ?? DEFAULT_GLYPH}</g>
+      </svg>
+    </div>
+  );
 }
 
 /* ── PaletteDot ─────────────────────────────────────────────────── */
@@ -77,101 +107,130 @@ function PaletteDot({ name, active, color, onClick }: { name: PaletteKey; active
   );
 }
 
-/* ── SparksCanvas: page-wide ambient embers, unchanged house style ────── */
-function SparksCanvas({ isSepia }: { isSepia: boolean }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current; if (!canvas) return;
-    const ctx = canvas.getContext('2d'); if (!ctx) return;
-    let rafId: number;
-    const resize = () => { if (canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } };
-    resize(); window.addEventListener('resize', resize);
-    const sparks = Array.from({ length: 40 }, () => ({
-      x: Math.random(), vy: (0.28 + Math.random() * 0.5) * 0.00055,
-      vx: (Math.random() - 0.5) * 0.00028, r: Math.random() * 1.5 + 0.4,
-      life: Math.random(), maxLife: 0.65 + Math.random() * 0.35, gold: Math.random() < 0.55,
-    }));
-    const draw = () => {
-      if (!canvas || !ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      sparks.forEach(s => {
-        s.life += s.vy; s.x += s.vx + Math.sin(s.life * 20) * 0.00012;
-        if (s.life > s.maxLife) { s.x = Math.random(); s.life = 0; s.vx = (Math.random() - 0.5) * 0.00028; }
-        const t = s.life / s.maxLife;
-        const op = t < 0.1 ? t / 0.1 : t > 0.8 ? (1 - t) / 0.2 : 1;
-        ctx.beginPath();
-        ctx.arc(s.x * canvas.width, (1 - s.life) * canvas.height, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = s.gold ? `rgba(255,200,60,${op * (isSepia ? 0.1 : 0.28)})` : `rgba(239,90,111,${op * (isSepia ? 0.1 : 0.28)})`;
-        ctx.fill();
-      });
-      rafId = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => { window.removeEventListener('resize', resize); cancelAnimationFrame(rafId); };
-  }, [isSepia]);
-  return <canvas ref={ref} style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }} aria-hidden="true" />;
-}
+/* ── CometField ─────────────────────────────────────────────────────
+   Comets drifting upward, drawn as a tapered streak with a bright head and
+   tinted with the hub's own domain color rather than the old fixed gold/rose
+   embers. Two presets share the code:
 
-/* ── RailSparks: comet field behind the rail, tinted to the hub's own domain color.
-   Lives OUTSIDE the horizontal scroller and sizes itself to the visible frame, not
-   the full rail width. A canvas as wide as the content (10,000px+ on a large hub)
-   is a multi-megabyte texture the compositor has to move every scroll frame, which
-   is what made the rail wobble on mobile. Sized to the viewport it stays put and
-   costs nothing to scroll past. */
-function RailSparks({ isSepia, colorRgb }: { isSepia: boolean; colorRgb: string }) {
+     page — sized to the viewport, sparse and long-tailed, the ambient layer
+     rail — sized to its parent box, dense and short-tailed, behind the lanes
+
+   The rail canvas deliberately measures its PARENT and not the scrolling
+   content: a canvas as tall as a long rail is a multi-megabyte texture the
+   compositor has to move every scroll frame, which is what made the rail
+   wobble on mobile. Sized to the visible frame it stays put and costs nothing
+   to scroll past. */
+type CometVariant = 'page' | 'rail';
+const COMET_PRESETS: Record<CometVariant, {
+  perPx: number; min: number; max: number;
+  speed: number; drift: number; wobble: number;
+  rMin: number; rVar: number; tailMin: number; tailVar: number;
+}> = {
+  page: { perPx: 34, min: 22, max: 70,  speed: 0.00055, drift: 0.00028, wobble: 0.00012, rMin: 0.5, rVar: 1.4, tailMin: 34, tailVar: 62 },
+  rail: { perPx: 9,  min: 40, max: 220, speed: 0.0009,  drift: 0.0004,  wobble: 0.0002,  rMin: 0.4, rVar: 1.4, tailMin: 14, tailVar: 26 },
+};
+
+type Comet = { x: number; vy: number; vx: number; r: number; tail: number; life: number; maxLife: number; bright: boolean };
+
+function CometField({ variant, colorRgb, intensity, className, style }: {
+  variant: CometVariant; colorRgb: string; intensity: number;
+  className?: string; style?: React.CSSProperties;
+}) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
-    const parent = canvas.parentElement; if (!parent) return;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
+    const parent = canvas.parentElement;
+    if (variant === 'rail' && !parent) return;
+    const cfg = COMET_PRESETS[variant];
 
     let rafId = 0;
-    let sparks: { x: number; vy: number; vx: number; r: number; life: number; maxLife: number; bright: boolean }[] = [];
+    let comets: Comet[] = [];
     let w = 0, h = 0;
 
+    const spawn = (): Comet => ({
+      x: Math.random(),
+      vy: (0.24 + Math.random() * 0.5) * cfg.speed,
+      vx: (Math.random() - 0.5) * cfg.drift,
+      r: Math.random() * cfg.rVar + cfg.rMin,
+      tail: cfg.tailMin + Math.random() * cfg.tailVar,
+      life: Math.random(), maxLife: 0.62 + Math.random() * 0.35,
+      bright: Math.random() < 0.55,
+    });
+
     const size = () => {
-      const rect = parent.getBoundingClientRect();
-      const nw = Math.max(1, Math.round(rect.width));
-      const nh = Math.max(1, Math.round(rect.height));
+      const nw = variant === 'page' ? window.innerWidth : Math.round(parent!.getBoundingClientRect().width);
+      const nh = variant === 'page' ? window.innerHeight : Math.round(parent!.getBoundingClientRect().height);
+      /* Bail on a zero-sized box (hidden tab, not laid out yet) WITHOUT recording
+         it — otherwise w/h latch at 0, every later measurement compares equal to
+         the stored size, and the field never populates once the box is real. */
+      if (nw < 1 || nh < 1) return;
       if (nw === w && nh === h) return;
       w = nw; h = nh;
       canvas.width = w; canvas.height = h;
-      const count = Math.round(Math.min(220, Math.max(40, w / 9)));
-      sparks = Array.from({ length: count }, () => ({
-        x: Math.random(), vy: (0.24 + Math.random() * 0.4) * 0.0009,
-        vx: (Math.random() - 0.5) * 0.0004, r: Math.random() * 1.4 + 0.4,
-        life: Math.random(), maxLife: 0.6 + Math.random() * 0.35, bright: Math.random() < 0.55,
-      }));
+      const count = Math.round(Math.min(cfg.max, Math.max(cfg.min, w / cfg.perPx)));
+      comets = Array.from({ length: count }, spawn);
     };
     size();
 
-    /* Width-only observer: on mobile, scrolling shows/hides the browser chrome,
-       which fires height-only resizes constantly. Reacting to those mid-scroll is
-       another source of visible jitter. */
-    const ro = new ResizeObserver(() => size());
-    ro.observe(parent);
+    /* Width-driven resizing only. On mobile, scrolling shows/hides the browser
+       chrome, which fires a stream of height-only resizes; reacting to those
+       mid-scroll respawns the whole field and reads as a flicker. */
+    let ro: ResizeObserver | undefined;
+    const onResize = () => size();
+    if (variant === 'page') window.addEventListener('resize', onResize);
+    else { ro = new ResizeObserver(() => size()); ro.observe(parent!); }
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const draw = () => {
-      if (!ctx) return;
       ctx.clearRect(0, 0, w, h);
-      const base = isSepia ? 0.22 : 0.42;
-      sparks.forEach(s => {
-        s.life += s.vy; s.x += s.vx + Math.sin(s.life * 20) * 0.0002;
-        if (s.life > s.maxLife) { s.x = Math.random(); s.life = 0; s.vx = (Math.random() - 0.5) * 0.0004; }
-        const t = s.life / s.maxLife;
-        const op = t < 0.1 ? t / 0.1 : t > 0.8 ? (1 - t) / 0.2 : 1;
+      comets.forEach(c => {
+        c.life += c.vy;
+        c.x += c.vx + Math.sin(c.life * 20) * cfg.wobble;
+        if (c.life > c.maxLife) { const n = spawn(); n.life = 0; Object.assign(c, n); }
+        const t = c.life / c.maxLife;
+        /* Fade in over the first tenth of the arc and out over the last fifth,
+           so comets never pop into or out of existence mid-screen. */
+        const fade = t < 0.1 ? t / 0.1 : t > 0.8 ? (1 - t) / 0.2 : 1;
+        const op = fade * intensity * (c.bright ? 1 : 0.66);
+        if (op <= 0.002) return;
+
+        const px = c.x * w;
+        const py = (1 - c.life) * h;
+        /* The streak trails along the comet's own path, so drifting comets lean
+           instead of all raining straight down. */
+        const ex = px - (c.vx / c.vy) * c.tail;
+        const ey = py + c.tail;
+
+        const grad = ctx.createLinearGradient(px, py, ex, ey);
+        grad.addColorStop(0, `rgba(${colorRgb},${op})`);
+        grad.addColorStop(1, `rgba(${colorRgb},0)`);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = c.r * 1.5;
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.arc(s.x * w, (1 - s.life) * h, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${colorRgb},${op * base * (s.bright ? 1 : 0.7)})`;
+        ctx.moveTo(px, py);
+        ctx.lineTo(ex, ey);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(px, py, c.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${colorRgb},${Math.min(1, op * 1.6)})`;
         ctx.fill();
       });
       if (!reduceMotion) rafId = requestAnimationFrame(draw);
     };
     draw();
-    return () => { ro.disconnect(); cancelAnimationFrame(rafId); };
-  }, [isSepia, colorRgb]);
-  return <canvas ref={ref} className="hs-rail-sparks" aria-hidden="true" />;
+
+    return () => {
+      if (variant === 'page') window.removeEventListener('resize', onResize);
+      ro?.disconnect();
+      cancelAnimationFrame(rafId);
+    };
+  }, [variant, colorRgb, intensity]);
+
+  return <canvas ref={ref} className={className} style={style} aria-hidden="true" />;
 }
 
 /* Per-lane geometry, measured from the real dots so the colored line starts at
@@ -193,6 +252,9 @@ function sameLayout(a: RailLayout | null, b: RailLayout): boolean {
 export default function HubSpineClient({ title, domain, domainLabel, domainColor, excerpt, path, sections, unplaced }: HubSpineProps) {
   const [paletteKey, setPaletteKey] = useState<PaletteKey>('ember');
   const P = PALETTES[paletteKey];
+  /* On sepia the comets draw on near-white paper, so the domain color has to be
+     pulled toward ink to stay visible instead of just washing out. */
+  const cometRgb = hexToRgb(domainColor, P.dark ? 0 : 0.5);
 
   useEffect(() => {
     const sync = () => {
@@ -358,7 +420,12 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
 
   return (
     <div className="hs-root" style={rootVars}>
-      <SparksCanvas isSepia={!P.dark} />
+      <CometField
+        variant="page"
+        colorRgb={cometRgb}
+        intensity={P.dark ? 0.34 : 0.30}
+        style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }}
+      />
       <div className="hs-stripe" />
 
       <nav className="hs-nav">
@@ -384,6 +451,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
 
       <div className="hs-wrap">
         <header className="hs-header">
+          <DomainSigil domain={domain} />
           <div className="hs-chip">{domainLabel} · Hub</div>
           <h1 className="hs-title">{title}</h1>
           {excerpt && <p className="hs-lede">{excerpt}</p>}
@@ -420,7 +488,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
             sections top to bottom. The comet canvas sits in the frame, outside
             the scroller, so it stays fixed while the lanes scroll under it. */}
         <div className="hs-rail-frame">
-          <RailSparks isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />
+          <CometField variant="rail" colorRgb={cometRgb} intensity={P.dark ? 0.42 : 0.34} className="hs-rail-sparks" />
           <div className="hs-rail-scroll" ref={railScrollRef}>
           <div className="hs-rail-inner" style={{ ['--lanes' as any]: lanes.length }}>
             {lanes.map(lane => {
@@ -600,6 +668,32 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-wrap{position:relative;z-index:3;max-width:1180px;margin:0 auto;padding:96px 32px 180px}
         @media(max-width:680px){.hs-wrap{padding:72px 16px 120px}}
         .hs-header{text-align:center;margin-bottom:56px}
+        /* The header block drifts up on load, one element at a time. */
+        .hs-header > *{animation:hs-rise .6s cubic-bezier(.16,1,.3,1) both}
+        .hs-header > *:nth-child(1){animation-delay:0s}
+        .hs-header > *:nth-child(2){animation-delay:.07s}
+        .hs-header > *:nth-child(3){animation-delay:.13s}
+        .hs-header > *:nth-child(4){animation-delay:.2s}
+        .hs-header > *:nth-child(5){animation-delay:.27s}
+        .hs-header > *:nth-child(6){animation-delay:.33s}
+        @keyframes hs-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+        /* Domain sigil: a slow-turning dashed ring around a fixed geometric mark,
+           over a breathing glow — gives the top of the page something to sit on. */
+        .hs-sigil{position:relative;width:92px;height:92px;margin:0 auto 20px;color:var(--domain-color,#ef5a6f)}
+        .hs-sigil svg{position:relative;width:100%;height:100%;overflow:visible;display:block}
+        .hs-sigil::before{content:'';position:absolute;inset:-24%;border-radius:50%;z-index:-1;
+          background:radial-gradient(circle,color-mix(in srgb,var(--domain-color,#ef5a6f) 26%,transparent) 0,transparent 68%);
+          will-change:opacity,transform;animation:hs-sigil-breathe 5.6s ease-in-out infinite}
+        .hs-sigil-ring{fill:none;stroke:currentColor;stroke-width:1;opacity:.3;stroke-dasharray:3 8;
+          transform-origin:32px 32px;animation:hs-sigil-spin 44s linear infinite}
+        .hs-sigil-glyph{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.92}
+        @keyframes hs-sigil-spin{to{transform:rotate(360deg)}}
+        @keyframes hs-sigil-breathe{0%,100%{opacity:.55;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
+        @media (prefers-reduced-motion:reduce){
+          .hs-header > *{animation:hs-fade-in .25s ease both}
+          .hs-sigil-ring,.hs-sigil::before{animation:none}
+        }
+        @media(max-width:680px){.hs-sigil{width:72px;height:72px;margin-bottom:16px}}
         .hs-chip{font-family:var(--font-jetbrains,monospace);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--domain-color,#ef5a6f);opacity:.75;margin-bottom:14px}
         .hs-title{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(42px,8.5vw,110px);line-height:.88;letter-spacing:-.04em;color:var(--hs-ink,#f0eeff);margin-bottom:20px;text-wrap:balance}
         .hs-lede{font-family:var(--font-newsreader,serif);font-style:italic;font-size:clamp(15px,1.9vw,18px);line-height:1.82;color:var(--hs-ink2,#b4acd0);max-width:500px;margin:0 auto 26px}
