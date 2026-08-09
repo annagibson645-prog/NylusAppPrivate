@@ -181,12 +181,12 @@ function RailSparks({ isSepia, colorRgb }: { isSepia: boolean; colorRgb: string 
 
 type ZoneGeom = {
   level: 'foundational' | 'intermediate' | 'advanced';
-  segLeft: number; segWidth: number;
-  zoneLeft: number; zoneWidth: number;
-  boundaryX: number; showTick: boolean;
+  segTop: number; segHeight: number;
+  zoneTop: number; zoneHeight: number;
+  boundaryY: number; showTick: boolean;
   watermarkPx: number; showWatermark: boolean;
 };
-type RailLayout = { markY: number; totalWidth: number; zones: ZoneGeom[] };
+type RailLayout = { markX: number; totalHeight: number; zones: ZoneGeom[] };
 
 /* ── HubSpineClient ─────────────────────────────────────────────── */
 export default function HubSpineClient({ title, domain, domainLabel, domainColor, excerpt, path, sections, unplaced }: HubSpineProps) {
@@ -238,8 +238,8 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     const marks = allSections.map(s => dotRefs.current[s.key]?.querySelector<HTMLElement>('.hs-rail-mark') ?? null);
     if (marks.some(m => !m)) return;
     const rects = marks.map(m => m!.getBoundingClientRect());
-    const centers = rects.map(r => r.left - innerRect.left + r.width / 2);
-    const markY = rects[0].top - innerRect.top + rects[0].height / 2;
+    const centers = rects.map(r => r.top - innerRect.top + r.height / 2);
+    const markX = rects[0].left - innerRect.left + rects[0].width / 2;
     const OUTER_PAD = 34;
 
     const zones: ZoneGeom[] = [];
@@ -250,22 +250,22 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
       let end = i;
       while (end + 1 < allSections.length && allSections[end + 1].level === lvl) end++;
 
-      const segLeft = centers[i];
-      const segRight = centers[end];
-      const zoneLeft = i > 0 ? (segLeft + centers[i - 1]) / 2 : segLeft - OUTER_PAD;
+      const segTop = centers[i];
+      const segBottom = centers[end];
+      const zoneTop = i > 0 ? (segTop + centers[i - 1]) / 2 : segTop - OUTER_PAD;
       const hasNext = end < allSections.length - 1;
-      const zoneRight = hasNext ? (segRight + centers[end + 1]) / 2 : segRight + OUTER_PAD;
-      const zoneWidth = zoneRight - zoneLeft;
+      const zoneBottom = hasNext ? (segBottom + centers[end + 1]) / 2 : segBottom + OUTER_PAD;
+      const zoneHeight = zoneBottom - zoneTop;
 
       const levelKey = lvl as 'foundational' | 'intermediate' | 'advanced';
-      const fitPx = (zoneWidth - 24) / WATERMARK_WPX[levelKey];
+      const fitPx = (zoneHeight - 24) / WATERMARK_WPX[levelKey];
       const watermarkPx = Math.max(WATERMARK_MIN_PX, Math.min(WATERMARK_MAX_PX, fitPx));
 
       zones.push({
         level: levelKey,
-        segLeft, segWidth: segRight - segLeft,
-        zoneLeft, zoneWidth,
-        boundaryX: zoneRight, showTick: hasNext,
+        segTop, segHeight: segBottom - segTop,
+        zoneTop, zoneHeight,
+        boundaryY: zoneBottom, showTick: hasNext,
         watermarkPx, showWatermark: fitPx >= WATERMARK_MIN_PX,
       });
       i = end + 1;
@@ -280,7 +280,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
       zones.forEach(z => { if (z.showWatermark) z.watermarkPx = uniformPx; });
     }
 
-    setLayout({ markY, totalWidth: inner.scrollWidth, zones });
+    setLayout({ markX, totalHeight: inner.scrollHeight, zones });
   }, [allSections]);
 
   /* Recompute on WIDTH changes only. On mobile, scrolling shows/hides the browser
@@ -300,7 +300,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
   }, [computeLayout]);
 
   const scrollDotIntoView = useCallback((key: string) => {
-    dotRefs.current[key]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    dotRefs.current[key]?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
   }, []);
 
   const railScrollRef = useRef<HTMLDivElement>(null);
@@ -427,32 +427,32 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           />
         </div>
 
-        {/* Horizontal, level-colored rail — replaces the old vertical spine.
-            The comet canvas sits in the frame, outside the scroller, so it stays
-            fixed while the rail scrolls under it. */}
+        {/* Vertical, level-colored rail. The comet canvas sits in the frame,
+            outside the scroller, so it stays fixed while the rail scrolls
+            under it. */}
         <div className="hs-rail-frame">
           <RailSparks isSepia={!P.dark} colorRgb={hexToRgb(domainColor)} />
           <div className="hs-rail-scroll" ref={railScrollRef}>
           <div className="hs-rail-inner" ref={railInnerRef}>
-            {layout && <div className="hs-rail-track" style={{ top: layout.markY }} />}
+            {layout && <div className="hs-rail-track" style={{ left: layout.markX }} />}
             {layout && layout.zones.length === 0 && (
               /* No foundational/intermediate/advanced sections on this hub (all
                  thematic) — still give the rail a domain-colored backdrop rather
                  than leaving it bare, matching hubs that do have graded zones. */
-              <div className="hs-rail-zone" style={{ left: 0, width: layout.totalWidth, top: layout.markY - 96, ['--dc' as any]: domainColor }} />
+              <div className="hs-rail-zone" style={{ top: 0, height: layout.totalHeight, left: layout.markX - 96, ['--dc' as any]: domainColor }} />
             )}
             {layout && layout.zones.map((z, zi) => {
               const dc = LEVEL_COLORS[z.level][P.dark ? 'dark' : 'light'];
               return (
                 <div key={zi}>
-                  <div className="hs-rail-zone" style={{ left: z.zoneLeft, width: z.zoneWidth, top: layout.markY - 96, ['--dc' as any]: dc }} />
-                  <div className="hs-rail-seg" style={{ left: z.segLeft, width: z.segWidth, top: layout.markY - 1.5, ['--dc' as any]: dc }} />
+                  <div className="hs-rail-zone" style={{ top: z.zoneTop, height: z.zoneHeight, left: layout.markX - 96, ['--dc' as any]: dc }} />
+                  <div className="hs-rail-seg" style={{ top: z.segTop, height: z.segHeight, left: layout.markX - 1.5, ['--dc' as any]: dc }} />
                   {z.showWatermark && (
-                    <div className="hs-rail-watermark" style={{ left: z.boundaryX, top: layout.markY - 18, fontSize: z.watermarkPx, ['--dc' as any]: dc }}>
+                    <div className="hs-rail-watermark" style={{ top: z.boundaryY, left: layout.markX - 18, fontSize: z.watermarkPx, ['--dc' as any]: dc }}>
                       {LEVEL_LABEL[z.level]}
                     </div>
                   )}
-                  {z.showTick && <div className="hs-rail-tick" style={{ left: z.boundaryX, top: layout.markY - 11 }} />}
+                  {z.showTick && <div className="hs-rail-tick" style={{ top: z.boundaryY, left: layout.markX - 11 }} />}
                 </div>
               );
             })}
@@ -495,7 +495,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                   <span className="hs-panel-close">collapse ▴</span>
                 </button>
                 {lead && (
-                  <button className={`hs-bridge${lead.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={lead.id} onClick={() => openConcept(lead.id)}>
+                  <button className={`hs-bridge${lead.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={lead.id} style={{ animationDelay: '.08s' }} onClick={() => openConcept(lead.id)}>
                     {lead.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
                     <div className="hs-bridge-meta"><span className="hs-order-lead">{circled(1)} read first</span><span>Lead Concept</span></div>
                     <div className="hs-bridge-title">{lead.title}</div>
@@ -508,7 +508,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                     {[leftCol, rightCol].map((col, ci) => (
                       <div key={ci} className="hs-col">
                         {col.map((c, j) => (
-                          <button key={c.id} className={`hs-scard${ci === 1 ? ' hs-scard-right' : ''}${c.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={c.id} onClick={() => openConcept(c.id)}>
+                          <button key={c.id} className={`hs-scard${ci === 1 ? ' hs-scard-right' : ''}${c.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={c.id} style={{ animationDelay: `${Math.min(0.16 + (j * 2 + ci) * 0.045, 0.6)}s` }} onClick={() => openConcept(c.id)}>
                             {c.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
                             <span className="hs-scard-hint">open ↗</span>
                             <span className="hs-order-num">{circled(ci === 0 ? j * 2 + 2 : j * 2 + 3)}</span>
@@ -628,47 +628,70 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-jetbrains,monospace);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .hs-rail-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 7px 1px var(--dc);display:inline-block}
         /* The frame holds the fixed comet layer; only .hs-rail-scroll inside it moves. */
-        .hs-rail-frame{position:relative;margin-top:8px;isolation:isolate}
-        .hs-rail-scroll{position:relative;z-index:1;overflow-x:auto;overflow-y:visible;padding:112px 4px 10px;
+        .hs-rail-frame{position:relative;margin:8px auto 0;max-width:520px;isolation:isolate}
+        .hs-rail-scroll{position:relative;z-index:1;overflow-y:auto;overflow-x:hidden;padding:10px 10px 10px 112px;
+          max-height:min(62vh,720px);
           scrollbar-width:none;-ms-overflow-style:none;
-          -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
-          -webkit-mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
+          -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
+          -webkit-mask-image:linear-gradient(180deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(180deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
         .hs-rail-scroll::-webkit-scrollbar{display:none;width:0;height:0}
         /* translateZ promotes the scrolling content to its own layer so the browser
            can move it without repainting — without this, mobile scroll repaints the
            whole rail every frame and the absolutely-placed zones visibly shimmer. */
-        .hs-rail-inner{position:relative;display:inline-flex;min-width:100%;transform:translateZ(0);backface-visibility:hidden}
+        .hs-rail-inner{position:relative;display:flex;flex-direction:column;min-height:100%;transform:translateZ(0);backface-visibility:hidden}
         .hs-rail-sparks{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-        .hs-rail-track{position:absolute;left:0;right:0;height:1px;background:var(--hs-border,rgba(255,255,255,.09));z-index:1}
-        /* Horizontal fade uses fixed px insets and the vertical falloff lives in
-           the mask, so the wash reads identically on a 200px zone and a 4000px
+        .hs-rail-track{position:absolute;top:0;bottom:0;width:1px;background:var(--hs-border,rgba(255,255,255,.09));z-index:1}
+        /* The along-rail fade uses fixed px insets and the cross-rail falloff lives
+           in the mask, so the wash reads identically on a 200px zone and a 4000px
            one — a percentage-based radial gradient concentrated all its color in
-           the middle and left the visible edges of wide zones looking empty. */
-        .hs-rail-zone{position:absolute;height:190px;z-index:1;pointer-events:none;
-          background:linear-gradient(90deg,transparent 0,color-mix(in srgb, var(--dc) 17%, transparent) 70px,color-mix(in srgb, var(--dc) 17%, transparent) calc(100% - 70px),transparent 100%);
-          -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%);
-          mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 52%,transparent 100%)}
+           the middle and left the visible edges of long zones looking empty. */
+        .hs-rail-zone{position:absolute;width:190px;z-index:1;pointer-events:none;
+          background:linear-gradient(180deg,transparent 0,color-mix(in srgb, var(--dc) 17%, transparent) 70px,color-mix(in srgb, var(--dc) 17%, transparent) calc(100% - 70px),transparent 100%);
+          -webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%,#000 52%,transparent 100%);
+          mask-image:linear-gradient(to right,transparent 0,#000 30%,#000 52%,transparent 100%)}
         /* The glow was an animated box-shadow, which is not compositor-accelerated:
            it forced a full repaint every frame on a bar that can be thousands of px
-           wide. Now the shadow is painted once and only a sibling layer's opacity
+           long. Now the shadow is painted once and only a sibling layer's opacity
            animates, which runs entirely on the compositor. */
-        .hs-rail-seg{position:absolute;height:3px;border-radius:2px;z-index:1;background:var(--dc);
+        .hs-rail-seg{position:absolute;width:3px;border-radius:2px;z-index:1;background:var(--dc);
           box-shadow:0 0 10px 1px color-mix(in srgb, var(--dc) 42%, transparent)}
-        .hs-rail-seg::after{content:'';position:absolute;inset:-5px -1px;border-radius:6px;background:var(--dc);
+        .hs-rail-seg::after{content:'';position:absolute;inset:-1px -5px;border-radius:6px;background:var(--dc);
           opacity:.22;filter:blur(6px);will-change:opacity;animation:hs-rail-breathe 3.6s ease-in-out infinite}
         @media (prefers-reduced-motion:reduce){.hs-rail-seg::after{animation:none;opacity:.3}}
         @keyframes hs-rail-breathe{0%,100%{opacity:.16}50%{opacity:.46}}
-        .hs-rail-watermark{position:absolute;transform:translate(-100%,-100%);font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;color:var(--dc);opacity:.22;user-select:none;z-index:1;pointer-events:none}
-        .hs-rail-tick{position:absolute;width:1px;height:22px;background:var(--hs-ink3,#565278);opacity:.55;z-index:1}
-        .hs-rail-dots{position:relative;z-index:3;display:flex;gap:44px;padding:0 20px}
-        .hs-rail-dot{flex:0 0 168px;background:none;border:none;cursor:pointer;padding:0;display:flex;flex-direction:column;align-items:center;gap:12px;font-family:inherit;color:inherit;scroll-snap-align:center}
-        .hs-rail-mark{width:14px;height:14px;border-radius:50%;border:2px solid var(--dc);background:var(--hs-bg,#03020a);transition:transform .25s cubic-bezier(.16,1,.3,1),background .2s;position:relative;z-index:2}
-        .hs-rail-dot.active .hs-rail-mark{background:var(--dc);transform:scale(1.3)}
-        .hs-rail-name{font-family:var(--font-newsreader,serif);font-style:italic;font-size:14px;color:var(--hs-ink2,#b4acd0);text-align:center;line-height:1.28;transition:color .15s}
+        /* Rotated a quarter turn so the word runs along the rail and still ends at
+           its zone boundary, exactly as it did when the rail was horizontal. */
+        .hs-rail-watermark{position:absolute;transform-origin:0 0;transform:rotate(90deg) translate(-100%,0);font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1;white-space:nowrap;padding-right:16px;color:var(--dc);opacity:.22;user-select:none;z-index:1;pointer-events:none}
+        .hs-rail-tick{position:absolute;height:1px;width:22px;background:var(--hs-ink3,#565278);opacity:.55;z-index:1}
+        .hs-rail-dots{position:relative;z-index:3;display:flex;flex-direction:column;gap:64px;padding:20px 0}
+        .hs-rail-dot{flex:0 0 auto;min-height:60px;width:200px;background:none;border:none;cursor:pointer;padding:0;
+          display:grid;grid-template-columns:14px 1fr;column-gap:12px;align-items:center;justify-items:start;
+          text-align:left;font-family:inherit;color:inherit;scroll-snap-align:center}
+        .hs-rail-mark{grid-row:1 / 3;align-self:center;width:14px;height:14px;border-radius:50%;border:2px solid var(--dc);background:var(--hs-bg,#03020a);transition:transform .25s cubic-bezier(.16,1,.3,1),background .2s,box-shadow .25s;position:relative;z-index:2}
+        .hs-rail-mark::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--dc);opacity:0;transform:scale(.7);pointer-events:none}
+        .hs-rail-dot.active .hs-rail-mark{background:var(--dc);transform:scale(1.3);box-shadow:0 0 12px 2px color-mix(in srgb,var(--dc) 45%,transparent)}
+        .hs-rail-dot.active .hs-rail-mark::after{animation:hs-dot-ripple .62s cubic-bezier(.16,1,.3,1) forwards}
+        @keyframes hs-dot-ripple{0%{opacity:.85;transform:scale(.7)}100%{opacity:0;transform:scale(2.4)}}
+        .hs-rail-name{grid-column:2;grid-row:1;font-family:var(--font-newsreader,serif);font-style:italic;font-size:14px;color:var(--hs-ink2,#b4acd0);text-align:left;line-height:1.28;transition:color .15s}
         .hs-rail-dot.active .hs-rail-name{color:var(--hs-ink,#f0eeff)}
-        .hs-rail-count{font-family:var(--font-jetbrains,monospace);font-size:9px;color:var(--hs-ink3,#565278)}
+        .hs-rail-count{grid-column:2;grid-row:2;font-family:var(--font-jetbrains,monospace);font-size:9px;color:var(--hs-ink3,#565278)}
+        @media(max-width:680px){
+          .hs-rail-scroll{padding-left:92px;max-height:min(58vh,560px)}
+          .hs-rail-dot{width:auto;min-height:52px}
+          .hs-rail-dots{gap:52px}
+        }
         .hs-panels{margin-top:32px;display:flex;flex-direction:column;gap:24px}
-        .hs-panel{position:relative}
+        /* Panels mount only while their rail dot is open, so these run once on
+           expand: the shell settles first, then its cards fade up in sequence. */
+        .hs-panel{position:relative;animation:hs-panel-in .42s cubic-bezier(.16,1,.3,1) both}
+        @keyframes hs-panel-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+        .hs-panel .hs-bridge,.hs-panel .hs-scard{animation:hs-card-in .5s cubic-bezier(.16,1,.3,1) both}
+        @keyframes hs-card-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+        @media (prefers-reduced-motion:reduce){
+          .hs-panel,.hs-panel .hs-bridge,.hs-panel .hs-scard{animation:hs-fade-in .2s ease both}
+          .hs-rail-dot.active .hs-rail-mark::after{animation:none}
+        }
+        @keyframes hs-fade-in{from{opacity:0}to{opacity:1}}
         .hs-panel-head{display:flex;align-items:center;gap:10px;width:100%;padding:14px 20px;background:var(--hs-card2,rgba(9,7,18,.88));border:1px solid var(--hs-border,rgba(255,255,255,.07));border-bottom:none;cursor:pointer;color:inherit;text-align:left}
         .hs-panel-name{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(16px,2.2vw,22px);color:var(--domain-color,#ef5a6f)}
         .hs-panel-badge{font-family:var(--font-jetbrains,monospace);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.8}
