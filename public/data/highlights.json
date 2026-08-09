@@ -5432,12 +5432,12 @@
       0,
       0,
       0,
-      0,
-      160,
-      0,
+      154,
+      6,
       3,
-      5,
-      13
+      0,
+      18,
+      0
     ],
     "highlights": [
       {
@@ -20501,8 +20501,8 @@
       0,
       0,
       0,
-      0,
       95,
+      0,
       0,
       0,
       0,
@@ -42589,6 +42589,112 @@
     ]
   },
   {
+    "id": "61910244",
+    "title": "The Big Book of Mental Models",
+    "author": "Cristian Mihai",
+    "cover": "https://m.media-amazon.com/images/I/61kzTj9AyCL._SL2000_.jpg",
+    "numHighlights": 11,
+    "lastHighlightedAt": "2026-08-08",
+    "kind": "unclassified",
+    "domain": null,
+    "genre": null,
+    "tag": "Unclassified",
+    "color": "#9aa0a6",
+    "activity": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      10,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "highlights": [
+      {
+        "id": "1032317081",
+        "text": "The result is an industry where talent is common and thriving is rare. Where brilliant people make amateur decisions about their professional lives. Where gut feeling substitutes for strategy, and pattern matching passes for wisdom.",
+        "note": "",
+        "location": 176,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317082",
+        "text": "None of that matters for your purposes. What matters: these frameworks work. They help people make better decisions more consistently across a wider range of situations than intuition alone permits. The evidence for this is substantial and growing. The people who thrive in creative fields disproportionately use systematic thinking tools, whether they call them mental models or not, whether they acquired them deliberately or stumbled into them by accident.",
+        "note": "",
+        "location": 219,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317083",
+        "text": "First Principles Thinking is reasoning from foundational truths instead of reasoning from analogy. You strip away assumptions, inherited wisdom, and conventional methods until you reach bedrock facts. Then you build back up, constructing solutions that fit the actual problem rather than copying what came before.",
+        "note": "",
+        "location": 239,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317084",
+        "text": "For creatives, this matters because borrowed methods produce borrowed results. A photographer mimics Avedon's style. A writer imitates Hemingway's cadence. A designer replicates Apple's minimalism. The copies multiply until the original purpose vanishes beneath layers of aesthetic convention.",
+        "note": "",
+        "location": 243,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317085",
+        "text": "Identify what remains. After verification, you're left with genuine constraints. Physics. Human perception. Available resources. Time. These are your first principles, your foundation truths. A story needs to create and resolve tension. A visual composition needs hierarchy. An audience has limited attention. These don't change.",
+        "note": "",
+        "location": 256,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317086",
+        "text": "Study adjacent fields for their first principles. A chef's principles about flavor combination can transform how you structure narrative tension. An architect's principles about spatial flow can change how you pace a film. The principles transfer; the methods don't. Write your assumptions in permanent marker on paper. Physical presence makes them harder to ignore when you're testing them. Cross them out violently when they fail verification. The visual record of elimination matters. Create a \"necessary elements\" list for your medium. What can you subtract before the work stops functioning? That minimum set contains your actual principles. Everything else is decoration or convention. Test your first principles against extreme constraints. What if you had one-tenth the budget? What if you had ten times the audience? Principles stay stable across contexts. Methods crumble.",
+        "note": "",
+        "location": 264,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317087",
+        "text": "First Principles Thinking gives creative work its only sustainable edge: structural innovation. Surface innovation ages instantly. A new visual style gets copied in months. A fresh narrative voice becomes a trend in a year. Structural innovation resists replication because most people never question deep enough to understand what you actually did.",
+        "note": "",
+        "location": 281,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317088",
+        "text": "First Principles Thinking is slower than copying. Harder than following conventions. Riskier because you're building without proof your foundation will hold. It is simply the only method that lets you solve problems nobody has solved before.",
+        "note": "",
+        "location": 295,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317089",
+        "text": "First-order thinking looks like this: Problem appears. Fix problem. Appease the room. Move on. Cast the tall blonde. Keep your job. Make a forgettable film.",
+        "note": "",
+        "location": 310,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1032317090",
+        "text": "Second-Order Thinking traces the chain reaction your decisions trigger. You make a choice. That choice creates a consequence. That consequence creates another. Most people stop at consequence one. They optimize for immediate results and wonder why everything falls apart three moves later.",
+        "note": "",
+        "location": 319,
+        "at": "2026-07-05T04:56:00Z"
+      },
+      {
+        "id": "1042366825",
+        "text": "Your brain evolved to move forward. Hunt the prey. Reach the destination. Achieve the goal. This wiring serves survival. It fails creative work. Forward momentum blinds you to structural flaws. You build on unstable foundations because you're already committed to the direction. Inversion shows you the cliff before you walk off it.",
+        "note": "",
+        "location": 394,
+        "at": "2026-08-08T04:56:00Z"
+      }
+    ]
+  },
+  {
     "id": "53515104",
     "title": "Sangharakshita Complete Works",
     "author": "Sangharakshita",
@@ -43327,105 +43433,6 @@
         "note": "",
         "location": 117,
         "at": "2022-03-05T04:56:00Z"
-      }
-    ]
-  },
-  {
-    "id": "61910244",
-    "title": "The Big Book of Mental Models",
-    "author": "Cristian Mihai",
-    "cover": "https://m.media-amazon.com/images/I/61kzTj9AyCL._SL2000_.jpg",
-    "numHighlights": 10,
-    "lastHighlightedAt": "2026-07-05",
-    "kind": "unclassified",
-    "domain": null,
-    "genre": null,
-    "tag": "Unclassified",
-    "color": "#9aa0a6",
-    "activity": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      10,
-      0,
-      0,
-      0,
-      0
-    ],
-    "highlights": [
-      {
-        "id": "1032317081",
-        "text": "The result is an industry where talent is common and thriving is rare. Where brilliant people make amateur decisions about their professional lives. Where gut feeling substitutes for strategy, and pattern matching passes for wisdom.",
-        "note": "",
-        "location": 176,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317082",
-        "text": "None of that matters for your purposes. What matters: these frameworks work. They help people make better decisions more consistently across a wider range of situations than intuition alone permits. The evidence for this is substantial and growing. The people who thrive in creative fields disproportionately use systematic thinking tools, whether they call them mental models or not, whether they acquired them deliberately or stumbled into them by accident.",
-        "note": "",
-        "location": 219,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317083",
-        "text": "First Principles Thinking is reasoning from foundational truths instead of reasoning from analogy. You strip away assumptions, inherited wisdom, and conventional methods until you reach bedrock facts. Then you build back up, constructing solutions that fit the actual problem rather than copying what came before.",
-        "note": "",
-        "location": 239,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317084",
-        "text": "For creatives, this matters because borrowed methods produce borrowed results. A photographer mimics Avedon's style. A writer imitates Hemingway's cadence. A designer replicates Apple's minimalism. The copies multiply until the original purpose vanishes beneath layers of aesthetic convention.",
-        "note": "",
-        "location": 243,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317085",
-        "text": "Identify what remains. After verification, you're left with genuine constraints. Physics. Human perception. Available resources. Time. These are your first principles, your foundation truths. A story needs to create and resolve tension. A visual composition needs hierarchy. An audience has limited attention. These don't change.",
-        "note": "",
-        "location": 256,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317086",
-        "text": "Study adjacent fields for their first principles. A chef's principles about flavor combination can transform how you structure narrative tension. An architect's principles about spatial flow can change how you pace a film. The principles transfer; the methods don't. Write your assumptions in permanent marker on paper. Physical presence makes them harder to ignore when you're testing them. Cross them out violently when they fail verification. The visual record of elimination matters. Create a \"necessary elements\" list for your medium. What can you subtract before the work stops functioning? That minimum set contains your actual principles. Everything else is decoration or convention. Test your first principles against extreme constraints. What if you had one-tenth the budget? What if you had ten times the audience? Principles stay stable across contexts. Methods crumble.",
-        "note": "",
-        "location": 264,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317087",
-        "text": "First Principles Thinking gives creative work its only sustainable edge: structural innovation. Surface innovation ages instantly. A new visual style gets copied in months. A fresh narrative voice becomes a trend in a year. Structural innovation resists replication because most people never question deep enough to understand what you actually did.",
-        "note": "",
-        "location": 281,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317088",
-        "text": "First Principles Thinking is slower than copying. Harder than following conventions. Riskier because you're building without proof your foundation will hold. It is simply the only method that lets you solve problems nobody has solved before.",
-        "note": "",
-        "location": 295,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317089",
-        "text": "First-order thinking looks like this: Problem appears. Fix problem. Appease the room. Move on. Cast the tall blonde. Keep your job. Make a forgettable film.",
-        "note": "",
-        "location": 310,
-        "at": "2026-07-05T04:56:00Z"
-      },
-      {
-        "id": "1032317090",
-        "text": "Second-Order Thinking traces the chain reaction your decisions trigger. You make a choice. That choice creates a consequence. That consequence creates another. Most people stop at consequence one. They optimize for immediate results and wonder why everything falls apart three moves later.",
-        "note": "",
-        "location": 319,
-        "at": "2026-07-05T04:56:00Z"
       }
     ]
   },
