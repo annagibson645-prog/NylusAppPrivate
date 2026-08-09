@@ -112,8 +112,14 @@ function PaletteDot({ name, active, color, onClick }: { name: PaletteKey; active
    tinted with the hub's own domain color rather than the old fixed gold/rose
    embers. Two presets share the code:
 
-     page — sized to the viewport, sparse and long-tailed, the ambient layer
-     rail — sized to its parent box, dense and short-tailed, behind the lanes
+     page — sized to the viewport, the ambient layer over empty background
+     rail — sized to its parent box, deliberately sparse and faint because it
+            sits behind the lanes and must not compete with their content
+
+   Comets travel in a straight line. An earlier version added a sinusoidal x
+   wobble, which combined with a round head and a trailing tail to read as
+   swimming rather than falling — the wiggle is the whole tell, so there is
+   none. Lean comes only from a comet's own constant sideways drift.
 
    The rail canvas deliberately measures its PARENT and not the scrolling
    content: a canvas as tall as a long rail is a multi-megabyte texture the
@@ -123,11 +129,11 @@ function PaletteDot({ name, active, color, onClick }: { name: PaletteKey; active
 type CometVariant = 'page' | 'rail';
 const COMET_PRESETS: Record<CometVariant, {
   perPx: number; min: number; max: number;
-  speed: number; drift: number; wobble: number;
+  speed: number; drift: number;
   rMin: number; rVar: number; tailMin: number; tailVar: number;
 }> = {
-  page: { perPx: 34, min: 22, max: 70,  speed: 0.00055, drift: 0.00028, wobble: 0.00012, rMin: 0.5, rVar: 1.4, tailMin: 34, tailVar: 62 },
-  rail: { perPx: 9,  min: 40, max: 220, speed: 0.0009,  drift: 0.0004,  wobble: 0.0002,  rMin: 0.4, rVar: 1.4, tailMin: 14, tailVar: 26 },
+  page: { perPx: 40, min: 18, max: 52, speed: 0.0022, drift: 0.00035, rMin: 0.45, rVar: 1.15, tailMin: 60, tailVar: 120 },
+  rail: { perPx: 30, min: 12, max: 46, speed: 0.0032, drift: 0.00042, rMin: 0.3,  rVar: 0.85, tailMin: 26, tailVar: 54 },
 };
 
 type Comet = { x: number; vy: number; vx: number; r: number; tail: number; life: number; maxLife: number; bright: boolean };
@@ -148,15 +154,22 @@ function CometField({ variant, colorRgb, intensity, className, style }: {
     let comets: Comet[] = [];
     let w = 0, h = 0;
 
-    const spawn = (): Comet => ({
-      x: Math.random(),
-      vy: (0.24 + Math.random() * 0.5) * cfg.speed,
-      vx: (Math.random() - 0.5) * cfg.drift,
-      r: Math.random() * cfg.rVar + cfg.rMin,
-      tail: cfg.tailMin + Math.random() * cfg.tailVar,
-      life: Math.random(), maxLife: 0.62 + Math.random() * 0.35,
-      bright: Math.random() < 0.55,
-    });
+    /* The slow end of the speed range is well off zero: a comet that crawls
+       reads as drifting debris, not as something falling. Tail length scales
+       with speed so the faster ones streak further, which is most of what
+       sells the motion. */
+    const spawn = (): Comet => {
+      const rate = 0.55 + Math.random() * 0.75;
+      return {
+        x: Math.random(),
+        vy: rate * cfg.speed,
+        vx: (Math.random() - 0.5) * cfg.drift,
+        r: Math.random() * cfg.rVar + cfg.rMin,
+        tail: (cfg.tailMin + Math.random() * cfg.tailVar) * rate,
+        life: Math.random(), maxLife: 0.62 + Math.random() * 0.35,
+        bright: Math.random() < 0.55,
+      };
+    };
 
     const size = () => {
       const nw = variant === 'page' ? window.innerWidth : Math.round(parent!.getBoundingClientRect().width);
@@ -187,7 +200,7 @@ function CometField({ variant, colorRgb, intensity, className, style }: {
       ctx.clearRect(0, 0, w, h);
       comets.forEach(c => {
         c.life += c.vy;
-        c.x += c.vx + Math.sin(c.life * 20) * cfg.wobble;
+        c.x += c.vx;
         if (c.life > c.maxLife) { const n = spawn(); n.life = 0; Object.assign(c, n); }
         const t = c.life / c.maxLife;
         /* Fade in over the first tenth of the arc and out over the last fifth,
@@ -203,8 +216,12 @@ function CometField({ variant, colorRgb, intensity, className, style }: {
         const ex = px - (c.vx / c.vy) * c.tail;
         const ey = py + c.tail;
 
+        /* Most of the alpha is spent in the first fifth of the streak, so the
+           comet reads as a bright leading edge dissolving behind it rather than
+           an evenly-lit line with a blob on the end. */
         const grad = ctx.createLinearGradient(px, py, ex, ey);
         grad.addColorStop(0, `rgba(${colorRgb},${op})`);
+        grad.addColorStop(0.18, `rgba(${colorRgb},${op * 0.55})`);
         grad.addColorStop(1, `rgba(${colorRgb},0)`);
         ctx.strokeStyle = grad;
         ctx.lineWidth = c.r * 1.5;
@@ -214,9 +231,11 @@ function CometField({ variant, colorRgb, intensity, className, style }: {
         ctx.lineTo(ex, ey);
         ctx.stroke();
 
+        /* Head kept smaller than the streak is wide — a full-radius disc on the
+           front of a tapering tail is exactly the silhouette to avoid. */
         ctx.beginPath();
-        ctx.arc(px, py, c.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${colorRgb},${Math.min(1, op * 1.6)})`;
+        ctx.arc(px, py, c.r * 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${colorRgb},${Math.min(1, op * 1.25)})`;
         ctx.fill();
       });
       if (!reduceMotion) rafId = requestAnimationFrame(draw);
@@ -423,7 +442,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
       <CometField
         variant="page"
         colorRgb={cometRgb}
-        intensity={P.dark ? 0.34 : 0.30}
+        intensity={P.dark ? 0.3 : 0.26}
         style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }}
       />
       <div className="hs-stripe" />
@@ -488,7 +507,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
             sections top to bottom. The comet canvas sits in the frame, outside
             the scroller, so it stays fixed while the lanes scroll under it. */}
         <div className="hs-rail-frame">
-          <CometField variant="rail" colorRgb={cometRgb} intensity={P.dark ? 0.42 : 0.34} className="hs-rail-sparks" />
+          <CometField variant="rail" colorRgb={cometRgb} intensity={P.dark ? 0.2 : 0.17} className="hs-rail-sparks" />
           <div className="hs-rail-scroll" ref={railScrollRef}>
           <div className="hs-rail-inner" style={{ ['--lanes' as any]: lanes.length }}>
             {lanes.map(lane => {
@@ -718,7 +737,11 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
            frame and the absolutely-placed lines visibly shimmer. */
         .hs-rail-inner{position:relative;display:grid;grid-template-columns:repeat(var(--lanes,3),minmax(0,1fr));gap:20px;
           align-items:start;min-height:100%;transform:translateZ(0);backface-visibility:hidden}
-        .hs-rail-sparks{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        /* Held off the lane headers and the bottom edge, so the band the eye
+           actually reads stays clear of moving pixels. */
+        .hs-rail-sparks{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;
+          -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22%,#000 84%,transparent 100%);
+          mask-image:linear-gradient(180deg,transparent 0,#000 22%,#000 84%,transparent 100%)}
         /* Each lane is its own positioning context: its line, wash, and dots are
            measured and placed against the lane, not the rail as a whole. */
         .hs-rail-lane{padding-left:14px}
