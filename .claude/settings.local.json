@@ -41,7 +41,21 @@
       "Bash(git commit -m '@ *)",
       "Bash(npx next *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3100/hub/archetypal-psychology-hub)",
-      "Bash(curl -s http://localhost:3100/hub/archetypal-psychology-hub)"
+      "Bash(curl -s http://localhost:3100/hub/archetypal-psychology-hub)",
+      "Bash(git count-objects *)",
+      "Bash(git ls-tree *)",
+      "Bash(sort -k4 -n -r)",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -T git@github.com)",
+      "Bash(git --version)",
+      "Bash(git config *)",
+      "Bash(git remote *)",
+      "Bash(node --check sync-once.mjs)",
+      "Bash(node -e \"const t=Date.now\\(\\);Atomics.wait\\(new Int32Array\\(new SharedArrayBuffer\\(4\\)\\),0,0,1000\\);console.log\\('sleep works:',Date.now\\(\\)-t,'ms'\\)\")",
+      "Bash(awk -F/ '{print $1}')",
+      "Bash(node -e \"const d=require\\('./public/data/domain-eastern-spirituality.json'\\);console.log\\('top-level keys:',Object.keys\\(d\\)\\);for\\(const k of Object.keys\\(d\\)\\){const s=JSON.stringify\\(d[k]\\).length;console.log\\(' ',k,\\(s/1048576\\).toFixed\\(1\\)+'MB',Array.isArray\\(d[k]\\)?d[k].length+' items':''\\)}\")",
+      "Bash(sort -k5 -n -r)",
+      "Bash(node -e \"const i=require\\('./public/data/domain-index-eastern-spirituality.json'\\);console.log\\('index items:',Array.isArray\\(i\\)?i.length:Object.keys\\(i\\)\\);console.log\\('sample:',JSON.stringify\\(Array.isArray\\(i\\)?i[0]:i\\).slice\\(0,500\\)\\)\")",
+      "Bash(awk '{s+=$1} END {print s/1048576 \" MB of markdown\"}')"
     ]
   }
 }
