@@ -55,7 +55,9 @@
       "Bash(node -e \"const d=require\\('./public/data/domain-eastern-spirituality.json'\\);console.log\\('top-level keys:',Object.keys\\(d\\)\\);for\\(const k of Object.keys\\(d\\)\\){const s=JSON.stringify\\(d[k]\\).length;console.log\\(' ',k,\\(s/1048576\\).toFixed\\(1\\)+'MB',Array.isArray\\(d[k]\\)?d[k].length+' items':''\\)}\")",
       "Bash(sort -k5 -n -r)",
       "Bash(node -e \"const i=require\\('./public/data/domain-index-eastern-spirituality.json'\\);console.log\\('index items:',Array.isArray\\(i\\)?i.length:Object.keys\\(i\\)\\);console.log\\('sample:',JSON.stringify\\(Array.isArray\\(i\\)?i[0]:i\\).slice\\(0,500\\)\\)\")",
-      "Bash(awk '{s+=$1} END {print s/1048576 \" MB of markdown\"}')"
+      "Bash(awk '{s+=$1} END {print s/1048576 \" MB of markdown\"}')",
+      "Bash(git rm *)",
+      "Bash(tee /dev/stderr)"
     ]
   }
 }

@@ -3,7 +3,7 @@ import path from "path";
 import NavG from "@/components/NavG";
 import CraftLedger, { type CraftNode } from "@/components/CraftLedger";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 function loadJSON<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));

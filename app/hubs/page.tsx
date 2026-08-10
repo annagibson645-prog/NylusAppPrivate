@@ -3,7 +3,7 @@ import path from "path";
 import { Suspense } from "react";
 import HubsCompassRose from "@/components/HubsCompassRose";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 interface HubRaw {
   id: string;

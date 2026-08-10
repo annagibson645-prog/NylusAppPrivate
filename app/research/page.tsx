@@ -3,7 +3,7 @@ import path from "path";
 import NavG from "@/components/NavG";
 import ResearchLoom from "@/components/ResearchLoom";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 function loadJSON<T>(file: string): T {
   return JSON.parse(
