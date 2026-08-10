@@ -36,7 +36,12 @@
       "WebSearch",
       "Bash(ls \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\NylusS\\\\LAB\\\\Sparks\" 2>&1 | head -20)",
       "Bash(rm \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\NylusS\\\\The Platform\\\\Essays\\\\the-manual-that-couldnt-read-itself.md\")",
-      "Bash(rm \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\NylusS\\\\The Platform\\\\Essays\\\\the-empire-that-taught-its-conquerors-to-win.md\")"
+      "Bash(rm \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\NylusS\\\\The Platform\\\\Essays\\\\the-empire-that-taught-its-conquerors-to-win.md\")",
+      "Bash(node -e \"const d=require\\('./public/data/graph.json'\\);const h=\\(d.nodes||d\\).filter\\(n=>n.type==='hub'\\);console.log\\(h.slice\\(0,8\\).map\\(n=>n.id+' | '+\\(n.sections?n.sections.length:'-'\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(git commit -m '@ *)",
+      "Bash(npx next *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3100/hub/archetypal-psychology-hub)",
+      "Bash(curl -s http://localhost:3100/hub/archetypal-psychology-hub)"
     ]
   }
 }
