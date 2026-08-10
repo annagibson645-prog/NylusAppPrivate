@@ -1,3 +1,4 @@
+import { idsOfType, loadVaultJSON } from "@/lib/vault-json";
 import { readFileSync } from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
@@ -5,10 +6,15 @@ import Link from "next/link";
 import type { VaultNode, GraphData } from "@/lib/types";
 import NavG from "@/components/NavG";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return idsOfType("collision").map((slug) => ({ slug }));
+}
 
 function loadJSON<T>(file: string): T {
-  return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
+  return loadVaultJSON<T>(file);
 }
 
 const DOMAIN_COLOR: Record<string, string> = {

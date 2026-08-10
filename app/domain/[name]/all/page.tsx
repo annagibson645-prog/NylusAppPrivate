@@ -1,4 +1,10 @@
-export const dynamic = 'force-dynamic';
+import { domainNames, loadVaultJSON } from "@/lib/vault-json";
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return domainNames().map((name) => ({ name }));
+}
 
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -7,7 +13,7 @@ import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
 
 function loadJSON<T>(file: string): T {
-  return JSON.parse(readFileSync(path.join(process.cwd(), 'public/data', file), 'utf-8'));
+  return loadVaultJSON<T>(file);
 }
 
 const DOMAIN_FULL: Record<string, string> = {

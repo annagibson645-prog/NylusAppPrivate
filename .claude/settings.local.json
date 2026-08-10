@@ -60,7 +60,9 @@
       "Bash(tee /dev/stderr)",
       "WebFetch(domain:nylus-app-private-git-main-annas-projects-e9e41947.vercel.app)",
       "Bash(rm -rf .next)",
-      "Bash(npx vercel *)"
+      "Bash(npx vercel *)",
+      "Bash(node \"C:/Users/apgib/AppData/Local/Temp/claude/C--Users-apgib-OneDrive-Desktop-nylusappprivate/9552ac7a-bcaf-4688-aaf2-ae623675c74d/scratchpad/staticify.mjs\")",
+      "Bash(node -e \"console.log\\(Object.keys\\(require\\('./.next/server/app-paths-manifest.json'\\)\\).join\\('\\\\n'\\)\\)\")"
     ]
   }
 }

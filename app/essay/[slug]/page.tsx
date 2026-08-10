@@ -1,3 +1,4 @@
+import { idsOfFile, loadVaultJSON } from "@/lib/vault-json";
 import { readFileSync } from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
@@ -6,10 +7,15 @@ import { marked } from "marked";
 import type { VaultNode } from "@/lib/types";
 import ThemeToggle from "@/components/ThemeToggle";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return idsOfFile("essays.json").map((slug) => ({ slug }));
+}
 
 function loadJSON<T>(file: string): T {
-  return JSON.parse(readFileSync(path.join(process.cwd(), "public/data", file), "utf-8"));
+  return loadVaultJSON<T>(file);
 }
 
 function formatDate(raw: string) {

@@ -1,3 +1,4 @@
+import { idsOfFile, loadVaultJSON } from "@/lib/vault-json";
 import { readFileSync } from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
@@ -5,7 +6,12 @@ import Link from "next/link";
 import { marked } from "marked";
 import NavG from "@/components/NavG";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return idsOfFile("threads.json").map((slug) => ({ slug }));
+}
 
 const DOMAIN_COLORS: Record<string, string> = {
   "eastern-spirituality": "#dc2626",
@@ -19,9 +25,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 };
 
 function loadJSON<T>(file: string): T {
-  return JSON.parse(
-    readFileSync(path.join(process.cwd(), "public/data", file), "utf-8")
-  );
+  return loadVaultJSON<T>(file);
 }
 
 function formatDate(d: string) {

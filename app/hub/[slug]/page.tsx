@@ -1,4 +1,10 @@
-export const dynamic = 'force-dynamic';
+import { idsOfFile, loadVaultJSON } from "@/lib/vault-json";
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return idsOfFile("hubs.json").map((slug) => ({ slug }));
+}
 
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -10,7 +16,7 @@ import HubSpineClient, {
 } from '@/components/HubSpineClient';
 
 function loadJSON<T>(file: string): T {
-  return JSON.parse(readFileSync(path.join(process.cwd(), 'public/data', file), 'utf-8'));
+  return loadVaultJSON<T>(file);
 }
 
 const DOMAIN_FULL: Record<string, string> = {
