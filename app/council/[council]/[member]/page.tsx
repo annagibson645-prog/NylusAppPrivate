@@ -10,6 +10,8 @@ import CouncilStars from "@/components/council/CouncilStars";
 import { getDossier, ALL_DOSSIERS } from "@/lib/council-dossiers";
 
 export const dynamic = "force-static";
+// See sibling route: unlisted params would otherwise cost a serverless function.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return ALL_DOSSIERS.map((d) => ({ council: d.councilKey, member: d.slug }));

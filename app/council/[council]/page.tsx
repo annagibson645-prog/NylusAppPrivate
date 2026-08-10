@@ -11,6 +11,9 @@ import { Emblem } from "@/components/council/CouncilEmblems";
 import CouncilStars from "@/components/council/CouncilStars";
 
 export const dynamic = "force-static";
+// Without this, unlisted params render on demand — which costs a serverless
+// function, and the Hobby plan allows only 12 across the whole deployment.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return COUNCILS.map((c) => ({ council: c.key }));

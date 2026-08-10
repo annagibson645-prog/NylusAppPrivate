@@ -59,7 +59,8 @@
       "Bash(git rm *)",
       "Bash(tee /dev/stderr)",
       "WebFetch(domain:nylus-app-private-git-main-annas-projects-e9e41947.vercel.app)",
-      "Bash(rm -rf .next)"
+      "Bash(rm -rf .next)",
+      "Bash(npx vercel *)"
     ]
   }
 }
