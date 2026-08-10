@@ -10,6 +10,8 @@ interface Props {
   backlinkedNodes: VaultNode[];
   nodeTypes: Map<string, string>;
   domainSiblings?: VaultNode[];
+  /** Next concept in this domain's reading order — bottom card + right nav. */
+  nextNode?: VaultNode;
 }
 
 function slugFromWikilink(target: string): string {
@@ -196,7 +198,7 @@ function ConceptLotus({ color }: { color: string }) {
   );
 }
 
-export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSiblings = [] }: Props) {
+export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSiblings = [], nextNode }: Props) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -532,6 +534,18 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
               </div>
             )}
           </div>
+
+          {/* Next in section — end of the read */}
+          {nextNode && (
+            <Link href={`/concept/${nextNode.id}`} className="void-next">
+              <div className="void-next-label">next in {domainLabel}</div>
+              <div className="void-next-title">{nextNode.title}</div>
+              {nextNode.excerpt && (
+                <div className="void-next-excerpt">{nextNode.excerpt}</div>
+              )}
+              <span className="void-next-arrow" aria-hidden="true">→</span>
+            </Link>
+          )}
         </div>
 
         {/* ── Right nav ─────────────────────────────────────────────── */}
@@ -551,6 +565,17 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
           >
             obsidian ↗
           </a>
+
+          {nextNode && (
+            <>
+              <div className="vrn-sep" />
+              <span className="vrn-section-label">next</span>
+              <Link href={`/concept/${nextNode.id}`} className="vrn-next" title={nextNode.title}>
+                <span className="vrn-next-title">{nextNode.title}</span>
+                <span className="vrn-next-arrow" aria-hidden="true">→</span>
+              </Link>
+            </>
+          )}
 
           {domainSiblings.length > 0 && (
             <>

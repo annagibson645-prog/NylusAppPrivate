@@ -31,10 +31,31 @@ export default async function ConceptPage({ params }: { params: Promise<{ slug: 
   const nodeTypes = new Map(nodes.map((n) => [n.id, n.type]));
   const backlinkedNodes = node.backlinks.flatMap((id) => nodeMap.has(id) ? [nodeMap.get(id)!] : []);
 
-  const domainSiblings = nodes
-    .filter(n => n.domain === node.domain && n.id !== slug && n.type === 'concept')
-    .sort((a, b) => (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0))
-    .slice(0, 15);
+  // Reading order for the domain ("section"): most-linked first, title as the
+  // tie-break so the sequence is stable between builds. Includes the current
+  // node so "next" is just the following entry.
+  const sectionOrder = nodes
+    .filter(n => n.domain === node.domain && n.type === 'concept')
+    .sort((a, b) =>
+      (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0) ||
+      a.title.localeCompare(b.title)
+    );
 
-  return <NodeReader node={node} backlinkedNodes={backlinkedNodes} nodeTypes={nodeTypes} domainSiblings={domainSiblings} />;
+  const here = sectionOrder.findIndex(n => n.id === slug);
+  // Wraps at the end so the last concept still points somewhere.
+  const nextNode = sectionOrder.length > 1
+    ? sectionOrder[(here + 1) % sectionOrder.length]
+    : undefined;
+
+  const domainSiblings = sectionOrder.filter(n => n.id !== slug).slice(0, 15);
+
+  return (
+    <NodeReader
+      node={node}
+      backlinkedNodes={backlinkedNodes}
+      nodeTypes={nodeTypes}
+      domainSiblings={domainSiblings}
+      nextNode={nextNode}
+    />
+  );
 }
