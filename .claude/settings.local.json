@@ -57,7 +57,9 @@
       "Bash(node -e \"const i=require\\('./public/data/domain-index-eastern-spirituality.json'\\);console.log\\('index items:',Array.isArray\\(i\\)?i.length:Object.keys\\(i\\)\\);console.log\\('sample:',JSON.stringify\\(Array.isArray\\(i\\)?i[0]:i\\).slice\\(0,500\\)\\)\")",
       "Bash(awk '{s+=$1} END {print s/1048576 \" MB of markdown\"}')",
       "Bash(git rm *)",
-      "Bash(tee /dev/stderr)"
+      "Bash(tee /dev/stderr)",
+      "WebFetch(domain:nylus-app-private-git-main-annas-projects-e9e41947.vercel.app)",
+      "Bash(rm -rf .next)"
     ]
   }
 }
