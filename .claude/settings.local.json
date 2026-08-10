@@ -62,7 +62,10 @@
       "Bash(rm -rf .next)",
       "Bash(npx vercel *)",
       "Bash(node \"C:/Users/apgib/AppData/Local/Temp/claude/C--Users-apgib-OneDrive-Desktop-nylusappprivate/9552ac7a-bcaf-4688-aaf2-ae623675c74d/scratchpad/staticify.mjs\")",
-      "Bash(node -e \"console.log\\(Object.keys\\(require\\('./.next/server/app-paths-manifest.json'\\)\\).join\\('\\\\n'\\)\\)\")"
+      "Bash(node -e \"console.log\\(Object.keys\\(require\\('./.next/server/app-paths-manifest.json'\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq *next*\")",
+      "Bash(curl -s -o /dev/null -w \"server still up: %{http_code}\\\\n\" http://localhost:3210/)",
+      "Bash(node sync-once.mjs)"
     ]
   }
 }
