@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Fraunces, Newsreader, Cormorant_Garamond } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono, Fraunces, Cormorant_Garamond } from "next/font/google";
+import localFont from "next/font/local";
 import MobileNav from "@/components/MobileNav";
 import "./globals.css";
 
@@ -22,11 +23,24 @@ const fraunces = Fraunces({
   style: ["normal", "italic"],
 });
 
-const newsreader = Newsreader({
-  subsets: ["latin"],
+// Self-hosted: the Google Fonts fetch for Newsreader intermittently fails on the
+// deploy builder, which emits @font-face rules pointing at font files that were
+// never downloaded (module-not-found at build time). Variable woff2, latin subset.
+const newsreader = localFont({
   variable: "--font-newsreader",
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
+  display: "swap",
+  src: [
+    {
+      path: "./fonts/Newsreader-latin-normal.woff2",
+      weight: "200 800",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Newsreader-latin-italic.woff2",
+      weight: "200 800",
+      style: "italic",
+    },
+  ],
 });
 
 const cormorantGaramond = Cormorant_Garamond({
