@@ -65,7 +65,8 @@
       "Bash(node -e \"console.log\\(Object.keys\\(require\\('./.next/server/app-paths-manifest.json'\\)\\).join\\('\\\\n'\\)\\)\")",
       "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq *next*\")",
       "Bash(curl -s -o /dev/null -w \"server still up: %{http_code}\\\\n\" http://localhost:3210/)",
-      "Bash(node sync-once.mjs)"
+      "Bash(node sync-once.mjs)",
+      "Bash(curl -s \"http://localhost:3100/spark/one-chapter-ahead\")"
     ]
   }
 }

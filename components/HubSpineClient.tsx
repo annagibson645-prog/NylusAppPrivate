@@ -108,7 +108,7 @@ function PaletteDot({ name, active, color, onClick }: { name: PaletteKey; active
 }
 
 /* ── CometField ─────────────────────────────────────────────────────
-   Comets drifting upward, drawn as a tapered streak with a bright head and
+   Comets falling downward, drawn as a tapered streak with a bright head and
    tinted with the hub's own domain color rather than the old fixed gold/rose
    embers. Two presets share the code:
 
@@ -210,11 +210,12 @@ function CometField({ variant, colorRgb, intensity, className, style }: {
         if (op <= 0.002) return;
 
         const px = c.x * w;
-        const py = (1 - c.life) * h;
-        /* The streak trails along the comet's own path, so drifting comets lean
-           instead of all raining straight down. */
+        /* Head descends as life accrues, and the streak is drawn BEHIND it —
+           up and against the sideways drift — so the bright end always leads
+           the fall instead of trailing it. */
+        const py = c.life * h;
         const ex = px - (c.vx / c.vy) * c.tail;
-        const ey = py + c.tail;
+        const ey = py - c.tail;
 
         /* Most of the alpha is spent in the first fifth of the streak, so the
            comet reads as a bright leading edge dissolving behind it rather than
@@ -315,15 +316,19 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
   const conceptMap = useMemo(() => new Map(ORDER.map(c => [c.id, c])), [ORDER]);
   const allKeys = useMemo(() => allSections.map(s => s.key), [allSections]);
 
-  /* All sections start collapsed. The rail behaves as an accordion: opening a
-     dot closes whichever one was open, so a click on any line always swaps the
-     concepts below instead of stacking another section onto them. */
-  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(allKeys));
-  const openOnly = useCallback((key: string | null) => {
-    setCollapsed(new Set(key === null ? allKeys : allKeys.filter(k => k !== key)));
-  }, [allKeys]);
+  /* Exactly one section is open at a time, and it takes over the rail's own
+     frame rather than stacking below it: click a dot and the lanes give way to
+     that section in place; the back arrow puts the lanes right back. Nothing
+     moves down the page, so the reading position never has to be hunted for. */
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const openOnly = useCallback((key: string | null) => setOpenKey(key), []);
   const toggleSection = useCallback((key: string) => {
-    setCollapsed(prev => new Set(prev.has(key) ? allKeys.filter(k => k !== key) : allKeys));
+    setOpenKey(prev => (prev === key ? null : key));
+  }, []);
+  /* A hub whose sections changed under us (palette/route reuse) must not keep
+     pointing at a key that no longer exists. */
+  useEffect(() => {
+    setOpenKey(prev => (prev && allKeys.includes(prev) ? prev : null));
   }, [allKeys]);
 
   /* ── Rail layout: each lane's line measured from its own dots ──────── */
@@ -373,6 +378,36 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
   }, []);
 
   const railScrollRef = useRef<HTMLDivElement>(null);
+  const railFrameRef  = useRef<HTMLDivElement>(null);
+
+  const openSection = useMemo(
+    () => allSections.find(s => s.key === openKey) ?? null,
+    [allSections, openKey],
+  );
+  const openLevelColor = openSection && openSection.level !== 'thematic'
+    ? LEVEL_COLORS[openSection.level][P.dark ? 'dark' : 'light']
+    : domainColor;
+
+  /* The frame keeps its place on screen through the swap, so the only scrolling
+     needed is when it has drifted out of the comfortable band — pulling it back
+     under the nav on every toggle would fight the reader. */
+  const didSwap = useRef(false);
+  useEffect(() => {
+    if (!didSwap.current) { didSwap.current = true; return; }
+    const el = railFrameRef.current; if (!el) return;
+    const top = el.getBoundingClientRect().top;
+    if (top < 64 || top > window.innerHeight * 0.55) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [openKey]);
+
+  /* The lanes unmount while a section holds the frame, so their measured
+     geometry has to be taken again the moment they come back. */
+  useEffect(() => {
+    if (openKey) return;
+    const id = requestAnimationFrame(() => computeLayout());
+    return () => cancelAnimationFrame(id);
+  }, [openKey, computeLayout]);
 
   const bookmarkKey = `nylus-bookmark-${path ?? title}`;
   const [bookmarkId, setBookmarkId] = useState<string | null>(null);
@@ -417,15 +452,56 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     setTimeout(() => document.querySelector(`[data-cid="${nextId}"]`)?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
   }, [activeIdx, ORDER, allSections, scrollDotIntoView, openOnly]);
 
+  /* Escape unwinds one layer at a time: the concept drawer first, then the open
+     section back to the lanes. */
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closePanel();
+      if (e.key === 'Escape') { if (activeId) closePanel(); else setOpenKey(null); }
       if (e.key === 'ArrowLeft')  navigate(-1);
       if (e.key === 'ArrowRight') navigate(1);
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  }, [closePanel, navigate]);
+  }, [activeId, closePanel, navigate]);
+
+  /* The section body, rendered into the frame the lanes just vacated. Its own
+     header is the stage head above it, so it carries cards only. */
+  const renderPanel = (sec: SpineSection) => {
+    const [lead, ...rest] = sec.concepts;
+    const leftCol  = rest.filter((_, i) => i % 2 === 0);
+    const rightCol = rest.filter((_, i) => i % 2 === 1);
+    return (
+      <div className="hs-panel">
+        {lead && (
+          <button className={`hs-bridge${lead.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={lead.id} style={{ animationDelay: '.08s' }} onClick={() => openConcept(lead.id)}>
+            {lead.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
+            <div className="hs-bridge-meta"><span className="hs-order-lead">{circled(1)} read first</span><span>Lead Concept</span></div>
+            <div className="hs-bridge-title">{lead.title}</div>
+            {lead.excerpt && <div className="hs-bridge-exc">{lead.excerpt.slice(0, 240)}{lead.excerpt.length > 240 ? '…' : ''}</div>}
+            <div className="hs-bridge-foot">{lead.sources > 0 && `${lead.sources} src · `}{lead.backlinkCount > 0 && `${lead.backlinkCount} bl · `}{lead.status && `● ${lead.status}`}</div>
+          </button>
+        )}
+        {rest.length > 0 && (
+          <div className="hs-two-col">
+            {[leftCol, rightCol].map((col, ci) => (
+              <div key={ci} className="hs-col">
+                {col.map((c, j) => (
+                  <button key={c.id} className={`hs-scard${ci === 1 ? ' hs-scard-right' : ''}${c.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={c.id} style={{ animationDelay: `${Math.min(0.16 + (j * 2 + ci) * 0.045, 0.6)}s` }} onClick={() => openConcept(c.id)}>
+                    {c.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
+                    <span className="hs-scard-hint">open ↗</span>
+                    <span className="hs-order-num">{circled(ci === 0 ? j * 2 + 2 : j * 2 + 3)}</span>
+                    <div className="hs-scard-title">{c.title}</div>
+                    {c.excerpt && <div className="hs-scard-exc">{c.excerpt.slice(0, 120)}{c.excerpt.length > 120 ? '…' : ''}</div>}
+                    <div className="hs-scard-meta">{c.sources > 0 && `${c.sources} src · `}{c.backlinkCount > 0 && `${c.backlinkCount} bl`}</div>
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const rootVars = {
     '--hs-bg': P.bg, '--hs-bg2': P.bg2, '--hs-ink': P.ink, '--hs-ink2': P.ink2,
@@ -505,8 +581,31 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         {/* One vertical, level-colored line per lane — Foundational on the far
             left, then Intermediate, then Advanced — each carrying its own
             sections top to bottom. The comet canvas sits in the frame, outside
-            the scroller, so it stays fixed while the lanes scroll under it. */}
-        <div className="hs-rail-frame">
+            the scroller, so it stays fixed while the lanes scroll under it.
+
+            Opening a section swaps the lanes out for that section IN THIS SAME
+            FRAME: the concepts land exactly where the lines were, and the back
+            arrow returns the lines. Nothing below the frame moves, so there is
+            never anything to scroll down and find. */}
+        <div className="hs-rail-frame" ref={railFrameRef}>
+          {openSection ? (
+            <div key={openSection.key} className="hs-stage" style={{ ['--dc' as any]: openLevelColor }}>
+              <div className="hs-stage-head">
+                <button className="hs-stage-back" onClick={() => setOpenKey(null)}>
+                  <span className="hs-stage-back-arr">←</span>
+                  <span>all sections</span>
+                </button>
+                <div className="hs-stage-id">
+                  <span className="hs-stage-level">{LEVEL_LABEL[openSection.level]}</span>
+                  <span className="hs-stage-name">{openSection.label}</span>
+                </div>
+                {openSection.badge && <span className="hs-stage-badge">{openSection.badge}</span>}
+                <span className="hs-stage-count">{openSection.concepts.length} concepts</span>
+              </div>
+              <div className="hs-panels">{renderPanel(openSection)}</div>
+            </div>
+          ) : (
+          <div className="hs-rail-live">
           <CometField variant="rail" colorRgb={cometRgb} intensity={P.dark ? 0.2 : 0.17} className="hs-rail-sparks" />
           <div className="hs-rail-scroll" ref={railScrollRef}>
           <div className="hs-rail-inner" style={{ ['--lanes' as any]: lanes.length }}>
@@ -527,7 +626,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                     {g && <div className="hs-rail-seg" style={{ top: g.segTop, height: g.segHeight, left: g.markX - 1.5 }} />}
                     <div className="hs-rail-dots">
                       {lane.sections.map(sec => {
-                        const isOpen = !collapsed.has(sec.key);
+                        const isOpen = openKey === sec.key;
                         return (
                           <button
                             key={sec.key}
@@ -549,50 +648,8 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
             })}
           </div>
           </div>
-        </div>
-
-        <div className="hs-panels">
-          {allSections.filter(sec => !collapsed.has(sec.key)).map(sec => {
-            const [lead, ...rest] = sec.concepts;
-            const leftCol  = rest.filter((_, i) => i % 2 === 0);
-            const rightCol = rest.filter((_, i) => i % 2 === 1);
-            return (
-              <div key={sec.key} className="hs-panel">
-                <button className="hs-panel-head" onClick={() => toggleSection(sec.key)}>
-                  <span className="hs-panel-name">{sec.label}</span>
-                  {sec.badge && <span className="hs-panel-badge" style={{ color: sec.color }}>{sec.badge}</span>}
-                  <span className="hs-panel-close">collapse ▴</span>
-                </button>
-                {lead && (
-                  <button className={`hs-bridge${lead.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={lead.id} style={{ animationDelay: '.08s' }} onClick={() => openConcept(lead.id)}>
-                    {lead.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
-                    <div className="hs-bridge-meta"><span className="hs-order-lead">{circled(1)} read first</span><span>Lead Concept</span></div>
-                    <div className="hs-bridge-title">{lead.title}</div>
-                    {lead.excerpt && <div className="hs-bridge-exc">{lead.excerpt.slice(0, 240)}{lead.excerpt.length > 240 ? '…' : ''}</div>}
-                    <div className="hs-bridge-foot">{lead.sources > 0 && `${lead.sources} src · `}{lead.backlinkCount > 0 && `${lead.backlinkCount} bl · `}{lead.status && `● ${lead.status}`}</div>
-                  </button>
-                )}
-                {rest.length > 0 && (
-                  <div className="hs-two-col">
-                    {[leftCol, rightCol].map((col, ci) => (
-                      <div key={ci} className="hs-col">
-                        {col.map((c, j) => (
-                          <button key={c.id} className={`hs-scard${ci === 1 ? ' hs-scard-right' : ''}${c.id === bookmarkId ? ' hs-bookmarked' : ''}`} data-cid={c.id} style={{ animationDelay: `${Math.min(0.16 + (j * 2 + ci) * 0.045, 0.6)}s` }} onClick={() => openConcept(c.id)}>
-                            {c.id === bookmarkId && <><div className="hs-bookmark-ring" /><div className="hs-bookmark-label">left off here</div><div className="hs-bookmark-dot" /></>}
-                            <span className="hs-scard-hint">open ↗</span>
-                            <span className="hs-order-num">{circled(ci === 0 ? j * 2 + 2 : j * 2 + 3)}</span>
-                            <div className="hs-scard-title">{c.title}</div>
-                            {c.excerpt && <div className="hs-scard-exc">{c.excerpt.slice(0, 120)}{c.excerpt.length > 120 ? '…' : ''}</div>}
-                            <div className="hs-scard-meta">{c.sources > 0 && `${c.sources} src · `}{c.backlinkCount > 0 && `${c.backlinkCount} bl`}</div>
-                          </button>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          </div>
+          )}
         </div>
 
         <div style={{ marginTop:64 }}>
@@ -670,7 +727,11 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         </div>
       </div>
 
-      {!activeC && <div className="hs-hint" aria-hidden="true">tap any concept to explore</div>}
+      {!activeC && (
+        <div className="hs-hint" aria-hidden="true">
+          {openSection ? 'tap any concept to explore · esc to go back' : 'tap a section to open it here'}
+        </div>
+      )}
 
       <style>{`
         .hs-root{min-height:100vh;background:var(--hs-bg,#03020a);color:var(--hs-ink,#f0eeff);overflow-x:hidden;position:relative}
@@ -722,8 +783,33 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-legend{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
         .hs-rail-legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-jetbrains,monospace);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .hs-rail-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 7px 1px var(--dc);display:inline-block}
-        /* The frame holds the fixed comet layer; only .hs-rail-scroll inside it moves. */
-        .hs-rail-frame{position:relative;margin:8px auto 0;max-width:1000px;isolation:isolate}
+        /* The frame is the one place the rail and an open section ever occupy:
+           whichever is showing starts at the same point on the page, so opening
+           a section is a swap in place, not a jump somewhere further down.
+           scroll-margin keeps it clear of the fixed nav when it is scrolled to. */
+        .hs-rail-frame{position:relative;margin:8px auto 0;max-width:1000px;isolation:isolate;scroll-margin-top:72px}
+        /* Both faces of the swap enter the same way — a short rise — so the
+           frame reads as one surface turning over rather than two views. */
+        .hs-rail-live,.hs-stage{position:relative;animation:hs-swap-in .42s cubic-bezier(.16,1,.3,1) both}
+        @keyframes hs-swap-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+        @media (prefers-reduced-motion:reduce){.hs-rail-live,.hs-stage{animation:hs-fade-in .2s ease both}}
+        /* Same rule as a lane head — same rhythm, same level color, so the open
+           section looks like the lane it came out of. */
+        .hs-stage-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:0 2px 12px;
+          border-bottom:1px solid color-mix(in srgb, var(--dc) 40%, transparent)}
+        .hs-stage-back{display:inline-flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;padding:6px 0;
+          font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+          color:var(--hs-ink3,#565278);transition:color .15s;flex-shrink:0}
+        .hs-stage-back:hover{color:var(--dc)}
+        .hs-stage-back-arr{font-size:13px;line-height:1;color:var(--dc);transition:transform .22s cubic-bezier(.16,1,.3,1)}
+        .hs-stage-back:hover .hs-stage-back-arr{transform:translateX(-4px)}
+        .hs-stage-id{display:flex;flex-direction:column;gap:3px;min-width:0}
+        .hs-stage-level{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--dc)}
+        .hs-stage-name{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(18px,2.6vw,26px);letter-spacing:-.02em;line-height:1.05;color:var(--hs-ink,#f0eeff)}
+        .hs-stage-badge{font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dc);opacity:.8;
+          border:1px solid color-mix(in srgb, var(--dc) 45%, transparent);padding:3px 9px}
+        .hs-stage-count{margin-left:auto;font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--hs-ink3,#565278);flex-shrink:0}
+        @media(max-width:680px){.hs-stage-count{margin-left:0}}
         .hs-rail-scroll{position:relative;z-index:1;overflow-y:auto;overflow-x:hidden;padding:10px 4px;
           max-height:min(62vh,720px);
           scrollbar-width:none;-ms-overflow-style:none;
@@ -788,7 +874,7 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           .hs-rail-scroll{max-height:min(58vh,560px)}
           .hs-rail-dots{gap:26px;padding:20px 0 16px}
         }
-        .hs-panels{margin-top:32px;display:flex;flex-direction:column;gap:24px}
+        .hs-panels{margin-top:20px;display:flex;flex-direction:column;gap:24px}
         /* Panels mount only while their rail dot is open, so these run once on
            expand: the shell settles first, then its cards fade up in sequence. */
         .hs-panel{position:relative;animation:hs-panel-in .42s cubic-bezier(.16,1,.3,1) both}
@@ -800,10 +886,6 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
           .hs-rail-dot.active .hs-rail-mark::after{animation:none}
         }
         @keyframes hs-fade-in{from{opacity:0}to{opacity:1}}
-        .hs-panel-head{display:flex;align-items:center;gap:10px;width:100%;padding:14px 20px;background:var(--hs-card2,rgba(9,7,18,.88));border:1px solid var(--hs-border,rgba(255,255,255,.07));border-bottom:none;cursor:pointer;color:inherit;text-align:left}
-        .hs-panel-name{font-family:var(--font-fraunces,serif);font-style:italic;font-weight:900;font-size:clamp(16px,2.2vw,22px);color:var(--domain-color,#ef5a6f)}
-        .hs-panel-badge{font-family:var(--font-jetbrains,monospace);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.8}
-        .hs-panel-close{margin-left:auto;font-family:var(--font-jetbrains,monospace);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--hs-ink3,#565278)}
         .hs-bridge{display:block;width:100%;padding:32px 40px;background:var(--hs-card,rgba(10,8,24,.88));border:1px solid var(--hs-border,rgba(255,255,255,.07));position:relative;z-index:3;cursor:pointer;overflow:hidden;text-align:left;color:inherit;transition:background .25s}
         .hs-bridge::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--domain-color,#ef5a6f);transform:scaleY(0);transform-origin:top;transition:transform .4s cubic-bezier(.16,1,.3,1)}
         .hs-bridge:hover{background:var(--hs-cardHov,rgba(16,12,36,.95))}
