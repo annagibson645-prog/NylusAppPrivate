@@ -13294,10 +13294,10 @@
       0,
       0,
       0,
+      30,
+      82,
+      20,
       0,
-      111,
-      18,
-      3,
       1
     ],
     "highlights": [
@@ -20486,6 +20486,700 @@
     ]
   },
   {
+    "id": "61910248",
+    "title": "Egyptian Mysteries VOl 1 Shetaut Neter",
+    "author": "Muata Ashby",
+    "cover": "https://m.media-amazon.com/images/I/71FdgMuSfjL._SL2000_.jpg",
+    "numHighlights": 95,
+    "lastHighlightedAt": "2026-08-11",
+    "kind": "domain",
+    "domain": "african-spirituality",
+    "genre": "Kemetic Spirituality",
+    "tag": "African Spirituality",
+    "color": "#34d399",
+    "activity": [
+      0,
+      0,
+      75,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      20
+    ],
+    "highlights": [
+      {
+        "id": "1032317101",
+        "text": "sense.  Most people in the world are following spiritual traditions and philosophies in ways that are leading them into ignorance, darkness, stress and strife.  Those are not humanistic traditions, traditions that are based on truth and universal spirituality. We need to rectify this. Firstly, this philosophy is for all people. Our own Kamitan scriptures state this point. Shetaut Neter (The Egyptian Mysteries)  is a universal teaching to improve life, and promote peace and prosperity for all. All people are part of the human family, spiritually and physically. Genetics has shown that all human beings, regardless of if one’s ancestry is from Africa, Asia, Europe or the Americas in more recent times, all originated from Africa. Therefore, all human beings are Africans, sharing in the legacy and heritage of Africa.",
+        "note": "",
+        "location": 222,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317102",
+        "text": "True religion (authentic spiritual movement) is a process that leads you through three steps: myth, ritual and mysticism. If one’s religion does not have these three steps, then one is not practicing true religion.  If  a religion has a myth and its followers practice ritual(s) relating to that myth, if that is the extent of  the religion, only containing dogmas and stories in which its followers must have faith, then that religion is not reaching a mystical level of oneness with all creation.",
+        "note": "",
+        "location": 261,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317103",
+        "text": "However, it must be clearly understood that in Neterian Theology there are two kinds of Mysteries, the lower and the higher. The lower Mysteries are worldly, practical branches of learning, the areas that help human beings to improve their lives and learn about the world around them. The lower mysteries offer limited insight because they only use physical, empirical means for the researches. Examples of the lower mysteries include mechanics, engineering, astronomy, literature, mathematics, physiology, etc. The higher Mysteries are the disciplines or sciences that promote insight into the nature of self and the revelation of the Mysteries of life, the Mysteries of the universe. The higher Mysteries answer questions such as “Who am I? Where did I come from? Why am I here? What is life? What or who is God?,” etc.",
+        "note": "",
+        "location": 311,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317104",
+        "text": "Mysteries. One could not study the Mysteries if one could not understand a certain level of mathematics, language, etc.; a certain level of maturity, stability and intellectual capacity are necessary to pursue higher spiritual attainment, and the lower Mysteries provide that foundation.",
+        "note": "",
+        "location": 318,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317105",
+        "text": "meaning. Stability and financial capacity gained from being proficient in the lower Mysteries allows you to think without the pressure of financial burdens, purchase the materials necessary for the practice, visit spiritual centers, confer with spiritual teachers, etc.",
+        "note": "",
+        "location": 321,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317106",
+        "text": "The current cycle of Creation began around the year 36,000 B.C.E. In the beginning there was nothing more than a watery mass, a primeval ocean, called Nun. Nun is the body of Khepri. Prior to the creation, Khepri remained in a recumbent posture. He rested on the back of the great serpent Asha-hrau (“many faces”). From that Nun the Divine Spirit arose by stimulating Asha-hrau to move and churn the ocean. Then he named himself Khepri, Creator. Khepri called out his own name and  dchn –vibrations were infused in the ocean and waves vere formed. Just as there are many waves in the ocean with many shapes and sizes, the objects of the world came into being in the form of elements, Ra (fire), Shu (air-space), Tefnut (water), Geb (earth), Nut (ether). Everything in creation emanates from the Nun or primordial ocean, and expresses in the form of elements in succeeding levels of denseness. These elements also manifest in the form of the opposites of Creation (man-woman, up-down, white-black) which appear to be exclusive and separate from each other, but which are in reality complements to each other.",
+        "note": "",
+        "location": 568,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317107",
+        "text": "Khepri congealed the Nun, his own body, into all the forms of Creation. The first spot that was congealed from the Nun is called  Benben, the first place, the Ben-Ben dot, ·, of Creation. That dot is the center point in the symbol of Khepr-Ra $. That dot is the very point at the top of the Pyramid  mr- Obelisk,   tekhnu. The pyramid-obelisk symbolizes the mound that formed from that initial spot. Khepri sat atop the hill of Creation and all solid ground took form underneath him.",
+        "note": "",
+        "location": 593,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317108",
+        "text": "The act of “Sailing” signifies the motion in creation. Motion implies that events occur in the realm of time and space relative to each other, thus, the phenomenal universe comes into existence as a mass of moving essence we call the elements. Prior to this motion, there was the primeval state of being without any form and without existence in time or space. The gods and goddesses of the boat form the court of Kheper-Ra.",
+        "note": "",
+        "location": 630,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317109",
+        "text": "As Ra, the Supreme Being governed the earth for many thousands of years. He created the world, the planets, the stars and the galaxies; he also created animals, as well as men and women. In the beginning, men and women revered the Divine, but after living for a very long time, they began to take Ra for granted. They became arrogant and vain. Ra sent his daughter, Hetheru, to punish them, but she forgot her way and became lost in the world. Then He left for his abode in heaven and gave the earthly throne to his son Shu, and daughter, Tefnut. After a long period of time, they turned over the throne to their children, Geb and Nut. After some time again, Geb and Nut gave the throne to their children, Asar and Aset, and so on in a line of succession throughout history, down to the Pharaohs of Kamit.",
+        "note": "",
+        "location": 633,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317110",
+        "text": "So, the Shetaut Neter “Mystery teachings” were originally given by the Creator, Khepri. In this capacity  he is known as Shetaut Kheperu, “hidden Creator of forms.” Lord Djehuti codified these Mystery teachings into the hieroglyphic texts, and these teachings were passed down to succeeding generations of divinities, sages and priests and priestesses throughout history.",
+        "note": "",
+        "location": 660,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317111",
+        "text": "So Lord Khepri imparted his knowledge to the divinities, and especially to his son Djehuti . Thus, Lord Khepri, the Self Created Divinity, is the founder of Shetaut Neter. The codifier was his first main disciple, Djehuti.",
+        "note": "",
+        "location": 666,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317112",
+        "text": "Thus, these Shetaut (mysteries- rituals, wisdom, philosophy) about the Neter (Supreme Being) are related in the writings of the hidden teaching. And those writings are referred to as  Medu Neter or “Divine Speech,” the writings of the god Djehuti (Ancient Egyptian god of the divine word). Medu Neter also generally refers to any Kamitan hieroglyphic texts or inscriptions. The term Medu Neter makes use of a special hieroglyph,, which means “medu” or “staff - walking stick-speech.” This means that speech is the support for the Divine, . Thus, just as the staff supports an elderly person, the hieroglyphic writing (the word) is a prop or support (staff) which sustains the Divine in the realm of time and space. That is, these Divine writings (Medu Neter) contain the wisdom which enlightens us about the Divine,  Shetaut Neter.    If Shetitu is mastered through the study of the Medu Neter then the spiritual aspirant becomes  Maakheru or true of thought, word and deed, that is, purified in body, mind and soul. The symbol medu is static while the symbol of Kheru is dynamic.",
+        "note": "",
+        "location": 699,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317113",
+        "text": "Human beings are a higher order beings, and they can attain this higher state of consciousness if they learn about the nature of the universe and elevate themselves through virtue and wisdom.",
+        "note": "",
+        "location": 741,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317114",
+        "text": "Lord Djehuti imparted the teaching he learned from Khepri to goddess Hetheru (here in the form of a cow goddess). She became lost in the world and forgot her true identity. He showed her how to discover her true Self, how to know herself and how to find her way back to heaven, to her father Ra. Here Djehuti is shown presenting to Hetheru, the healed right eye of Ra, her true essence.",
+        "note": "",
+        "location": 744,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317115",
+        "text": "Lord Khep-Ra knew that human beings needed guidance, so he sent his great grandchildren, Asar and Aset, to be teachers and role models for human beings on earth. Lord Djehuti also imparted the hidden knowledge of life to Aset and Asar,  so that they would lead people on earth in a righteous manner,  showing them the path of peace, prosperity and spiritual enlightenment. Asar and Aset established the Shetaut Neter, “Divine Mysteries,” ritual worship and Ancient Egyptian religion. When human beings become too involved in the world they forget their true nature, and so the Temple,  Het Neter {House of the Divinity {God(dess)}-Temple},was created, where the pressure of the world can be relieved, and an association with something other than the worldly perspective (i.e., with Divinity) can occur.",
+        "note": "",
+        "location": 756,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317116",
+        "text": "Ament means “hidden.” It is a specific reference to the female form of the astral plane or Netherworld known as Amenta (Amentet, Amentat) or the Duat.  Like her husband Asar, who is known as the “Lord of the Perfect Black,” Aset is the Mistress of the Netherworld (Amentet, Amentat). Thus, Aset also symbolizes the “blackness” of the vast unmanifest regions of existence (the unmanifest).",
+        "note": "",
+        "location": 1285,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317117",
+        "text": "In order to be successful, the legacy of our ancestors must be lived, and not just studied and revered. In most of the lectures that are given on Ancient Egypt, the presenters are filling you with the wonder of how great African Culture was, and all the history… don’t you long for something more than that?  How is that going to help you in your life?  You attend such a lecture for an evening and it makes you feel better, but does it really help you improve your life situation?",
+        "note": "",
+        "location": 1457,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317118",
+        "text": "It must be uncovered and cleansed continuously, so that we may continue to benefit from its glory; that is what allows us to elevate ourselves.",
+        "note": "",
+        "location": 1471,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317119",
+        "text": "The same teachings that you find in Ancient Kamit, you find generally throughout African Religion.",
+        "note": "",
+        "location": 1532,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317120",
+        "text": "The Ancient Egyptian God Set represents egoism, lower desires, chaos and negativity. Set is the Divinity from which many scholars, including myself, believe the early Jews confused and developed their concept of Satan.",
+        "note": "",
+        "location": 1573,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317121",
+        "text": "The sundisk is the conduit through which the Spirit transmits Life Force energy to the world, i.e. the Lion Power, and this force is accessed by turning towards the Divine, symbolized in the form of the sundisk.",
+        "note": "",
+        "location": 1918,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317122",
+        "text": "Mythically it represents the foreleg of the god Set which was torn out and thrown into the heavens by the god Heru during their epic battle. A similar teaching occurs in the Babylonian epic of Gilgemesh[37]\\[38] when the “foreleg of the Bull of Heaven” is ripped out and thrown at the goddess Ishtar, who was the goddess or Queen of Heaven in Mesopotamia. It symbolizes the male generative capacity and is one of the offerings of Hetep given in Chapter 36 (usually referred to as #30B) of the Pert M Heru (Egyptian Book of the Dead).",
+        "note": "",
+        "location": 2067,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317123",
+        "text": "B. Therefore, mystically, the “Northern Path” is promoted as the path to immortality and enlightenment through the attainment of absolute consciousness which transcends the perishable and ever-changing nature of creation.",
+        "note": "",
+        "location": 2151,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317124",
+        "text": "The “Southern Path” is the process of reincarnation, renewal and repeated embodiment (uhem ankh {Kamitan}), for the purpose of further spiritual evolution through self-discovery by means of human experiences.",
+        "note": "",
+        "location": 2152,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317125",
+        "text": "ur. The mystical intent is to open the mind, through mystical wisdom and disciplines, so as to render it uadjit, ,  (universal and infinite, all-encompassing, unlimited) and beyond the fluctuations of egoism, i.e. mortal consciousness.",
+        "note": "",
+        "location": 2161,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317126",
+        "text": "The opening of the mouth and eyes is a mystical teaching relating to expansion in expression (mouth) and awareness (open eyes). These factors (mouth and eyes) are the signs of the existence of consciousness or its absence.",
+        "note": "",
+        "location": 2217,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317127",
+        "text": "From the passages above we learn that the Priests and Priestesses “open” the mouth and eyes by touching them with the ritual instruments which symbolize the eternal, the absolute, i.e. the expansion of consciousness, immortality and spiritual enlightenment. Also, we learn that the adze instrument (Ursa minor) is actually also the Eye of Heru, which is the greatest offering-eucharist of the Egyptian mysteries.",
+        "note": "",
+        "location": 2218,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317128",
+        "text": "Now we will examine the hieroglyphic text definition of Shetaut Neter. “Shetaut” is the first word. It means secret or hidden or mysteries and the flag looking symbol means “Neter.” Neter means Divinity. It can mean God or Goddess.  It means Divinity in general.  “Shetaut Neter” therefore means the teaching about the secret, hidden “Supreme Being,” or “Divine Mysteries.”",
+        "note": "",
+        "location": 2437,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317129",
+        "text": "The term “Neterian” means a person who follows Shetaut Neter, and the specific term for that person who is a “follower” is Shems. Shemsu are persons (plural) who follow Shetaut Neter. They are disciples or followers. This next slide shows the specific Medu Neter scripture that gives us this wisdom of the terms:",
+        "note": "",
+        "location": 2473,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317130",
+        "text": "The Symbols in the term Shems (follower) are the second two symbols, therefore we have “Follower of Neter” …that is, the person who “walks,” that is, practices the religion of Shetaut Neter, and who studies the teachings of Shetaut Neter.",
+        "note": "",
+        "location": 2515,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317131",
+        "text": "The following term  means Shemsu Heru - Followers of Heru. This is the highest kind of title a Neterian aspirant can be given. Such a person is a true follower of the teaching, a true follower of God. Heru means “that which is most high.”",
+        "note": "",
+        "location": 2519,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317132",
+        "text": "We will now go into some of the basic philosophical principles of Shetaut Neter.  A Kamitan Proverb states: “Men and women are to become God-like through a life of virtue and cultivation of the spirit through scientific knowledge, practice, and bodily discipline.”    This might be referred to as a central purpose, a central goal of the entire process of Shetaut Neter.",
+        "note": "",
+        "location": 2534,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317133",
+        "text": "However, in the light of Yoga philosophy and through the various disciplines developed by the yogic masters over the last 12,000 years, the Supreme Divinity is to be understood in a much more universal way. We not only discover the infinite compassion and love of the Self (Supreme Divinity) but through the various practices of the Mystery System, which have been tailored for the various levels of human spiritual development and different personalities, it is also possible to partake in the glory of Divinity. This is the goal of the Neterian Mystery System.",
+        "note": "",
+        "location": 2627,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317134",
+        "text": "This is true because all individuals are essentially one with the Divine Self. Through a process of ignorance they have forgotten their true identity and have turned to negativity. Through the process of The Mystery System, you may discover your true essence, thereby unleashing the gifts and infinite power of the soul.",
+        "note": "",
+        "location": 2635,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317135",
+        "text": "This Neterian path is based on the Ancient Egyptian myths, symbols, and practices for attaining the highest spiritual evolution and does incorporate all the levels of spiritual practice.",
+        "note": "",
+        "location": 2668,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317136",
+        "text": "Happiness can be yours on the condition that you are willing to work for it by practicing the art of self-development. It does not matter what crime or what sin you have committed. The light of wisdom and the practices of purification can bring about a transformation in the consciousness of any human being.",
+        "note": "",
+        "location": 2677,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317137",
+        "text": "This science begins with your understanding and forgiveness of yourself, and then the intensive process of introspection and realization of the truth through building a life based on order, truth and justice.",
+        "note": "",
+        "location": 2681,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317138",
+        "text": "Misery in life stems from ignorance of one's true nature. Human beings are like kings or queens who wander around the countryside as beggars, not knowing their true identity. They act as beggars, treat others unkindly, indulge in hatred and anger of others; they are frustrated due to their condition and don't know what to do about it so they go on from day to day wasting their lives.",
+        "note": "",
+        "location": 2683,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317139",
+        "text": "The wonderful thing is that you are also the one who by your actions illumined by the light of wisdom in action (Maat), can change your life.",
+        "note": "",
+        "location": 2692,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317140",
+        "text": "Your task is to follow up on this book, study the teachings and begin practicing them in your life right now. Develop a relationship with your inner Higher Self and discover the strength to overcome your failings. Everyone is a child of the Divine; as such everyone is capable of supreme good according to their level of awareness of their true Self.",
+        "note": "",
+        "location": 2705,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317141",
+        "text": "Have you committed crimes? Do you feel guilt? Do you feel suffering is your lot in life? Do you feel like an unsavable sinner? What is a sinner? And can a sin be redeemed? Can the soul truly be born again? What is a convict? Yes, there is redemption, but not perhaps as you might think. You cannot just say you are “born again” and shout halleluiah and have all the errors of life erased, nor can the errors of life be wiped away in an instant just by being repentant. Exuberant types of religious practices, that is, practices that are full of unrestrained enthusiasm, hysterical, lavish, extravagant, etc., are like a band-aid on a wound that really needs an operation with stitches. The benefits are short term in that stress is released, but the cause of the problem, spiritual emptiness, is not resolved by such limited practice of religion.",
+        "note": "",
+        "location": 2718,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317142",
+        "text": "step. Then there must be serious work on yourself to remove the error that led to the sin (turning away from God in actions).Only then can there be true redemption and forgiveness – and spiritual enlightenment, abiding happiness and immortality.",
+        "note": "",
+        "location": 2724,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317143",
+        "text": "The wisdom of Shetaut Neter and Sema Tawi has taught for thousands of years that the soul is innately divine and has a possibility to evolve, to discover its own higher reality which is eternal and pure in the Supreme Self (God).",
+        "note": "",
+        "location": 2728,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317144",
+        "text": "This exalted vision of life is not merely a myth inspired by superstition or fanaticism, but was the basis of Ancient Egyptian society which allowed the construction of the most extensive and longest running civilization in history.",
+        "note": "",
+        "location": 2735,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317145",
+        "text": "Anger and hatred cannot be stopped by simply telling someone to be good, loving, forgiving and so on. One cannot become righteous by being ordered to or forced to, no more than a plant can be forced to grow, bear fruit or flowers through a command by the farmer.",
+        "note": "",
+        "location": 2747,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317146",
+        "text": "Virtue is a profound quality which every human being has a potential to manifest because it is the innate nature of the innermost reality within every human being. This is because the innermost self of every person is divine.",
+        "note": "",
+        "location": 2751,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317147",
+        "text": "However, just as a plant must receive the proper nutrients (soil, water, sunlight, etc.) so too the human heart must receive the proper caring and nurturing in the form of love, wisdom, proper diet, meditation and good will.",
+        "note": "",
+        "location": 2754,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317148",
+        "text": "Even if you had a troubled upbringing, maybe your parents did not love you, or were not present, or you were hurt by others, realize that those things too can be resolved and you can move forward, and you will discover compassion, love, healing and nurturance in the teaching, the family of practitioners, in God and in your own Higher Self",
+        "note": "",
+        "location": 2756,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317149",
+        "text": "Adversity is a divine messenger. Imagine how life would be if you could do anything you wanted to do. You would indulge every desire and whim. You would only seek to satisfy your desire for pleasure and you would not accomplish any thing significant in life and you would not grow.",
+        "note": "",
+        "location": 2765,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317150",
+        "text": "Adversity is a form of resistance which life places on all beings for the purpose of engendering in them a need to strive to overcome the desires of the lower nature, and thus to discover the Higher Self within.",
+        "note": "",
+        "location": 2770,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317151",
+        "text": "However, if adversity makes you hardhearted, insensitive, selfish, cold and bitter then you will lead yourself deeper into the quagmire of negativity and pain. Adversity is God’s way of calling your attention away from negative ways of life and to draw attention toward the basic mysteries of life.",
+        "note": "",
+        "location": 2773,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317152",
+        "text": "This is because nature has been set up by God to create situations which challenge human beings so as to provide for them opportunities to discover their inner resources which give them the capacity to overcome the trouble and thereby grow in discovery of their deeper Self.",
+        "note": "",
+        "location": 2791,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317153",
+        "text": "Those who suffer most are in reality those who have drawn more attention from the Divine; indeed they are chosen for more intense spiritual testing and training.",
+        "note": "",
+        "location": 2794,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317154",
+        "text": "The rewards of adversity faced well are increased strength of will and an increased feeling of discovery of the Divine within (inner peace and expansion -Heaven). When adversity is faced with negativity and ignorance it leads to pain, sorrow and more adversity (Hell).",
+        "note": "",
+        "location": 2796,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317155",
+        "text": "Therefore, adversity cannot be understood and successfully faced with negativity (anger, hatred, hardheartedness, etc.). Adversity can only be overcome with wisdom and virtue, and virtue is the first and most important quality to be developed by all serious spiritual aspirants.",
+        "note": "",
+        "location": 2800,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317156",
+        "text": "Therefore, adversity is in reality prosperity because it stimulates the mind through suffering so that it may look for a higher vision of life and discover the abode of true happiness, peace and contentment that transcends all worldly measures.",
+        "note": "",
+        "location": 2814,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317157",
+        "text": "Your inner Higher Self has the power to absolve and redeem all negativity. This is the highest goal of all human beings and the most difficult one as well.",
+        "note": "",
+        "location": 2819,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317158",
+        "text": "In reality, happiness does not and cannot come from objects that can be acquired or from activities that are performed or from people outside of you. It can only come from within. Even actions that seem to be pleasurable in life cannot be considered as a source of happiness from a philosophical point of view because all activities are relative.",
+        "note": "",
+        "location": 2826,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317159",
+        "text": "The second is that if the desired activity is not possible, there will be depression or animosity in the mind. If the activity is thwarted by some outside force, meaning that something or someone prevented you from achieving the object or activity you saw as the “source of happiness,” you develop anger towards that person or circumstance. If by chance you succeed in achieving the object or activity, you become elated; this will cause greed and craving to develop in the mind.",
+        "note": "",
+        "location": 2835,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317160",
+        "text": "Under these conditions, a constant dependence on outside activities and worldly objects develops in the mind, which will not allow for true peace and contentment.",
+        "note": "",
+        "location": 2840,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317161",
+        "text": "Even though it is illogical to pursue activities that cause pain in life, people are constantly acting against their own interests as they engage in actions in an effort to gain happiness, while in reality they are enhancing the probability of encountering pain later on. For every egoistic pleasure, there is an equal measure of pain that must be experienced later.",
+        "note": "",
+        "location": 2841,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317162",
+        "text": "This is because when the mind is controlled by desires and expectations, the intellect, the light of reason, and will power are clouded and dull. One is then controlled by the ego-the lower self.",
+        "note": "",
+        "location": 2845,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317163",
+        "text": "Thus, a person who lives according to the teachings of RIGHTEOUS ACTION (Maat) lives a life of perpetual peace and happiness in the present. This implies performing actions without desire or expectations for the future results of those actions, and striving to only do good to humanity in service of Maat (God), to discover inner satisfaction.",
+        "note": "",
+        "location": 2850,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317164",
+        "text": "However, happiness and peace can arise spontaneously when there is an attitude of detachment and dispassion toward objects and situations in life, and attachment to what is good, beautiful and true.",
+        "note": "",
+        "location": 2858,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317165",
+        "text": "“The purpose of human life is to achieve a state of consciousness apart from bodily concerns”",
+        "note": "",
+        "location": 2878,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317166",
+        "text": "“Men and women are to become godlike through a life of virtue and cultivation of the spirit through scientific knowledge, practice, and bodily discipline.”",
+        "note": "",
+        "location": 2881,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317167",
+        "text": "“Salvation is freeing of the soul from the bodily fetters. Becoming a god through knowledge and wisdom, controlling the forces of the cosmos instead of being a slave to them. Subduing the lower nature and through awakening the higher Self, ending the cycle of rebirth and dwelling with the neters who direct and control the great plan.”",
+        "note": "",
+        "location": 2882,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317168",
+        "text": "What should be the purpose of life? Should the purpose of life be to get rich, to have lots of fame, or a big family? No, the purpose is to become God-like, and further, to become one with God!",
+        "note": "",
+        "location": 2888,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317169",
+        "text": "Your dream appears to be very real, but when you wake up from it in the morning, then you realize that it is not real.  What happens when you go to sleep?  When you go to sleep you believe that dream world is real, and this waking world is unreal.",
+        "note": "",
+        "location": 2932,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317170",
+        "text": "How are you to discover that state that is beyond illusion?  How are you to elevate yourself to transcend this mortal finite existence?  Accomplishing this is what is referred to as becoming gods and goddesses.  The question then becomes how is this to be achieved? It is wonderful for me to tell you what Shetaut Neter is all about. But it is also important that you know how this is achieved. I am sure that you have heard of that saying “many are called and few are chosen.”",
+        "note": "",
+        "location": 2937,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317171",
+        "text": "There is an Ancient Egyptian proverb that says “The body belongs to the earth and your soul belongs to heaven.”  This means that you are not the body… that is what the Ancient Egyptian proverb is trying to tell you. You never were. You have an association with typical matter, that allows you to have a typical experience, and that is the end of your association with time and space. Actually the deeper you is transcendental and immortal, but you just don’t know that.",
+        "note": "",
+        "location": 3011,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317172",
+        "text": "If you think that having 4 billion dollars is going to make you happier in life, think again.  Money can take care of the basic necessities and that is necessary and proper. But beyond that, money is actually the source of much worry and strife. The only thing that will make you truly happy is to discover and to realize that you are immortal, and transcendental and all-encompassing.",
+        "note": "",
+        "location": 3024,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317173",
+        "text": "“To know God, strive to grow in stature beyond all measure; conceive that there is nothing beyond thy capacity. Know thyself deathless and able to know all things, all arts, sciences, the way of every life. Become higher than the highest height, and lower than the lowest depth.  Amass in thyself all senses of animal, fire, water, dryness, and moistness. Think of thyself in all places at the same times, earth, sea, sky, not yet born, in the womb, young, old, dead and in the after death state.”",
+        "note": "",
+        "location": 3033,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317174",
+        "text": "The ultimate goal of life is Nehast. Nehast means “Spiritual Awakening.” It is the spiritual awakening that leads one to discover the glory of life beyond death, discovering immortality, eternity and supreme peace.",
+        "note": "",
+        "location": 3067,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1032317175",
+        "text": "And this is what is called the Great Awakening, Nehast, the Awakening to spiritual consciousness. In the upper left hand corner of the slide you can see Asar Awakening from the tomb being assisted by the four sons of Heru. These four sons are also the first Shemsu, the Shemsu Heru.  They are the ones who follow Asar, and they help to resurrect him.  Nehast means to wake-up, to awaken to the higher existence.",
+        "note": "",
+        "location": 3071,
+        "at": "2026-06-09T04:56:00Z"
+      },
+      {
+        "id": "1041218991",
+        "text": "In the slide above, at the bottom right, there is a picture of the God Ra who is sitting in his boat In his boat, Ra sails on the primeval ocean, which is inhabited by the serpent Apep. Apep is a demon of chaos who is trying to stop the creative movement of the boat. Set, who was previously a negative personality, was redeemed and now stands at the bow (front) of the boat to protect it from the giant serpent; in other words, Set is serving Ra, the good. So having turned away from evil Set is no longer demonic.",
+        "note": "",
+        "location": 3726,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218992",
+        "text": "\"Men and women are to become God-like through a life of virtue and the cultivation of the spirit through scientific knowledge, practice and bodily discipline.\"   \"Salvation is the freeing of the soul from its bodily fetters; becoming a God through knowledge and wisdom; controlling the forces of the  cosmos instead of being a slave to them; subduing the lower nature and through awakening the higher self, ending the cycle of rebirth and dwelling with the Neters who direct and control the Great Plan.\"",
+        "note": "",
+        "location": 3735,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218993",
+        "text": "You must understand then, that you are wearing God right now.  Those of you who are holding something, you are holding God right now.  If you are sitting, you are sitting on God. If you are walking, you are walking on God. If you are wearing shoes, you are wearing God’s shoes. If you are breathing, you are breathing God. If your heart is beating it is God’s heart that is beating, etc. You see the glory of this philosophy if it is correctly understood?  And the loss of this is just a sorry affair for those who miss out.",
+        "note": "",
+        "location": 3787,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218994",
+        "text": "So even the gods and goddesses, the lesser beings we were talking about, the ones that are below the Supreme Being, even they don’t have full knowledge, full enlightenment.  They have to do the same thing human beings have to do. They have to practice Uashu (devotion) – they also have to practice the disciplines in order to enlighten themselves.",
+        "note": "",
+        "location": 3810,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218995",
+        "text": "The second Great Truth is “An-Maat swy Saui Set s-khemn” which means: “Lack of righteousness brings fetters to the personality, and these fetters cause ignorance of the Divine.” This teaching is reflected in the Neterian proverb:   \"There are two roads traveled by humankind, those who seek to live MAAT and those who seek to satisfy their animal passions.\"",
+        "note": "",
+        "location": 3870,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218996",
+        "text": "In a higher, more advanced sense there are only two groups of people, the Nehastu   -“spiritually awakened” and the kmn  {ignorant} “worldly.”",
+        "note": "",
+        "location": 3881,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218997",
+        "text": "So in the end, worldliness is unrighteousness in a broad understanding of the term, from a philosophical standpoint. Unrighteousness is selfishness. It is greed, lust, jealousy, and envy, but the greatest unrighteousness is the unrighteousness of ignorance.  The Kamitan proverb goes, “There is no darkness like the darkness of ignorance.”",
+        "note": "",
+        "location": 3886,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218998",
+        "text": "Ignorance is insidious because the ignorant mind, being deluded, believes it is following the right path when actually it is following a path of its own design. Even when errors and contradictions are pointed out to such a person, his/her mind develops rationalizations to justify the an-maat- “unrighteous actions.”",
+        "note": "",
+        "location": 3925,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041218999",
+        "text": "The third Great Truth is “S-Uashu s-Nafu n saiu Set.” “Devotion to the Divine leads to freedom from the fetters of Set.” Saui Set relates to the fetters. As spiritual enlightenment dawns, there will be many new feelings that arise, because a new world heretofore unknown by the mind has been accessed. Devotion purifies the personality by dissolving the ego. Then you begin to discover the world in which enlightened sages live. Along with devotion, your actions must be pure.",
+        "note": "",
+        "location": 3950,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041219000",
+        "text": "The mummies that are wrapped all have a special bandage that is placed over their mouth. Symbolically it is called saiu set.  When saiu set is there, you cannot touch the mummy with the seba-ur instrument .  Recall the Seba glyphs discussed previously, about the teachings sba, sbai, etc. Seba-ur is the great Seba.  Seba-ur also relates to the great star in the sky that illumines, the great enlightenment. This instrument is a metaphor of the great Sba, the star that illumines perennially  “Akhemu Urdu” in the North Pole – it never fades. So, one who is touched by that great star is fully illumined (enlightened), and not like ordinary people who are only partially enlightened. People who acquire some knowledge but who do not achieve the highest attainment, full enlightenment, can be likened to someone waking up, but then going back to sleep.",
+        "note": "",
+        "location": 3961,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041219001",
+        "text": "So words and right speech are extremely important in Neterian spirituality. If you speak wrongly you are creating negative  ariu- (ctions, deeds, unconscious mental impressions that impel the desires of the mind-the karmic basis) accumulated over previous years. That negativity leads to dullness of mind and ignorance, as well as the inability to understand the teaching and avoid the complications and miseries of life.",
+        "note": "",
+        "location": 3991,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1041219002",
+        "text": "Therefore, one’s conscious desire to go to heaven at the time of one’s death or one’s conscious repentance at the time of death for misdeeds in life cannot overcome the weight of the unrighteous  ariu – (actions, things done, make something, deeds; Ari -Karma) one has set up during a lifetime. Therefore, one cannot repent on one’s death bed after a life of unrighteousness- after filling the heart and mind with unrighteous feelings, thoughts, words and deeds. So it is important to begin now to purify the heart and cleanse the soul so as to become Maakheru (true of speech-pure of heart) at the time of the judgment.",
+        "note": "",
+        "location": 4045,
+        "at": "2026-08-05T04:56:00Z"
+      },
+      {
+        "id": "1042778424",
+        "text": "The orthodox are interested in imparting dogmas and demanding obedience to those blindly following. Mystical religion is interested in making you free, making you an enlightened being, and not a slave to ignorance and illusion.",
+        "note": "",
+        "location": 4148,
+        "at": "2026-08-10T04:56:00Z"
+      },
+      {
+        "id": "1042778425",
+        "text": "What are you supposed to be devoting yourself to? The Divine. What are you supposed to be studying to get the knowledge of? The wisdom philosophy. These are the keys. We will go into a little more detail now based directly on the Medu Neter.",
+        "note": "",
+        "location": 4159,
+        "at": "2026-08-10T04:56:00Z"
+      },
+      {
+        "id": "1042778426",
+        "text": "All of the disciplines of shedy lead to a meditative experience; they act to attenuate the personality and allow it to be purified. Then the mind can enter into extended concentration and super-consciousness, deeper levels of awareness. What is needed to overcome these fetters or obstacles is  Shemsu udja shedy –“real and powerful, burning following and practice of the disciplines of the spiritual teaching.” This implies constant and not intermittent contact with the temple, the teaching, the  Sbai – {wise person, teacher, instructor, sage, spiritual preceptor}, regular practice of the disciplines, studies and rituals.",
+        "note": "",
+        "location": 4207,
+        "at": "2026-08-10T04:56:00Z"
+      },
+      {
+        "id": "1042778427",
+        "text": "The final objective of the Mysteries is to be able to say:  Nuk pu Nuk Asar Neter – “I am that I am” (Asar the Divinity).",
+        "note": "",
+        "location": 4236,
+        "at": "2026-08-10T04:56:00Z"
+      },
+      {
+        "id": "1042778428",
+        "text": "It is expressed in the diagram of the Pautti of Anunian Cosmology or Company of Gods and Goddesses who formed the creation of the universe based on the creation story of the theological teaching that was developed by the priests and priestesses of the Ancient Egyptian city of Anu (also known to the Greeks as “Heliopolis.”",
+        "note": "",
+        "location": 4307,
+        "at": "2026-08-10T04:56:00Z"
+      },
+      {
+        "id": "1042778429",
+        "text": "The Pau  - self existent spirit, God, created all things out of Paut  the stuff or matter or substance or material out of which all is made (food-objects-people-gods-planets-stars-etc.) Thus, came into being the Pauti company of gods and goddesses, and God is also known as Pauti because Creation is made of God stuff.",
+        "note": "",
+        "location": 4314,
+        "at": "2026-08-10T04:56:00Z"
+      },
+      {
+        "id": "1043101001",
+        "text": "Aset, by virtue of her qualities, has the power to bestow immortality through the transformative power of her symbolic essence, her wisdom, the Neterian philosophy. Aset then told the king that Asar, her husband, is inside the pillar he made from the tree.  He graciously gave her the pillar (Djed) and she returned with it to Kamit (Egypt).",
+        "note": "",
+        "location": 4623,
+        "at": "2026-08-11T04:56:00Z"
+      },
+      {
+        "id": "1043101002",
+        "text": "The woman-goddess, who symbolizes creation itself, the physical universe, supports the incarnation of the soul (Asar). In this way, the physical (Aset) supports the spirit (Asar).",
+        "note": "",
+        "location": 4860,
+        "at": "2026-08-11T04:56:00Z"
+      }
+    ]
+  },
+  {
     "id": "61305645",
     "title": "The Complete Shiva Purana",
     "author": "Bora, Dr Bhaskar",
@@ -21176,686 +21870,6 @@
         "note": "",
         "location": 119,
         "at": "2026-06-14T02:45:51.021Z"
-      }
-    ]
-  },
-  {
-    "id": "61910248",
-    "title": "Egyptian Mysteries VOl 1 Shetaut Neter",
-    "author": "Muata Ashby",
-    "cover": "https://m.media-amazon.com/images/I/71FdgMuSfjL._SL2000_.jpg",
-    "numHighlights": 93,
-    "lastHighlightedAt": "2026-08-10",
-    "kind": "domain",
-    "domain": "african-spirituality",
-    "genre": "Kemetic Spirituality",
-    "tag": "African Spirituality",
-    "color": "#34d399",
-    "activity": [
-      0,
-      0,
-      0,
-      75,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      18
-    ],
-    "highlights": [
-      {
-        "id": "1032317101",
-        "text": "sense.  Most people in the world are following spiritual traditions and philosophies in ways that are leading them into ignorance, darkness, stress and strife.  Those are not humanistic traditions, traditions that are based on truth and universal spirituality. We need to rectify this. Firstly, this philosophy is for all people. Our own Kamitan scriptures state this point. Shetaut Neter (The Egyptian Mysteries)  is a universal teaching to improve life, and promote peace and prosperity for all. All people are part of the human family, spiritually and physically. Genetics has shown that all human beings, regardless of if one’s ancestry is from Africa, Asia, Europe or the Americas in more recent times, all originated from Africa. Therefore, all human beings are Africans, sharing in the legacy and heritage of Africa.",
-        "note": "",
-        "location": 222,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317102",
-        "text": "True religion (authentic spiritual movement) is a process that leads you through three steps: myth, ritual and mysticism. If one’s religion does not have these three steps, then one is not practicing true religion.  If  a religion has a myth and its followers practice ritual(s) relating to that myth, if that is the extent of  the religion, only containing dogmas and stories in which its followers must have faith, then that religion is not reaching a mystical level of oneness with all creation.",
-        "note": "",
-        "location": 261,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317103",
-        "text": "However, it must be clearly understood that in Neterian Theology there are two kinds of Mysteries, the lower and the higher. The lower Mysteries are worldly, practical branches of learning, the areas that help human beings to improve their lives and learn about the world around them. The lower mysteries offer limited insight because they only use physical, empirical means for the researches. Examples of the lower mysteries include mechanics, engineering, astronomy, literature, mathematics, physiology, etc. The higher Mysteries are the disciplines or sciences that promote insight into the nature of self and the revelation of the Mysteries of life, the Mysteries of the universe. The higher Mysteries answer questions such as “Who am I? Where did I come from? Why am I here? What is life? What or who is God?,” etc.",
-        "note": "",
-        "location": 311,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317104",
-        "text": "Mysteries. One could not study the Mysteries if one could not understand a certain level of mathematics, language, etc.; a certain level of maturity, stability and intellectual capacity are necessary to pursue higher spiritual attainment, and the lower Mysteries provide that foundation.",
-        "note": "",
-        "location": 318,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317105",
-        "text": "meaning. Stability and financial capacity gained from being proficient in the lower Mysteries allows you to think without the pressure of financial burdens, purchase the materials necessary for the practice, visit spiritual centers, confer with spiritual teachers, etc.",
-        "note": "",
-        "location": 321,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317106",
-        "text": "The current cycle of Creation began around the year 36,000 B.C.E. In the beginning there was nothing more than a watery mass, a primeval ocean, called Nun. Nun is the body of Khepri. Prior to the creation, Khepri remained in a recumbent posture. He rested on the back of the great serpent Asha-hrau (“many faces”). From that Nun the Divine Spirit arose by stimulating Asha-hrau to move and churn the ocean. Then he named himself Khepri, Creator. Khepri called out his own name and  dchn –vibrations were infused in the ocean and waves vere formed. Just as there are many waves in the ocean with many shapes and sizes, the objects of the world came into being in the form of elements, Ra (fire), Shu (air-space), Tefnut (water), Geb (earth), Nut (ether). Everything in creation emanates from the Nun or primordial ocean, and expresses in the form of elements in succeeding levels of denseness. These elements also manifest in the form of the opposites of Creation (man-woman, up-down, white-black) which appear to be exclusive and separate from each other, but which are in reality complements to each other.",
-        "note": "",
-        "location": 568,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317107",
-        "text": "Khepri congealed the Nun, his own body, into all the forms of Creation. The first spot that was congealed from the Nun is called  Benben, the first place, the Ben-Ben dot, ·, of Creation. That dot is the center point in the symbol of Khepr-Ra $. That dot is the very point at the top of the Pyramid  mr- Obelisk,   tekhnu. The pyramid-obelisk symbolizes the mound that formed from that initial spot. Khepri sat atop the hill of Creation and all solid ground took form underneath him.",
-        "note": "",
-        "location": 593,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317108",
-        "text": "The act of “Sailing” signifies the motion in creation. Motion implies that events occur in the realm of time and space relative to each other, thus, the phenomenal universe comes into existence as a mass of moving essence we call the elements. Prior to this motion, there was the primeval state of being without any form and without existence in time or space. The gods and goddesses of the boat form the court of Kheper-Ra.",
-        "note": "",
-        "location": 630,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317109",
-        "text": "As Ra, the Supreme Being governed the earth for many thousands of years. He created the world, the planets, the stars and the galaxies; he also created animals, as well as men and women. In the beginning, men and women revered the Divine, but after living for a very long time, they began to take Ra for granted. They became arrogant and vain. Ra sent his daughter, Hetheru, to punish them, but she forgot her way and became lost in the world. Then He left for his abode in heaven and gave the earthly throne to his son Shu, and daughter, Tefnut. After a long period of time, they turned over the throne to their children, Geb and Nut. After some time again, Geb and Nut gave the throne to their children, Asar and Aset, and so on in a line of succession throughout history, down to the Pharaohs of Kamit.",
-        "note": "",
-        "location": 633,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317110",
-        "text": "So, the Shetaut Neter “Mystery teachings” were originally given by the Creator, Khepri. In this capacity  he is known as Shetaut Kheperu, “hidden Creator of forms.” Lord Djehuti codified these Mystery teachings into the hieroglyphic texts, and these teachings were passed down to succeeding generations of divinities, sages and priests and priestesses throughout history.",
-        "note": "",
-        "location": 660,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317111",
-        "text": "So Lord Khepri imparted his knowledge to the divinities, and especially to his son Djehuti . Thus, Lord Khepri, the Self Created Divinity, is the founder of Shetaut Neter. The codifier was his first main disciple, Djehuti.",
-        "note": "",
-        "location": 666,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317112",
-        "text": "Thus, these Shetaut (mysteries- rituals, wisdom, philosophy) about the Neter (Supreme Being) are related in the writings of the hidden teaching. And those writings are referred to as  Medu Neter or “Divine Speech,” the writings of the god Djehuti (Ancient Egyptian god of the divine word). Medu Neter also generally refers to any Kamitan hieroglyphic texts or inscriptions. The term Medu Neter makes use of a special hieroglyph,, which means “medu” or “staff - walking stick-speech.” This means that speech is the support for the Divine, . Thus, just as the staff supports an elderly person, the hieroglyphic writing (the word) is a prop or support (staff) which sustains the Divine in the realm of time and space. That is, these Divine writings (Medu Neter) contain the wisdom which enlightens us about the Divine,  Shetaut Neter.    If Shetitu is mastered through the study of the Medu Neter then the spiritual aspirant becomes  Maakheru or true of thought, word and deed, that is, purified in body, mind and soul. The symbol medu is static while the symbol of Kheru is dynamic.",
-        "note": "",
-        "location": 699,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317113",
-        "text": "Human beings are a higher order beings, and they can attain this higher state of consciousness if they learn about the nature of the universe and elevate themselves through virtue and wisdom.",
-        "note": "",
-        "location": 741,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317114",
-        "text": "Lord Djehuti imparted the teaching he learned from Khepri to goddess Hetheru (here in the form of a cow goddess). She became lost in the world and forgot her true identity. He showed her how to discover her true Self, how to know herself and how to find her way back to heaven, to her father Ra. Here Djehuti is shown presenting to Hetheru, the healed right eye of Ra, her true essence.",
-        "note": "",
-        "location": 744,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317115",
-        "text": "Lord Khep-Ra knew that human beings needed guidance, so he sent his great grandchildren, Asar and Aset, to be teachers and role models for human beings on earth. Lord Djehuti also imparted the hidden knowledge of life to Aset and Asar,  so that they would lead people on earth in a righteous manner,  showing them the path of peace, prosperity and spiritual enlightenment. Asar and Aset established the Shetaut Neter, “Divine Mysteries,” ritual worship and Ancient Egyptian religion. When human beings become too involved in the world they forget their true nature, and so the Temple,  Het Neter {House of the Divinity {God(dess)}-Temple},was created, where the pressure of the world can be relieved, and an association with something other than the worldly perspective (i.e., with Divinity) can occur.",
-        "note": "",
-        "location": 756,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317116",
-        "text": "Ament means “hidden.” It is a specific reference to the female form of the astral plane or Netherworld known as Amenta (Amentet, Amentat) or the Duat.  Like her husband Asar, who is known as the “Lord of the Perfect Black,” Aset is the Mistress of the Netherworld (Amentet, Amentat). Thus, Aset also symbolizes the “blackness” of the vast unmanifest regions of existence (the unmanifest).",
-        "note": "",
-        "location": 1285,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317117",
-        "text": "In order to be successful, the legacy of our ancestors must be lived, and not just studied and revered. In most of the lectures that are given on Ancient Egypt, the presenters are filling you with the wonder of how great African Culture was, and all the history… don’t you long for something more than that?  How is that going to help you in your life?  You attend such a lecture for an evening and it makes you feel better, but does it really help you improve your life situation?",
-        "note": "",
-        "location": 1457,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317118",
-        "text": "It must be uncovered and cleansed continuously, so that we may continue to benefit from its glory; that is what allows us to elevate ourselves.",
-        "note": "",
-        "location": 1471,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317119",
-        "text": "The same teachings that you find in Ancient Kamit, you find generally throughout African Religion.",
-        "note": "",
-        "location": 1532,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317120",
-        "text": "The Ancient Egyptian God Set represents egoism, lower desires, chaos and negativity. Set is the Divinity from which many scholars, including myself, believe the early Jews confused and developed their concept of Satan.",
-        "note": "",
-        "location": 1573,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317121",
-        "text": "The sundisk is the conduit through which the Spirit transmits Life Force energy to the world, i.e. the Lion Power, and this force is accessed by turning towards the Divine, symbolized in the form of the sundisk.",
-        "note": "",
-        "location": 1918,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317122",
-        "text": "Mythically it represents the foreleg of the god Set which was torn out and thrown into the heavens by the god Heru during their epic battle. A similar teaching occurs in the Babylonian epic of Gilgemesh[37]\\[38] when the “foreleg of the Bull of Heaven” is ripped out and thrown at the goddess Ishtar, who was the goddess or Queen of Heaven in Mesopotamia. It symbolizes the male generative capacity and is one of the offerings of Hetep given in Chapter 36 (usually referred to as #30B) of the Pert M Heru (Egyptian Book of the Dead).",
-        "note": "",
-        "location": 2067,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317123",
-        "text": "B. Therefore, mystically, the “Northern Path” is promoted as the path to immortality and enlightenment through the attainment of absolute consciousness which transcends the perishable and ever-changing nature of creation.",
-        "note": "",
-        "location": 2151,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317124",
-        "text": "The “Southern Path” is the process of reincarnation, renewal and repeated embodiment (uhem ankh {Kamitan}), for the purpose of further spiritual evolution through self-discovery by means of human experiences.",
-        "note": "",
-        "location": 2152,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317125",
-        "text": "ur. The mystical intent is to open the mind, through mystical wisdom and disciplines, so as to render it uadjit, ,  (universal and infinite, all-encompassing, unlimited) and beyond the fluctuations of egoism, i.e. mortal consciousness.",
-        "note": "",
-        "location": 2161,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317126",
-        "text": "The opening of the mouth and eyes is a mystical teaching relating to expansion in expression (mouth) and awareness (open eyes). These factors (mouth and eyes) are the signs of the existence of consciousness or its absence.",
-        "note": "",
-        "location": 2217,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317127",
-        "text": "From the passages above we learn that the Priests and Priestesses “open” the mouth and eyes by touching them with the ritual instruments which symbolize the eternal, the absolute, i.e. the expansion of consciousness, immortality and spiritual enlightenment. Also, we learn that the adze instrument (Ursa minor) is actually also the Eye of Heru, which is the greatest offering-eucharist of the Egyptian mysteries.",
-        "note": "",
-        "location": 2218,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317128",
-        "text": "Now we will examine the hieroglyphic text definition of Shetaut Neter. “Shetaut” is the first word. It means secret or hidden or mysteries and the flag looking symbol means “Neter.” Neter means Divinity. It can mean God or Goddess.  It means Divinity in general.  “Shetaut Neter” therefore means the teaching about the secret, hidden “Supreme Being,” or “Divine Mysteries.”",
-        "note": "",
-        "location": 2437,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317129",
-        "text": "The term “Neterian” means a person who follows Shetaut Neter, and the specific term for that person who is a “follower” is Shems. Shemsu are persons (plural) who follow Shetaut Neter. They are disciples or followers. This next slide shows the specific Medu Neter scripture that gives us this wisdom of the terms:",
-        "note": "",
-        "location": 2473,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317130",
-        "text": "The Symbols in the term Shems (follower) are the second two symbols, therefore we have “Follower of Neter” …that is, the person who “walks,” that is, practices the religion of Shetaut Neter, and who studies the teachings of Shetaut Neter.",
-        "note": "",
-        "location": 2515,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317131",
-        "text": "The following term  means Shemsu Heru - Followers of Heru. This is the highest kind of title a Neterian aspirant can be given. Such a person is a true follower of the teaching, a true follower of God. Heru means “that which is most high.”",
-        "note": "",
-        "location": 2519,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317132",
-        "text": "We will now go into some of the basic philosophical principles of Shetaut Neter.  A Kamitan Proverb states: “Men and women are to become God-like through a life of virtue and cultivation of the spirit through scientific knowledge, practice, and bodily discipline.”    This might be referred to as a central purpose, a central goal of the entire process of Shetaut Neter.",
-        "note": "",
-        "location": 2534,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317133",
-        "text": "However, in the light of Yoga philosophy and through the various disciplines developed by the yogic masters over the last 12,000 years, the Supreme Divinity is to be understood in a much more universal way. We not only discover the infinite compassion and love of the Self (Supreme Divinity) but through the various practices of the Mystery System, which have been tailored for the various levels of human spiritual development and different personalities, it is also possible to partake in the glory of Divinity. This is the goal of the Neterian Mystery System.",
-        "note": "",
-        "location": 2627,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317134",
-        "text": "This is true because all individuals are essentially one with the Divine Self. Through a process of ignorance they have forgotten their true identity and have turned to negativity. Through the process of The Mystery System, you may discover your true essence, thereby unleashing the gifts and infinite power of the soul.",
-        "note": "",
-        "location": 2635,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317135",
-        "text": "This Neterian path is based on the Ancient Egyptian myths, symbols, and practices for attaining the highest spiritual evolution and does incorporate all the levels of spiritual practice.",
-        "note": "",
-        "location": 2668,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317136",
-        "text": "Happiness can be yours on the condition that you are willing to work for it by practicing the art of self-development. It does not matter what crime or what sin you have committed. The light of wisdom and the practices of purification can bring about a transformation in the consciousness of any human being.",
-        "note": "",
-        "location": 2677,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317137",
-        "text": "This science begins with your understanding and forgiveness of yourself, and then the intensive process of introspection and realization of the truth through building a life based on order, truth and justice.",
-        "note": "",
-        "location": 2681,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317138",
-        "text": "Misery in life stems from ignorance of one's true nature. Human beings are like kings or queens who wander around the countryside as beggars, not knowing their true identity. They act as beggars, treat others unkindly, indulge in hatred and anger of others; they are frustrated due to their condition and don't know what to do about it so they go on from day to day wasting their lives.",
-        "note": "",
-        "location": 2683,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317139",
-        "text": "The wonderful thing is that you are also the one who by your actions illumined by the light of wisdom in action (Maat), can change your life.",
-        "note": "",
-        "location": 2692,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317140",
-        "text": "Your task is to follow up on this book, study the teachings and begin practicing them in your life right now. Develop a relationship with your inner Higher Self and discover the strength to overcome your failings. Everyone is a child of the Divine; as such everyone is capable of supreme good according to their level of awareness of their true Self.",
-        "note": "",
-        "location": 2705,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317141",
-        "text": "Have you committed crimes? Do you feel guilt? Do you feel suffering is your lot in life? Do you feel like an unsavable sinner? What is a sinner? And can a sin be redeemed? Can the soul truly be born again? What is a convict? Yes, there is redemption, but not perhaps as you might think. You cannot just say you are “born again” and shout halleluiah and have all the errors of life erased, nor can the errors of life be wiped away in an instant just by being repentant. Exuberant types of religious practices, that is, practices that are full of unrestrained enthusiasm, hysterical, lavish, extravagant, etc., are like a band-aid on a wound that really needs an operation with stitches. The benefits are short term in that stress is released, but the cause of the problem, spiritual emptiness, is not resolved by such limited practice of religion.",
-        "note": "",
-        "location": 2718,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317142",
-        "text": "step. Then there must be serious work on yourself to remove the error that led to the sin (turning away from God in actions).Only then can there be true redemption and forgiveness – and spiritual enlightenment, abiding happiness and immortality.",
-        "note": "",
-        "location": 2724,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317143",
-        "text": "The wisdom of Shetaut Neter and Sema Tawi has taught for thousands of years that the soul is innately divine and has a possibility to evolve, to discover its own higher reality which is eternal and pure in the Supreme Self (God).",
-        "note": "",
-        "location": 2728,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317144",
-        "text": "This exalted vision of life is not merely a myth inspired by superstition or fanaticism, but was the basis of Ancient Egyptian society which allowed the construction of the most extensive and longest running civilization in history.",
-        "note": "",
-        "location": 2735,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317145",
-        "text": "Anger and hatred cannot be stopped by simply telling someone to be good, loving, forgiving and so on. One cannot become righteous by being ordered to or forced to, no more than a plant can be forced to grow, bear fruit or flowers through a command by the farmer.",
-        "note": "",
-        "location": 2747,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317146",
-        "text": "Virtue is a profound quality which every human being has a potential to manifest because it is the innate nature of the innermost reality within every human being. This is because the innermost self of every person is divine.",
-        "note": "",
-        "location": 2751,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317147",
-        "text": "However, just as a plant must receive the proper nutrients (soil, water, sunlight, etc.) so too the human heart must receive the proper caring and nurturing in the form of love, wisdom, proper diet, meditation and good will.",
-        "note": "",
-        "location": 2754,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317148",
-        "text": "Even if you had a troubled upbringing, maybe your parents did not love you, or were not present, or you were hurt by others, realize that those things too can be resolved and you can move forward, and you will discover compassion, love, healing and nurturance in the teaching, the family of practitioners, in God and in your own Higher Self",
-        "note": "",
-        "location": 2756,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317149",
-        "text": "Adversity is a divine messenger. Imagine how life would be if you could do anything you wanted to do. You would indulge every desire and whim. You would only seek to satisfy your desire for pleasure and you would not accomplish any thing significant in life and you would not grow.",
-        "note": "",
-        "location": 2765,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317150",
-        "text": "Adversity is a form of resistance which life places on all beings for the purpose of engendering in them a need to strive to overcome the desires of the lower nature, and thus to discover the Higher Self within.",
-        "note": "",
-        "location": 2770,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317151",
-        "text": "However, if adversity makes you hardhearted, insensitive, selfish, cold and bitter then you will lead yourself deeper into the quagmire of negativity and pain. Adversity is God’s way of calling your attention away from negative ways of life and to draw attention toward the basic mysteries of life.",
-        "note": "",
-        "location": 2773,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317152",
-        "text": "This is because nature has been set up by God to create situations which challenge human beings so as to provide for them opportunities to discover their inner resources which give them the capacity to overcome the trouble and thereby grow in discovery of their deeper Self.",
-        "note": "",
-        "location": 2791,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317153",
-        "text": "Those who suffer most are in reality those who have drawn more attention from the Divine; indeed they are chosen for more intense spiritual testing and training.",
-        "note": "",
-        "location": 2794,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317154",
-        "text": "The rewards of adversity faced well are increased strength of will and an increased feeling of discovery of the Divine within (inner peace and expansion -Heaven). When adversity is faced with negativity and ignorance it leads to pain, sorrow and more adversity (Hell).",
-        "note": "",
-        "location": 2796,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317155",
-        "text": "Therefore, adversity cannot be understood and successfully faced with negativity (anger, hatred, hardheartedness, etc.). Adversity can only be overcome with wisdom and virtue, and virtue is the first and most important quality to be developed by all serious spiritual aspirants.",
-        "note": "",
-        "location": 2800,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317156",
-        "text": "Therefore, adversity is in reality prosperity because it stimulates the mind through suffering so that it may look for a higher vision of life and discover the abode of true happiness, peace and contentment that transcends all worldly measures.",
-        "note": "",
-        "location": 2814,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317157",
-        "text": "Your inner Higher Self has the power to absolve and redeem all negativity. This is the highest goal of all human beings and the most difficult one as well.",
-        "note": "",
-        "location": 2819,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317158",
-        "text": "In reality, happiness does not and cannot come from objects that can be acquired or from activities that are performed or from people outside of you. It can only come from within. Even actions that seem to be pleasurable in life cannot be considered as a source of happiness from a philosophical point of view because all activities are relative.",
-        "note": "",
-        "location": 2826,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317159",
-        "text": "The second is that if the desired activity is not possible, there will be depression or animosity in the mind. If the activity is thwarted by some outside force, meaning that something or someone prevented you from achieving the object or activity you saw as the “source of happiness,” you develop anger towards that person or circumstance. If by chance you succeed in achieving the object or activity, you become elated; this will cause greed and craving to develop in the mind.",
-        "note": "",
-        "location": 2835,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317160",
-        "text": "Under these conditions, a constant dependence on outside activities and worldly objects develops in the mind, which will not allow for true peace and contentment.",
-        "note": "",
-        "location": 2840,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317161",
-        "text": "Even though it is illogical to pursue activities that cause pain in life, people are constantly acting against their own interests as they engage in actions in an effort to gain happiness, while in reality they are enhancing the probability of encountering pain later on. For every egoistic pleasure, there is an equal measure of pain that must be experienced later.",
-        "note": "",
-        "location": 2841,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317162",
-        "text": "This is because when the mind is controlled by desires and expectations, the intellect, the light of reason, and will power are clouded and dull. One is then controlled by the ego-the lower self.",
-        "note": "",
-        "location": 2845,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317163",
-        "text": "Thus, a person who lives according to the teachings of RIGHTEOUS ACTION (Maat) lives a life of perpetual peace and happiness in the present. This implies performing actions without desire or expectations for the future results of those actions, and striving to only do good to humanity in service of Maat (God), to discover inner satisfaction.",
-        "note": "",
-        "location": 2850,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317164",
-        "text": "However, happiness and peace can arise spontaneously when there is an attitude of detachment and dispassion toward objects and situations in life, and attachment to what is good, beautiful and true.",
-        "note": "",
-        "location": 2858,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317165",
-        "text": "“The purpose of human life is to achieve a state of consciousness apart from bodily concerns”",
-        "note": "",
-        "location": 2878,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317166",
-        "text": "“Men and women are to become godlike through a life of virtue and cultivation of the spirit through scientific knowledge, practice, and bodily discipline.”",
-        "note": "",
-        "location": 2881,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317167",
-        "text": "“Salvation is freeing of the soul from the bodily fetters. Becoming a god through knowledge and wisdom, controlling the forces of the cosmos instead of being a slave to them. Subduing the lower nature and through awakening the higher Self, ending the cycle of rebirth and dwelling with the neters who direct and control the great plan.”",
-        "note": "",
-        "location": 2882,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317168",
-        "text": "What should be the purpose of life? Should the purpose of life be to get rich, to have lots of fame, or a big family? No, the purpose is to become God-like, and further, to become one with God!",
-        "note": "",
-        "location": 2888,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317169",
-        "text": "Your dream appears to be very real, but when you wake up from it in the morning, then you realize that it is not real.  What happens when you go to sleep?  When you go to sleep you believe that dream world is real, and this waking world is unreal.",
-        "note": "",
-        "location": 2932,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317170",
-        "text": "How are you to discover that state that is beyond illusion?  How are you to elevate yourself to transcend this mortal finite existence?  Accomplishing this is what is referred to as becoming gods and goddesses.  The question then becomes how is this to be achieved? It is wonderful for me to tell you what Shetaut Neter is all about. But it is also important that you know how this is achieved. I am sure that you have heard of that saying “many are called and few are chosen.”",
-        "note": "",
-        "location": 2937,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317171",
-        "text": "There is an Ancient Egyptian proverb that says “The body belongs to the earth and your soul belongs to heaven.”  This means that you are not the body… that is what the Ancient Egyptian proverb is trying to tell you. You never were. You have an association with typical matter, that allows you to have a typical experience, and that is the end of your association with time and space. Actually the deeper you is transcendental and immortal, but you just don’t know that.",
-        "note": "",
-        "location": 3011,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317172",
-        "text": "If you think that having 4 billion dollars is going to make you happier in life, think again.  Money can take care of the basic necessities and that is necessary and proper. But beyond that, money is actually the source of much worry and strife. The only thing that will make you truly happy is to discover and to realize that you are immortal, and transcendental and all-encompassing.",
-        "note": "",
-        "location": 3024,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317173",
-        "text": "“To know God, strive to grow in stature beyond all measure; conceive that there is nothing beyond thy capacity. Know thyself deathless and able to know all things, all arts, sciences, the way of every life. Become higher than the highest height, and lower than the lowest depth.  Amass in thyself all senses of animal, fire, water, dryness, and moistness. Think of thyself in all places at the same times, earth, sea, sky, not yet born, in the womb, young, old, dead and in the after death state.”",
-        "note": "",
-        "location": 3033,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317174",
-        "text": "The ultimate goal of life is Nehast. Nehast means “Spiritual Awakening.” It is the spiritual awakening that leads one to discover the glory of life beyond death, discovering immortality, eternity and supreme peace.",
-        "note": "",
-        "location": 3067,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1032317175",
-        "text": "And this is what is called the Great Awakening, Nehast, the Awakening to spiritual consciousness. In the upper left hand corner of the slide you can see Asar Awakening from the tomb being assisted by the four sons of Heru. These four sons are also the first Shemsu, the Shemsu Heru.  They are the ones who follow Asar, and they help to resurrect him.  Nehast means to wake-up, to awaken to the higher existence.",
-        "note": "",
-        "location": 3071,
-        "at": "2026-06-09T04:56:00Z"
-      },
-      {
-        "id": "1041218991",
-        "text": "In the slide above, at the bottom right, there is a picture of the God Ra who is sitting in his boat In his boat, Ra sails on the primeval ocean, which is inhabited by the serpent Apep. Apep is a demon of chaos who is trying to stop the creative movement of the boat. Set, who was previously a negative personality, was redeemed and now stands at the bow (front) of the boat to protect it from the giant serpent; in other words, Set is serving Ra, the good. So having turned away from evil Set is no longer demonic.",
-        "note": "",
-        "location": 3726,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218992",
-        "text": "\"Men and women are to become God-like through a life of virtue and the cultivation of the spirit through scientific knowledge, practice and bodily discipline.\"   \"Salvation is the freeing of the soul from its bodily fetters; becoming a God through knowledge and wisdom; controlling the forces of the  cosmos instead of being a slave to them; subduing the lower nature and through awakening the higher self, ending the cycle of rebirth and dwelling with the Neters who direct and control the Great Plan.\"",
-        "note": "",
-        "location": 3735,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218993",
-        "text": "You must understand then, that you are wearing God right now.  Those of you who are holding something, you are holding God right now.  If you are sitting, you are sitting on God. If you are walking, you are walking on God. If you are wearing shoes, you are wearing God’s shoes. If you are breathing, you are breathing God. If your heart is beating it is God’s heart that is beating, etc. You see the glory of this philosophy if it is correctly understood?  And the loss of this is just a sorry affair for those who miss out.",
-        "note": "",
-        "location": 3787,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218994",
-        "text": "So even the gods and goddesses, the lesser beings we were talking about, the ones that are below the Supreme Being, even they don’t have full knowledge, full enlightenment.  They have to do the same thing human beings have to do. They have to practice Uashu (devotion) – they also have to practice the disciplines in order to enlighten themselves.",
-        "note": "",
-        "location": 3810,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218995",
-        "text": "The second Great Truth is “An-Maat swy Saui Set s-khemn” which means: “Lack of righteousness brings fetters to the personality, and these fetters cause ignorance of the Divine.” This teaching is reflected in the Neterian proverb:   \"There are two roads traveled by humankind, those who seek to live MAAT and those who seek to satisfy their animal passions.\"",
-        "note": "",
-        "location": 3870,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218996",
-        "text": "In a higher, more advanced sense there are only two groups of people, the Nehastu   -“spiritually awakened” and the kmn  {ignorant} “worldly.”",
-        "note": "",
-        "location": 3881,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218997",
-        "text": "So in the end, worldliness is unrighteousness in a broad understanding of the term, from a philosophical standpoint. Unrighteousness is selfishness. It is greed, lust, jealousy, and envy, but the greatest unrighteousness is the unrighteousness of ignorance.  The Kamitan proverb goes, “There is no darkness like the darkness of ignorance.”",
-        "note": "",
-        "location": 3886,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218998",
-        "text": "Ignorance is insidious because the ignorant mind, being deluded, believes it is following the right path when actually it is following a path of its own design. Even when errors and contradictions are pointed out to such a person, his/her mind develops rationalizations to justify the an-maat- “unrighteous actions.”",
-        "note": "",
-        "location": 3925,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041218999",
-        "text": "The third Great Truth is “S-Uashu s-Nafu n saiu Set.” “Devotion to the Divine leads to freedom from the fetters of Set.” Saui Set relates to the fetters. As spiritual enlightenment dawns, there will be many new feelings that arise, because a new world heretofore unknown by the mind has been accessed. Devotion purifies the personality by dissolving the ego. Then you begin to discover the world in which enlightened sages live. Along with devotion, your actions must be pure.",
-        "note": "",
-        "location": 3950,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041219000",
-        "text": "The mummies that are wrapped all have a special bandage that is placed over their mouth. Symbolically it is called saiu set.  When saiu set is there, you cannot touch the mummy with the seba-ur instrument .  Recall the Seba glyphs discussed previously, about the teachings sba, sbai, etc. Seba-ur is the great Seba.  Seba-ur also relates to the great star in the sky that illumines, the great enlightenment. This instrument is a metaphor of the great Sba, the star that illumines perennially  “Akhemu Urdu” in the North Pole – it never fades. So, one who is touched by that great star is fully illumined (enlightened), and not like ordinary people who are only partially enlightened. People who acquire some knowledge but who do not achieve the highest attainment, full enlightenment, can be likened to someone waking up, but then going back to sleep.",
-        "note": "",
-        "location": 3961,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041219001",
-        "text": "So words and right speech are extremely important in Neterian spirituality. If you speak wrongly you are creating negative  ariu- (ctions, deeds, unconscious mental impressions that impel the desires of the mind-the karmic basis) accumulated over previous years. That negativity leads to dullness of mind and ignorance, as well as the inability to understand the teaching and avoid the complications and miseries of life.",
-        "note": "",
-        "location": 3991,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1041219002",
-        "text": "Therefore, one’s conscious desire to go to heaven at the time of one’s death or one’s conscious repentance at the time of death for misdeeds in life cannot overcome the weight of the unrighteous  ariu – (actions, things done, make something, deeds; Ari -Karma) one has set up during a lifetime. Therefore, one cannot repent on one’s death bed after a life of unrighteousness- after filling the heart and mind with unrighteous feelings, thoughts, words and deeds. So it is important to begin now to purify the heart and cleanse the soul so as to become Maakheru (true of speech-pure of heart) at the time of the judgment.",
-        "note": "",
-        "location": 4045,
-        "at": "2026-08-05T04:56:00Z"
-      },
-      {
-        "id": "1042778424",
-        "text": "The orthodox are interested in imparting dogmas and demanding obedience to those blindly following. Mystical religion is interested in making you free, making you an enlightened being, and not a slave to ignorance and illusion.",
-        "note": "",
-        "location": 4148,
-        "at": "2026-08-10T04:56:00Z"
-      },
-      {
-        "id": "1042778425",
-        "text": "What are you supposed to be devoting yourself to? The Divine. What are you supposed to be studying to get the knowledge of? The wisdom philosophy. These are the keys. We will go into a little more detail now based directly on the Medu Neter.",
-        "note": "",
-        "location": 4159,
-        "at": "2026-08-10T04:56:00Z"
-      },
-      {
-        "id": "1042778426",
-        "text": "All of the disciplines of shedy lead to a meditative experience; they act to attenuate the personality and allow it to be purified. Then the mind can enter into extended concentration and super-consciousness, deeper levels of awareness. What is needed to overcome these fetters or obstacles is  Shemsu udja shedy –“real and powerful, burning following and practice of the disciplines of the spiritual teaching.” This implies constant and not intermittent contact with the temple, the teaching, the  Sbai – {wise person, teacher, instructor, sage, spiritual preceptor}, regular practice of the disciplines, studies and rituals.",
-        "note": "",
-        "location": 4207,
-        "at": "2026-08-10T04:56:00Z"
-      },
-      {
-        "id": "1042778427",
-        "text": "The final objective of the Mysteries is to be able to say:  Nuk pu Nuk Asar Neter – “I am that I am” (Asar the Divinity).",
-        "note": "",
-        "location": 4236,
-        "at": "2026-08-10T04:56:00Z"
-      },
-      {
-        "id": "1042778428",
-        "text": "It is expressed in the diagram of the Pautti of Anunian Cosmology or Company of Gods and Goddesses who formed the creation of the universe based on the creation story of the theological teaching that was developed by the priests and priestesses of the Ancient Egyptian city of Anu (also known to the Greeks as “Heliopolis.”",
-        "note": "",
-        "location": 4307,
-        "at": "2026-08-10T04:56:00Z"
-      },
-      {
-        "id": "1042778429",
-        "text": "The Pau  - self existent spirit, God, created all things out of Paut  the stuff or matter or substance or material out of which all is made (food-objects-people-gods-planets-stars-etc.) Thus, came into being the Pauti company of gods and goddesses, and God is also known as Pauti because Creation is made of God stuff.",
-        "note": "",
-        "location": 4314,
-        "at": "2026-08-10T04:56:00Z"
       }
     ]
   },
@@ -31104,8 +31118,8 @@
     "activity": [
       0,
       0,
-      0,
       56,
+      0,
       0,
       0,
       0,
@@ -42538,8 +42552,8 @@
     "color": "#dc2626",
     "activity": [
       0,
-      0,
       11,
+      0,
       0,
       0,
       0,
@@ -47240,8 +47254,8 @@
     "color": "#14b8a6",
     "activity": [
       0,
-      0,
       3,
+      0,
       0,
       0,
       0,
