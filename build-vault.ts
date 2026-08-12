@@ -3,6 +3,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 import matter from "gray-matter";
 import { truncateAtWord } from './lib/string-utils.js';
+import { shardFile } from './lib/shard.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +11,12 @@ const __dirname = path.dirname(__filename);
 // ── Config ──────────────────────────────────────────────────────────────────
 const VAULT_PATH = path.resolve(__dirname, "../NylusS");
 const OUT_DIR = path.resolve(__dirname, "public/data");
+
+// Body text is written to `body-NNN.json` shards instead of living inside
+// domain-*.json. Rationale: domain-eastern-spirituality.json had reached 50MB,
+// past GitHub's recommended file size, and /concept/[slug] parsed the whole
+// thing on every request to pull one ~17KB note out of it.
+// The bucketing rule is shared with the reader — see lib/shard.ts.
 
 const INCLUDED_DIRS = [
   "ARCHIVES/concepts",
@@ -357,6 +364,32 @@ async function buildVault() {
 
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
+  // Clear the generated files this script fully rewrites below. Without this,
+  // a renamed or deleted note leaves its old shard behind forever — the file
+  // gets committed and pushed and never cleaned up, which is exactly the bloat
+  // the sharding is meant to solve.
+  //
+  // Deliberately scoped to patterns this script owns and regenerates on every
+  // run. domain-index-*.json is NOT included: it is only written when
+  // ARCHIVES/domain-indexes exists, so wiping it would lose data on any run
+  // where that directory is missing.
+  {
+    const owned = [
+      /^body-\d+\.json$/,
+      /^order-.+\.json$/,
+      /^cards\.json$/,
+      /^domain-(?!index-).+\.json$/,
+    ];
+    let removed = 0;
+    for (const f of fs.readdirSync(OUT_DIR)) {
+      if (owned.some((re) => re.test(f))) {
+        fs.unlinkSync(path.join(OUT_DIR, f));
+        removed++;
+      }
+    }
+    if (removed) console.log(`🧹 Cleared ${removed} stale generated files`);
+  }
+
   // Validate hub files FIRST — truncated wikilinks silently drop hub assignments
   const hubsDir = path.join(VAULT_PATH, "ARCHIVES/concepts/hubs");
   validateHubFiles(hubsDir);
@@ -615,17 +648,79 @@ async function buildVault() {
     nodeArray.some((n) => n.domain === d)
   );
   // Also write unknown for any orphaned pages (used internally, not shown on site)
+  // Body text lives in the body-NNN.json shards now, so these carry metadata
+  // only. /domain/[name]/all is the sole reader and never touched `content`;
+  // dropping it took domain-eastern-spirituality.json from 50MB to ~4MB.
   const allDomains = [...new Set(nodeArray.map((n) => n.domain))];
   for (const domain of allDomains) {
     const safeDomain = domain.replace(/[^a-z0-9-]/gi, "-").toLowerCase();
     const domainNodes = nodeArray
       .filter((n) => n.domain === domain)
-      .sort((a, b) => b.sources - a.sources);
+      .sort((a, b) => b.sources - a.sources)
+      .map(({ content, ...rest }) => rest);
     fs.writeFileSync(
       path.join(OUT_DIR, `domain-${safeDomain}.json`),
       JSON.stringify(domainNodes, null, 0)
     );
   }
+
+  // ── Reader files for /concept/[slug] ───────────────────────────────────────
+  // That route used to parse graph.json (20MB) plus its whole domain file
+  // (up to 50MB) on every request to render one note. These three artifacts
+  // replace both reads with ~2MB.
+
+  // body-NNN.json — the full node record, content included, keyed by slug.
+  // Sharded by the stable hash so one edited note rewrites one shard.
+  const shards: Map<string, Record<string, VaultNode>> = new Map();
+  for (const n of nodeArray) {
+    const file = shardFile(n.id);
+    let bucket = shards.get(file);
+    if (!bucket) {
+      bucket = {};
+      shards.set(file, bucket);
+    }
+    bucket[n.id] = n;
+  }
+  for (const [file, bucket] of shards) {
+    fs.writeFileSync(path.join(OUT_DIR, file), JSON.stringify(bucket, null, 0));
+  }
+
+  // cards.json — the handful of fields needed to render a *reference* to a
+  // node (backlink cells, sidebar links) plus the id→type map NodeReader uses
+  // to resolve wikilinks. Global, because backlinks cross domains freely.
+  // `domain` is load-bearing: NodeReader prints the domain short-name on every
+  // backlink cell (void-conn-domain). Dropping it renders an empty label.
+  const cards: Record<
+    string,
+    { title: string; type: string; color: string; domain: string }
+  > = {};
+  for (const n of nodeArray) {
+    cards[n.id] = { title: n.title, type: n.type, color: n.color, domain: n.domain };
+  }
+  fs.writeFileSync(
+    path.join(OUT_DIR, "cards.json"),
+    JSON.stringify(cards, null, 0)
+  );
+
+  // order-[domain].json — the domain reading order, precomputed. The sort must
+  // stay byte-identical to what app/concept/[slug]/page.tsx used to do inline,
+  // or "next in section" and the sidebar sibling list would silently reshuffle.
+  for (const domain of allDomains) {
+    const safeDomain = domain.replace(/[^a-z0-9-]/gi, "-").toLowerCase();
+    const order = nodeArray
+      .filter((n) => n.domain === domain && n.type === "concept")
+      .sort(
+        (a, b) =>
+          (b.backlinks?.length ?? 0) - (a.backlinks?.length ?? 0) ||
+          a.title.localeCompare(b.title)
+      )
+      .map((n) => ({ id: n.id, title: n.title, excerpt: n.excerpt }));
+    fs.writeFileSync(
+      path.join(OUT_DIR, `order-${safeDomain}.json`),
+      JSON.stringify(order, null, 0)
+    );
+  }
+  console.log(`   ${shards.size} body shards, cards + order files written`);
 
   // domain-index-[name].json — parsed domain index md files for Full Index tab
   const DOMAIN_INDEX_DIR = path.join(VAULT_PATH, "ARCHIVES/domain-indexes");
