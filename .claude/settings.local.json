@@ -66,7 +66,10 @@
       "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq *next*\")",
       "Bash(curl -s -o /dev/null -w \"server still up: %{http_code}\\\\n\" http://localhost:3210/)",
       "Bash(node sync-once.mjs)",
-      "Bash(curl -s \"http://localhost:3100/spark/one-chapter-ahead\")"
+      "Bash(curl -s \"http://localhost:3100/spark/one-chapter-ahead\")",
+      "PowerShell($f = Get-ChildItem \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\nylusappprivate\\\\public\\\\data\" -File; \"{0} files, {1} MB total\" -f $f.Count, [math]::Round\\(\\($f | Measure-Object Length -Sum\\).Sum/1MB,1\\))",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\apgib\\\\OneDrive\\\\Desktop\\\\nylusappprivate\\\\public\\\\data\" -File | Sort-Object Length -Descending | Select-Object Name, @{n='MB';e={[math]::Round\\($_.Length/1MB,2\\)}} | Format-Table -AutoSize)",
+      "PowerShell(node -e \"const fs=require\\('fs'\\);const g=JSON.parse\\(fs.readFileSync\\('C:/Users/apgib/OneDrive/Desktop/nylusappprivate/public/data/graph.json','utf8'\\)\\);const c=g.nodes.filter\\(n=>n.type==='concept'\\);const pick=[];const doms=['eastern-spirituality','history','business'];for\\(const d of doms\\){const inD=c.filter\\(n=>n.domain===d\\);pick.push\\(inD.sort\\(\\(a,b\\)=>\\(b.backlinks?.length||0\\)-\\(a.backlinks?.length||0\\)\\)[0]\\);pick.push\\(inD.filter\\(n=>\\(n.backlinks?.length||0\\)===0\\)[0]\\);}const hub=g.nodes.find\\(n=>n.type==='hub'&&n.domain==='eastern-spirituality'\\);pick.push\\(hub\\);pick.filter\\(Boolean\\).forEach\\(n=>console.log\\(n.id+' | '+n.type+' | '+n.domain+' | backlinks='+\\(n.backlinks?.length||0\\)\\)\\);\")"
     ]
   }
 }
