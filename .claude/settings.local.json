@@ -82,7 +82,11 @@
       "PowerShell(\"--- recent commits ---\")",
       "PowerShell(\"--- branch vs remote ---\")",
       "PowerShell(\"--- when were shards added? ---\")",
-      "PowerShell(git add -A; \"--- staged summary ---\"; git diff --cached --shortstat; \"--- source files staged ---\"; git diff --cached --name-only | Where-Object { $_ -notmatch '^public/data' })"
+      "PowerShell(git add -A; \"--- staged summary ---\"; git diff --cached --shortstat; \"--- source files staged ---\"; git diff --cached --name-only | Where-Object { $_ -notmatch '^public/data' })",
+      "PowerShell(try { $r=Invoke-WebRequest -Uri 'https://lotusmind.guru' -UseBasicParsing -TimeoutSec 60; \"home: $\\($r.StatusCode\\), $\\($r.Content.Length\\) bytes\" } catch { \"home FAILED: $\\($_.Exception.Message\\)\" }; try { $r=Invoke-WebRequest -Uri 'https://lotusmind.guru/concept/bhakti-as-path' -UseBasicParsing -TimeoutSec 60; \"concept: $\\($r.StatusCode\\), $\\($r.Content.Length\\) bytes\"; if \\($r.Content -match 'one-pointed devotional love'\\) { 'body text: PRESENT' } else { 'body text: MISSING' } } catch { \"concept FAILED: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(Remove-Item '.next\\\\server' -Recurse -Force -ErrorAction SilentlyContinue; $env:NODE_OPTIONS='--max-old-space-size=8192'; npx next build 2>&1 | Select-Object -Last 6)",
+      "PowerShell(try { $r=Invoke-WebRequest -Uri 'https://lotusmind.guru/data/domain-eastern-spirituality.json' -Method Head -UseBasicParsing -TimeoutSec 45; $mb=[math]::Round\\([int64]$r.Headers.'Content-Length'/1MB,2\\); if\\($mb -lt 10\\){ \"NEW deploy is live \\(domain file $mb MB\\)\" } else { \"still OLD deploy \\(domain file $mb MB\\)\" } } catch { \"check failed: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(foreach\\($f in @\\('sparks.json','collisions.json','cards.json','body-000.json'\\)\\){ try { $r=Invoke-WebRequest -Uri \"https://lotusmind.guru/data/$f\" -UseBasicParsing -TimeoutSec 90; \"{0,-18} {1}  {2,10} bytes  parses:{3}\" -f $f,$r.StatusCode,$r.Content.Length,$\\(try{ $null=$r.Content|ConvertFrom-Json; 'OK' }catch{ 'BAD' }\\) } catch { \"{0,-18} FAILED: {1}\" -f $f,$_.Exception.Message } })"
     ]
   }
 }
