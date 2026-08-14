@@ -3,6 +3,7 @@ import Link from "next/link";
 import { marked } from "marked";
 import { useState, useEffect, useRef } from "react";
 import type { VaultNode } from "@/lib/types";
+import { slugFromWikilink, wikilinkPattern } from "@/lib/wikilinks";
 import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
@@ -20,9 +21,9 @@ interface Props {
   hubNav?: { id: string; title: string; index: number; total: number };
 }
 
-function slugFromWikilink(target: string): string {
-  return target.split("/").pop()!.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
+/* slugFromWikilink / wikilinkPattern live in lib/wikilinks.ts: the concept page
+   uses them to work out which node types to send here, so both sides have to
+   resolve a target identically or live links would render as broken text. */
 
 function routeForType(type: string, slug: string): string {
   if (type === "source") return `/source/${slug}`;
@@ -35,7 +36,7 @@ function routeForType(type: string, slug: string): string {
 function renderContent(raw: string, nodeTypes: Map<string, string>): string {
   let body = raw.replace(/^---[\s\S]*?---\n?/, "");
   body = body.replace(
-    /\[\[([^\]|#\n]+?)(?:\|([^\]\n]+))?\]\]/g,
+    wikilinkPattern(),
     (_match, target: string, alias?: string) => {
       const display = alias?.trim() || target.split("/").pop() || target;
       const slug = slugFromWikilink(target);

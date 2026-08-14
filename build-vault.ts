@@ -898,6 +898,38 @@ async function buildVault() {
   console.log(`   ${domains.length} domains${unknownCount > 0 ? ` (+ ${unknownCount} uncategorized)` : ""}`);
   console.log(`   ${timeline.length} timeline entries`);
   console.log(`   Output: ${OUT_DIR}`);
+
+  // Vercel bundles every file /concept/[slug] can read into that route's
+  // serverless function and caps it at 250MB. Nothing surfaces how close you
+  // are until a deploy fails outright, which is how this bit twice — once at
+  // 256MB, then again when the same limit reappeared on another function. The
+  // set below must stay in step with outputFileTracingIncludes in next.config.
+  const FUNCTION_LIMIT_MB = 250;
+  const OVERHEAD_MB = 2; // app code + traced node_modules share the budget
+  const conceptReads = fs
+    .readdirSync(OUT_DIR)
+    .filter(
+      (f) =>
+        /^body-\d+\.json$/.test(f) ||
+        f === "cards.json" ||
+        /^order-.+\.json$/.test(f) ||
+        /^hubnav-.+\.json$/.test(f)
+    );
+  const usedMB =
+    conceptReads.reduce((sum, f) => sum + fs.statSync(path.join(OUT_DIR, f)).size, 0) /
+    (1024 * 1024);
+  const budgetMB = FUNCTION_LIMIT_MB - OVERHEAD_MB;
+  const perNoteMB = usedMB / Math.max(1, nodeArray.length);
+  const notesLeft = Math.max(0, Math.round((budgetMB - usedMB) / Math.max(perNoteMB, 1e-9)));
+  const pct = Math.round((usedMB / budgetMB) * 100);
+  const summary = `Vercel function budget: ${usedMB.toFixed(0)}MB / ${FUNCTION_LIMIT_MB}MB (${pct}%) — room for ~${notesLeft.toLocaleString()} more notes`;
+  if (usedMB >= budgetMB) {
+    console.error(`\n🛑 ${summary}\n   The next deploy will FAIL. See the growth notes in next.config.ts.`);
+  } else if (budgetMB - usedMB < 25) {
+    console.warn(`\n⚠️  ${summary}\n   Getting tight — deploys fail at the limit, they do not degrade.`);
+  } else {
+    console.log(`   ${summary}`);
+  }
 }
 
 function inferDomain(relPath: string): string {

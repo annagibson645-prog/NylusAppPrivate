@@ -3,6 +3,7 @@ import path from "path";
 import { notFound } from "next/navigation";
 import type { VaultNode } from "@/lib/types";
 import { shardFile } from "@/lib/shard";
+import { wikilinkSlugs } from "@/lib/wikilinks";
 import NodeReader from "@/components/NodeReader";
 
 export const dynamic = 'force-dynamic';
@@ -53,7 +54,16 @@ export default async function ConceptPage({
     );
   }
 
-  const nodeTypes = new Map(Object.entries(cards).map(([id, c]) => [id, c.type]));
+  // Only the link targets this note actually mentions. NodeReader needs a type
+  // per wikilink to route it, and this used to hand it the whole vault — one
+  // entry per node, 11,800+ of them, serialized into every single page. That
+  // was most of a concept page's ~800KB, and it grew with the vault rather than
+  // with the note, so every page got heavier each time anything was written.
+  const nodeTypes = new Map<string, string>();
+  for (const id of wikilinkSlugs(node.content)) {
+    const card = cards[id];
+    if (card) nodeTypes.set(id, card.type);
+  }
   const backlinkedNodes = node.backlinks.flatMap((id) =>
     cards[id] ? [{ id, ...cards[id] } as unknown as VaultNode] : []
   );
