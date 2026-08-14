@@ -94,7 +94,9 @@
       "PowerShell(npm run parse 2>&1)",
       "PowerShell(\"--- re-verify all hubs ---\")",
       "PowerShell(\"--- last 8 commits ---\"; git log --oneline -8; \"--- are the tracing fixes present? ---\"; foreach\\($c in @\\('9240db19','33d8d078','b4505b4a'\\)\\){ $r = git branch --contains $c 2>$null; if\\($?\\){ \"$c : in history\" } else { \"$c : MISSING\" } }; \"--- next.config on HEAD has the global exclude? ---\"; git show HEAD:next.config.ts | Select-String -Pattern 'outputFileTracing|public/data' | Select-Object -First 4)",
-      "PowerShell(foreach\\($s in @\\('progressio-long-antithesis-series','time-travel-within-a-story-rule','bhakti-redefines-dharma'\\)\\){ $r=Invoke-WebRequest -Uri \"http://localhost:3100/concept/$s\" -UseBasicParsing -TimeoutSec 300; $live=\\([regex]::Matches\\($r.Content,'class=\"void-link\"'\\)\\).Count; $broke=\\([regex]::Matches\\($r.Content,'void-link-broken'\\)\\).Count; \"{0,-36} live:{1,3}  broken:{2,3}  {3} KB\" -f $s,$live,$broke,[math]::Round\\($r.Content.Length/1KB\\) })"
+      "PowerShell(foreach\\($s in @\\('progressio-long-antithesis-series','time-travel-within-a-story-rule','bhakti-redefines-dharma'\\)\\){ $r=Invoke-WebRequest -Uri \"http://localhost:3100/concept/$s\" -UseBasicParsing -TimeoutSec 300; $live=\\([regex]::Matches\\($r.Content,'class=\"void-link\"'\\)\\).Count; $broke=\\([regex]::Matches\\($r.Content,'void-link-broken'\\)\\).Count; \"{0,-36} live:{1,3}  broken:{2,3}  {3} KB\" -f $s,$live,$broke,[math]::Round\\($r.Content.Length/1KB\\) })",
+      "PowerShell(npx tsc --noEmit 2>&1 | Where-Object { $_ -notmatch '\\\\.test\\\\.ts' } | Select-Object -First 12; \"--- typecheck done \\(blank = clean\\) ---\")",
+      "PowerShell(git add -A; \"--- staging \\(source only\\) ---\"; git diff --cached --name-only | Where-Object { $_ -notmatch '^public/data' }; git commit -F 'C:\\\\Users\\\\apgib\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-apgib-OneDrive-Desktop-nylusappprivate\\\\8198913b-999e-446f-b9a0-4560bf32a5bf\\\\scratchpad\\\\commitmsg3.txt' --quiet; if \\($?\\) { git push; git log --oneline -1 })"
     ]
   }
 }
