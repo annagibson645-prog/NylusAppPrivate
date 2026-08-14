@@ -1,53 +1,59 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Fraunces, Cormorant_Garamond } from "next/font/google";
 import localFont from "next/font/local";
 import MobileNav from "@/components/MobileNav";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
+// Every font is self-hosted. next/font/google downloads the binaries during the
+// build, and that fetch fails intermittently on the deploy builder: the
+// @font-face CSS is still emitted, now pointing at files that were never
+// written, and the build dies with module-not-found. Newsreader moved here for
+// that reason in 592a34a7; Fraunces and Cormorant Garamond then failed the same
+// way on separate builds, so the remaining families followed rather than
+// waiting their turn. Nothing is fetched from Google at build time now.
+//
+// All variable woff2, latin subset, declared with the full weight range each
+// file carries — a narrower range here would clamp weights the CSS still asks
+// for.
+const spaceGrotesk = localFont({
   variable: "--font-space-grotesk",
-  weight: ["400", "500", "600"],
+  display: "swap",
+  src: [{ path: "./fonts/SpaceGrotesk-latin-normal.woff2", weight: "300 700", style: "normal" }],
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
+const jetbrainsMono = localFont({
   variable: "--font-jetbrains",
-  weight: ["300", "400", "500"],
+  display: "swap",
+  src: [
+    { path: "./fonts/JetBrainsMono-latin-normal.woff2", weight: "100 800", style: "normal" },
+    { path: "./fonts/JetBrainsMono-latin-italic.woff2", weight: "100 800", style: "italic" },
+  ],
 });
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
+const fraunces = localFont({
   variable: "--font-fraunces",
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
+  display: "swap",
+  src: [
+    { path: "./fonts/Fraunces-latin-normal.woff2", weight: "100 900", style: "normal" },
+    { path: "./fonts/Fraunces-latin-italic.woff2", weight: "100 900", style: "italic" },
+  ],
 });
 
-// Self-hosted: the Google Fonts fetch for Newsreader intermittently fails on the
-// deploy builder, which emits @font-face rules pointing at font files that were
-// never downloaded (module-not-found at build time). Variable woff2, latin subset.
 const newsreader = localFont({
   variable: "--font-newsreader",
   display: "swap",
   src: [
-    {
-      path: "./fonts/Newsreader-latin-normal.woff2",
-      weight: "200 800",
-      style: "normal",
-    },
-    {
-      path: "./fonts/Newsreader-latin-italic.woff2",
-      weight: "200 800",
-      style: "italic",
-    },
+    { path: "./fonts/Newsreader-latin-normal.woff2", weight: "200 800", style: "normal" },
+    { path: "./fonts/Newsreader-latin-italic.woff2", weight: "200 800", style: "italic" },
   ],
 });
 
-const cormorantGaramond = Cormorant_Garamond({
-  subsets: ["latin"],
+const cormorantGaramond = localFont({
   variable: "--font-cormorant",
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
+  display: "swap",
+  src: [
+    { path: "./fonts/CormorantGaramond-latin-normal.woff2", weight: "300 700", style: "normal" },
+    { path: "./fonts/CormorantGaramond-latin-italic.woff2", weight: "300 700", style: "italic" },
+  ],
 });
 
 export const metadata: Metadata = {
