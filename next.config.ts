@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
       "./public/data/cards.json",
       "./public/data/body-*.json",
       "./public/data/order-*.json",
+      "./public/data/hubnav-*.json",
     ],
   },
 };

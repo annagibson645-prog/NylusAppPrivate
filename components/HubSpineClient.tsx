@@ -15,6 +15,8 @@ export interface SpineSection {
   color: string; badge: string; concepts: SpineConcept[];
 }
 export interface HubSpineProps {
+  /** Hub slug. Keys the reading bookmark, which NodeReader also writes to. */
+  hubId: string;
   title: string; domain: string; domainLabel: string; domainColor: string;
   excerpt?: string; path?: string; sections: SpineSection[]; unplaced: SpineConcept[];
 }
@@ -269,7 +271,7 @@ function sameLayout(a: RailLayout | null, b: RailLayout): boolean {
 }
 
 /* ── HubSpineClient ─────────────────────────────────────────────── */
-export default function HubSpineClient({ title, domain, domainLabel, domainColor, excerpt, path, sections, unplaced }: HubSpineProps) {
+export default function HubSpineClient({ hubId, title, domain, domainLabel, domainColor, excerpt, path, sections, unplaced }: HubSpineProps) {
   const [paletteKey, setPaletteKey] = useState<PaletteKey>('ember');
   const P = PALETTES[paletteKey];
   /* On sepia the comets draw on near-white paper, so the domain color has to be
@@ -409,22 +411,43 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
     return () => cancelAnimationFrame(id);
   }, [openKey, computeLayout]);
 
-  const bookmarkKey = `nylus-bookmark-${path ?? title}`;
+  /* Keyed on the hub slug rather than its vault path, because NodeReader writes
+     this same key from the concept page — reading a concept moves the bookmark,
+     so coming back here lands on where you actually got to rather than on the
+     last card you happened to click. */
+  const bookmarkKey = `nylus-bookmark-${hubId}`;
   const [bookmarkId, setBookmarkId] = useState<string | null>(null);
-  useEffect(() => {
+
+  const syncBookmark = useCallback((reveal: boolean) => {
     try {
       const saved = localStorage.getItem(bookmarkKey);
-      if (saved) {
-        setBookmarkId(saved);
-        const sec = allSections.find(s => s.concepts.some(c => c.id === saved));
-        if (sec) {
-          openOnly(sec.key);
-          setTimeout(() => scrollDotIntoView(sec.key), 250);
-        }
+      if (!saved) return;
+      setBookmarkId(saved);
+      if (!reveal) return;
+      const sec = allSections.find(s => s.concepts.some(c => c.id === saved));
+      if (sec) {
+        openOnly(sec.key);
+        setTimeout(() => scrollDotIntoView(sec.key), 250);
       }
-    } catch {}
+    } catch { /* storage unavailable — the rail just opens unbookmarked */ }
+  }, [bookmarkKey, allSections, openOnly, scrollDotIntoView]);
+
+  useEffect(() => {
+    syncBookmark(true);
+    /* A client-side back re-mounts this component, but a browser back restored
+       from bfcache does not — pageshow is what catches that case. */
+    const onShow = (e: PageTransitionEvent) => { if (e.persisted) syncBookmark(true); };
+    window.addEventListener('pageshow', onShow);
+    return () => window.removeEventListener('pageshow', onShow);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookmarkKey]);
+
+  /* The rail shows sections, not concepts, so the bookmark surfaces as a mark
+     on the dot of whichever section holds it. */
+  const bookmarkSectionKey = useMemo(
+    () => (bookmarkId ? allSections.find(s => s.concepts.some(c => c.id === bookmarkId))?.key ?? null : null),
+    [bookmarkId, allSections],
+  );
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const activeC   = activeId ? conceptMap.get(activeId) : null;
@@ -631,13 +654,16 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
                           <button
                             key={sec.key}
                             ref={el => { dotRefs.current[sec.key] = el; }}
-                            className={`hs-rail-dot${isOpen ? ' active' : ''}`}
+                            className={`hs-rail-dot${isOpen ? ' active' : ''}${sec.key === bookmarkSectionKey ? ' bookmarked' : ''}`}
                             onClick={() => toggleSection(sec.key)}
                             aria-expanded={isOpen}
                           >
                             <span className="hs-rail-mark" />
                             <span className="hs-rail-name">{sec.label}</span>
-                            <span className="hs-rail-count">{sec.concepts.length} concepts</span>
+                            <span className="hs-rail-count">
+                              {sec.concepts.length} concepts
+                              {sec.key === bookmarkSectionKey && <em className="hs-rail-here"> · you left off here</em>}
+                            </span>
                           </button>
                         );
                       })}
@@ -676,8 +702,11 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
 
         <div className="hs-dp-body">
           <div className="hs-dp-main">
+            {/* ?hub carries which hub you are reading, so "next" on the concept
+                page continues this hub's list rather than the single hub the
+                concept itself happens to name. */}
             {activeC && (
-              <Link href={`/concept/${activeC.id}`} className="hs-dp-title" onClick={closePanel}>
+              <Link href={`/concept/${activeC.id}?hub=${encodeURIComponent(hubId)}`} className="hs-dp-title" onClick={closePanel}>
                 {activeC.title}
               </Link>
             )}
@@ -861,6 +890,11 @@ export default function HubSpineClient({ title, domain, domainLabel, domainColor
         .hs-rail-mark{grid-row:1 / 3;align-self:center;width:14px;height:14px;border-radius:50%;border:2px solid var(--dc);background:var(--hs-bg,#03020a);transition:transform .25s cubic-bezier(.16,1,.3,1),background .2s,box-shadow .25s;position:relative;z-index:2}
         .hs-rail-mark::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--dc);opacity:0;transform:scale(.7);pointer-events:none}
         .hs-rail-dot.active .hs-rail-mark{background:var(--dc);transform:scale(1.3);box-shadow:0 0 12px 2px color-mix(in srgb,var(--dc) 45%,transparent)}
+        /* Where the reader left off. Filled and haloed so it reads at a glance
+           on a rail of hollow dots, but weaker than .active so an open section
+           still wins when they are the same dot. */
+        .hs-rail-dot.bookmarked .hs-rail-mark{background:color-mix(in srgb,var(--dc) 55%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--dc) 22%,transparent)}
+        .hs-rail-here{font-style:normal;color:var(--dc);opacity:.85;white-space:nowrap}
         .hs-rail-dot.active .hs-rail-mark::after{animation:hs-dot-ripple .62s cubic-bezier(.16,1,.3,1) forwards}
         @keyframes hs-dot-ripple{0%{opacity:.85;transform:scale(.7)}100%{opacity:0;transform:scale(2.4)}}
         .hs-rail-name{grid-column:2;grid-row:1;font-family:var(--font-newsreader,serif);font-style:italic;font-size:14px;color:var(--hs-ink2,#b4acd0);text-align:left;line-height:1.28;transition:color .15s}

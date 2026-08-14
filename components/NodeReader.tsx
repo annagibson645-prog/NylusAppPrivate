@@ -10,8 +10,14 @@ interface Props {
   backlinkedNodes: VaultNode[];
   nodeTypes: Map<string, string>;
   domainSiblings?: VaultNode[];
-  /** Next concept in this domain's reading order — bottom card + right nav. */
+  /** Next concept in the current reading order — bottom card + right nav. */
   nextNode?: VaultNode;
+  /**
+   * Set when this concept sits in a hub, in which case `domainSiblings` and
+   * `nextNode` follow the hub's reading order rather than the domain's, and
+   * `index`/`total` give the reader their position in it.
+   */
+  hubNav?: { id: string; title: string; index: number; total: number };
 }
 
 function slugFromWikilink(target: string): string {
@@ -198,8 +204,17 @@ function ConceptLotus({ color }: { color: string }) {
   );
 }
 
-export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSiblings = [], nextNode }: Props) {
+export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSiblings = [], nextNode, hubNav }: Props) {
   const [progress, setProgress] = useState(0);
+
+  // Record where the reader got to, so returning to the hub lands on this
+  // concept instead of the top of the rail. HubSpineClient reads the same key.
+  useEffect(() => {
+    if (!hubNav) return;
+    try {
+      localStorage.setItem(`nylus-bookmark-${hubNav.id}`, node.id);
+    } catch { /* private mode / storage disabled — bookmarking is optional */ }
+  }, [hubNav, node.id]);
 
   useEffect(() => {
     function onScroll() {
@@ -218,6 +233,10 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
   const complexity = complexityScore(node.sources, backlinkedNodes.length);
   const domainLabel = DOMAIN_FULL[node.domain] || node.domain;
   const domainShort = DOMAIN_BACK[node.domain] || node.domain;
+  /* Carried on every link that continues the hub sequence, so walking "next"
+     stays inside the hub you are reading rather than falling back to whichever
+     single hub each concept happens to name. */
+  const hubQ = hubNav ? `?hub=${encodeURIComponent(hubNav.id)}` : "";
 
   const c = node.color;
 
@@ -536,16 +555,30 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
           </div>
 
           {/* Next in section — end of the read */}
-          {nextNode && (
-            <Link href={`/concept/${nextNode.id}`} className="void-next">
-              <div className="void-next-label">next in {domainLabel}</div>
+          {nextNode ? (
+            <Link href={`/concept/${nextNode.id}${hubQ}`} className="void-next">
+              <div className="void-next-label">
+                next in {hubNav ? hubNav.title : domainLabel}
+              </div>
               <div className="void-next-title">{nextNode.title}</div>
               {nextNode.excerpt && (
                 <div className="void-next-excerpt">{nextNode.excerpt}</div>
               )}
               <span className="void-next-arrow" aria-hidden="true">→</span>
             </Link>
-          )}
+          ) : hubNav ? (
+            /* Last concept in the hub. The hub's own arrows stop here too, so
+               offer the way back rather than looping to the first concept —
+               a silent wrap reads as a bug when you know where the end is. */
+            <Link href={`/hub/${hubNav.id}`} className="void-next">
+              <div className="void-next-label">end of {hubNav.title}</div>
+              <div className="void-next-title">back to the hub</div>
+              <div className="void-next-excerpt">
+                That was the last of {hubNav.total} concepts in this hub.
+              </div>
+              <span className="void-next-arrow" aria-hidden="true">←</span>
+            </Link>
+          ) : null}
         </div>
 
         {/* ── Right nav ─────────────────────────────────────────────── */}
@@ -570,7 +603,7 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
             <>
               <div className="vrn-sep" />
               <span className="vrn-section-label">next</span>
-              <Link href={`/concept/${nextNode.id}`} className="vrn-next" title={nextNode.title}>
+              <Link href={`/concept/${nextNode.id}${hubQ}`} className="vrn-next" title={nextNode.title}>
                 <span className="vrn-next-title">{nextNode.title}</span>
                 <span className="vrn-next-arrow" aria-hidden="true">→</span>
               </Link>
@@ -580,13 +613,21 @@ export default function NodeReader({ node, backlinkedNodes, nodeTypes, domainSib
           {domainSiblings.length > 0 && (
             <>
               <div className="vrn-sep" />
+              {/* In a hub the rail lists the hub's sequence, so it needs a way
+                  back to the hub it belongs to — reusing vrn-link keeps it
+                  looking like the other rail links. */}
+              {hubNav && (
+                <Link href={`/hub/${hubNav.id}`} className="vrn-link">
+                  ← hub · {hubNav.index + 1}/{hubNav.total}
+                </Link>
+              )}
               <span className="vrn-domain-label">
-                {domainLabel}
+                {hubNav ? hubNav.title : domainLabel}
               </span>
               {domainSiblings.map((s) => (
                 <Link
                   key={s.id}
-                  href={`/concept/${s.id}`}
+                  href={`/concept/${s.id}${hubQ}`}
                   className={`vrn-sibling${s.id === node.id ? " vrn-sibling-current" : ""}`}
                   title={s.title}
                 >

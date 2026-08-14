@@ -87,6 +87,7 @@ export default async function HubPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <HubSpineClient
+      hubId={hub.id}
       title={hubTitle}
       domain={hub.domain}
       domainLabel={label}

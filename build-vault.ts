@@ -377,6 +377,7 @@ async function buildVault() {
     const owned = [
       /^body-\d+\.json$/,
       /^order-.+\.json$/,
+      /^hubnav-.+\.json$/,
       /^cards\.json$/,
       /^domain-(?!index-).+\.json$/,
     ];
@@ -791,6 +792,42 @@ async function buildVault() {
     path.join(OUT_DIR, "hubs.json"),
     JSON.stringify(hubs, null, 0)
   );
+
+  // hubnav-[hub].json — a hub's concepts in the order its rail reads them, so
+  // /concept/[slug] can offer "next in this hub" without loading hubs.json and
+  // graph.json to work it out.
+  //
+  // The order has to match HubSpineClient's ORDER exactly or "next" on the
+  // concept page and "→" in the hub panel would disagree. That component builds
+  // ORDER by grouping sections into lanes (foundational → intermediate →
+  // advanced → thematic) and flattening; parseHubSections already emits
+  // sections pre-sorted by that same level order and de-duplicates concepts
+  // within a hub, so flattening here reproduces it.
+  const conceptTitles = new Map(
+    nodeArray.filter((n) => n.type === "concept").map((n) => [n.id, n])
+  );
+  let hubNavCount = 0;
+  for (const h of hubs) {
+    // The hub page strips these suffixes for display; match it so the concept
+    // page's "next in ..." label reads the same as the hub's own heading.
+    const hubTitle = h.title.replace(/ — Map of Content$/, "").replace(/ Hub$/, "");
+    const concepts = (h.sections as HubSection[])
+      .flatMap((s) => s.concepts)
+      .map((id) => conceptTitles.get(id))
+      .filter((n): n is VaultNode => Boolean(n))
+      .map((n) => ({ id: n.id, title: n.title, excerpt: n.excerpt }));
+    if (concepts.length === 0) continue;
+    const safeHub = h.id.replace(/[^a-z0-9-]/gi, "-").toLowerCase();
+    fs.writeFileSync(
+      path.join(OUT_DIR, `hubnav-${safeHub}.json`),
+      JSON.stringify({ id: h.id, title: hubTitle, concepts }, null, 0)
+    );
+    hubNavCount++;
+  }
+  // Count the files actually written, not hubs.length — a hub whose sections
+  // hold no resolvable concepts is skipped, and reporting it as written would
+  // hide that from anyone reading the build log.
+  console.log(`   ${hubNavCount} of ${hubs.length} hubs have nav files`);
 
   // essays.json
   const essays = nodeArray
