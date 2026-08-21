@@ -93,11 +93,6 @@ interface HubSection {
   concepts: string[];
 }
 
-interface VaultEdge {
-  source: string;
-  target: string;
-}
-
 interface CollisionNode extends VaultNode {
   pressure_score: number;
 }
@@ -555,20 +550,22 @@ async function buildVault() {
     }
   }
 
-  // Build edges
-  const edges: VaultEdge[] = [];
+  // Count the undirected links. This used to materialise a full `edges` array
+  // that was written into graph.json — 84,000 entries, ~9MB — and nothing ever
+  // read it: `links` and `backlinks` on each node already carry the same
+  // information, and every consumer went through those instead. Because
+  // graph.json is one array over the whole vault it is rewritten whole and
+  // committed on every sync, so those 9MB were pure repo growth. Dropped
+  // 2026-08-20; only the count survives, for the build summary below.
   const edgeSet = new Set<string>();
   for (const node of nodes.values()) {
     for (const linkedSlug of node.links) {
       if (nodes.has(linkedSlug)) {
-        const key = [node.id, linkedSlug].sort().join("--");
-        if (!edgeSet.has(key)) {
-          edgeSet.add(key);
-          edges.push({ source: node.id, target: linkedSlug });
-        }
+        edgeSet.add([node.id, linkedSlug].sort().join("--"));
       }
     }
   }
+  const edgeCount = edgeSet.size;
 
   const nodeArray = Array.from(nodes.values());
 
@@ -585,7 +582,7 @@ async function buildVault() {
   });
   fs.writeFileSync(
     path.join(OUT_DIR, "graph.json"),
-    JSON.stringify({ nodes: graphNodes, edges }, null, 0)
+    JSON.stringify({ nodes: graphNodes }, null, 0)
   );
 
   // collisions.json — sorted by pressure_score desc
@@ -894,39 +891,48 @@ async function buildVault() {
   const unknownCount = nodeArray.filter((n) => n.domain === "unknown").length;
   console.log(`✅ Built:`);
   console.log(`   ${nodeArray.length} nodes (${collisions.length} collisions, ${sparks.length} sparks)`);
-  console.log(`   ${edges.length} edges`);
+  console.log(`   ${edgeCount} links between nodes`);
   console.log(`   ${domains.length} domains${unknownCount > 0 ? ` (+ ${unknownCount} uncategorized)` : ""}`);
   console.log(`   ${timeline.length} timeline entries`);
   console.log(`   Output: ${OUT_DIR}`);
 
-  // Vercel bundles every file /concept/[slug] can read into that route's
-  // serverless function and caps it at 250MB. Nothing surfaces how close you
-  // are until a deploy fails outright, which is how this bit twice — once at
-  // 256MB, then again when the same limit reappeared on another function. The
-  // set below must stay in step with outputFileTracingIncludes in next.config.
-  const FUNCTION_LIMIT_MB = 250;
-  const OVERHEAD_MB = 2; // app code + traced node_modules share the budget
-  const conceptReads = fs
-    .readdirSync(OUT_DIR)
-    .filter(
-      (f) =>
-        /^body-\d+\.json$/.test(f) ||
-        f === "cards.json" ||
-        /^order-.+\.json$/.test(f) ||
-        /^hubnav-.+\.json$/.test(f)
-    );
-  const usedMB =
-    conceptReads.reduce((sum, f) => sum + fs.statSync(path.join(OUT_DIR, f)).size, 0) /
-    (1024 * 1024);
-  const budgetMB = FUNCTION_LIMIT_MB - OVERHEAD_MB;
-  const perNoteMB = usedMB / Math.max(1, nodeArray.length);
-  const notesLeft = Math.max(0, Math.round((budgetMB - usedMB) / Math.max(perNoteMB, 1e-9)));
-  const pct = Math.round((usedMB / budgetMB) * 100);
-  const summary = `Vercel function budget: ${usedMB.toFixed(0)}MB / ${FUNCTION_LIMIT_MB}MB (${pct}%) — room for ~${notesLeft.toLocaleString()} more notes`;
-  if (usedMB >= budgetMB) {
-    console.error(`\n🛑 ${summary}\n   The next deploy will FAIL. See the growth notes in next.config.ts.`);
-  } else if (budgetMB - usedMB < 25) {
-    console.warn(`\n⚠️  ${summary}\n   Getting tight — deploys fail at the limit, they do not degrade.`);
+  // This used to measure the set of files pinned into /concept/[slug]'s
+  // serverless function against Vercel's 250MB cap, and it read 226MB / 91%.
+  // That number stopped meaning anything the day the route became
+  // `force-static` with `dynamicParams = false`: a fully prerendered route has
+  // no function for the cap to apply to. The pin (outputFileTracingIncludes in
+  // next.config) outlived the dynamic route it was written for and kept the
+  // gauge reading full. Both were removed 2026-08-20.
+  //
+  // What is left is a genuine hard limit, and it is git's, not Vercel's:
+  // GitHub refuses any single file over 100MB, and every one of these is
+  // committed because Vercel builds from the repo and the vault itself lives
+  // outside it. graph.json is the file that gets there first — it is one array
+  // over every node, so it grows linearly and is rewritten whole on each sync.
+  const GIT_FILE_LIMIT_MB = 100;
+  const generated = fs.readdirSync(OUT_DIR).filter((f) => f.endsWith(".json"));
+  const sizes = generated
+    .map((f) => ({ f, mb: fs.statSync(path.join(OUT_DIR, f)).size / (1024 * 1024) }))
+    .sort((a, b) => b.mb - a.mb);
+  const biggest = sizes[0];
+  const totalMB = sizes.reduce((sum, s) => sum + s.mb, 0);
+  // Headroom is set by the largest file, extrapolated at its current cost per
+  // note. Every other file is either sharded or bounded, so none of them reach
+  // 100MB before this one does.
+  const perNoteMB = biggest.mb / Math.max(1, nodeArray.length);
+  const notesLeft = Math.max(
+    0,
+    Math.round((GIT_FILE_LIMIT_MB - biggest.mb) / Math.max(perNoteMB, 1e-9))
+  );
+  const pct = Math.round((biggest.mb / GIT_FILE_LIMIT_MB) * 100);
+  const summary =
+    `Largest file: ${biggest.f} ${biggest.mb.toFixed(0)}MB / ${GIT_FILE_LIMIT_MB}MB git limit ` +
+    `(${pct}%) — room for ~${notesLeft.toLocaleString()} more notes. ` +
+    `${totalMB.toFixed(0)}MB generated across ${generated.length} files.`;
+  if (biggest.mb >= GIT_FILE_LIMIT_MB) {
+    console.error(`\n🛑 ${summary}\n   git push will be REJECTED. Shard ${biggest.f} the way body-*.json is sharded.`);
+  } else if (GIT_FILE_LIMIT_MB - biggest.mb < 20) {
+    console.warn(`\n⚠️  ${summary}\n   Getting tight — the push fails outright, it does not degrade.`);
   } else {
     console.log(`   ${summary}`);
   }

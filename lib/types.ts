@@ -49,14 +49,12 @@ export interface VaultNode {
   techniques?: string[];
 }
 
-export interface VaultEdge {
-  source: string;
-  target: string;
-}
-
+/** graph.json. Structural index only — no `content`, and no edge list: an
+ *  `edges` array used to sit alongside `nodes` here but nothing ever read it,
+ *  since `links` and `backlinks` on each node already carry the same relation.
+ *  Dropped from the generated file 2026-08-20. */
 export interface GraphData {
   nodes: VaultNode[];
-  edges: VaultEdge[];
 }
 
 export interface SearchItem {
