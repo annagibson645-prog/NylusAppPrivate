@@ -75,6 +75,7 @@ export default function Nav() {
               { href: "/essays",     label: "Essays"     },
               { href: "/collisions", label: "Collisions" },
               { href: "/sparks",     label: "Sparks"     },
+              { href: "/strata",     label: "Strata"     },
               { href: "/council",    label: "The Council" },
             ].map(({ href, label }) => (
               <Link key={href} href={href} className="text-sm transition-colors"
@@ -123,6 +124,7 @@ export default function Nav() {
               { href: "/essays",     label: "Essays"     },
               { href: "/collisions", label: "Collisions" },
               { href: "/sparks",     label: "Sparks"     },
+              { href: "/strata",     label: "Strata"     },
               { href: "/council",    label: "The Council" },
             ].map(({ href, label }) => (
               <Link key={href} href={href} className="block py-2 text-sm transition-colors"

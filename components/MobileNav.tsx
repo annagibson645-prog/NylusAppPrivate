@@ -13,6 +13,7 @@ const TABS = [
   { href: '/collisions', label: 'Collisions' },
   { href: '/sparks',     label: 'Sparks'     },
   { href: '/threads',    label: 'Threads'    },
+  { href: '/strata',     label: 'Strata'     },
   { href: '/tones',      label: 'Tomes'      },
   { href: '/council',    label: 'Council'    },
 ] as const;

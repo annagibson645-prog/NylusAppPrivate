@@ -27,6 +27,7 @@ const INCLUDED_DIRS = [
   "The Platform/Essays",
   "The Platform/Research",
   "The Platform/Craft",
+  "LAB/Worldview Reports",
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -425,9 +426,13 @@ async function buildVault() {
     const rawDomain = fm.domain || inferDomain(relPath);
     const domain = ALLOWED_DOMAINS.has(rawDomain) ? rawDomain : "unknown";
     const rawType = fm.type || inferType(relPath);
-    const type = (rawType === "extraction" && relPath.includes("The Platform/Research"))
-      ? "research"
-      : rawType;
+    const type =
+      (rawType === "extraction" && relPath.includes("The Platform/Research"))
+        ? "research"
+        // frontmatter says `worldview-archaeology`; the site route is /strata
+        : (rawType === "worldview-archaeology" || relPath.includes("LAB/Worldview Reports"))
+          ? "worldview"
+          : rawType;
     // gray-matter parses YYYY-MM-DD as a Date object (UTC midnight) — keep as string to avoid timezone shift
     const created = fm.created
       ? fm.created instanceof Date
@@ -483,7 +488,7 @@ async function buildVault() {
     if (type === "spark") {
       node.live_wire = extractSection(content, "The Live Wire");
     }
-    if (type === "essay" || type === "research" || type === "craft" || type === "thread") {
+    if (type === "essay" || type === "research" || type === "craft" || type === "thread" || type === "worldview") {
       const bodyText = content.replace(/^---[\s\S]*?---\n?/, "").replace(/[#*`\[\]]/g, "");
       node.word_count = bodyText.trim().split(/\s+/).filter(Boolean).length;
       // Connect an essay to the spark(s) it grew from. Declare in frontmatter:
@@ -862,6 +867,15 @@ async function buildVault() {
     JSON.stringify(threads, null, 0)
   );
 
+  // worldview.json — Worldview Reports/ archaeology reports (private /strata section)
+  const worldview = nodeArray
+    .filter((n) => n.type === "worldview")
+    .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+  fs.writeFileSync(
+    path.join(OUT_DIR, "worldview.json"),
+    JSON.stringify(worldview, null, 0)
+  );
+
   // stats.json — dashboard counters
   const stats = {
     total_concepts: nodeArray.filter((n) => n.type === "concept").length,
@@ -954,6 +968,7 @@ function inferType(relPath: string): string {
   if (relPath.includes("LAB/Collisions")) return "collision";
   if (relPath.includes("LAB/Sparks")) return "spark";
   if (relPath.includes("LAB/Threads")) return "thread";
+  if (relPath.includes("LAB/Worldview Reports")) return "worldview";
   if (relPath.includes("The Platform/Research")) return "research";
   if (relPath.includes("The Platform/Craft")) return "craft";
   if (relPath.includes("ARCHIVES/sources")) return "source";

@@ -17,8 +17,9 @@ const NAV_ITEMS = [
   { label: "Collisions",    idx: "06", href: "/collisions" },
   { label: "Sparks",        idx: "07", href: "/sparks"     },
   { label: "Threads",       idx: "08", href: "/threads"    },
-  { label: "Tomes",         idx: "09", href: "/tones"      },
-  { label: "The Council",   idx: "10", href: "/council"    },
+  { label: "Strata",        idx: "09", href: "/strata"     },
+  { label: "Tomes",         idx: "10", href: "/tones"      },
+  { label: "The Council",   idx: "11", href: "/council"    },
 ] as const;
 
 const STYLES = `
@@ -29,7 +30,7 @@ const STYLES = `
   .navg-item {
     position: relative; display: flex; flex-direction: column;
     align-items: center; justify-content: center; gap: 5px;
-    padding: 0 18px; cursor: pointer; height: 100%;
+    padding: 0 clamp(9px, 1.05vw, 18px); cursor: pointer; height: 100%;
     border-right: 1px solid var(--navg-border, rgba(255,255,255,0.07));
     overflow: hidden; background: transparent;
     text-decoration: none; transition: background 0.2s;
@@ -51,7 +52,7 @@ const STYLES = `
     pointer-events: none; user-select: none; line-height: 1;
   }
   .navg-lbl {
-    font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-style: italic;
+    font-family: 'Fraunces', Georgia, serif; font-size: clamp(14px, 1.05vw, 17px); font-style: italic;
     font-weight: 300; color: var(--navg-lbl, #8a849a); letter-spacing: -0.01em;
     position: relative; z-index: 1; transition: color 0.2s; white-space: nowrap;
   }
