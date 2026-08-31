@@ -155,9 +155,17 @@ export default function StrataPage() {
       <div className="void-page" style={{ "--domain-color": "#c9836a" } as React.CSSProperties}>
         <div className="void-ambient" />
 
-        <div style={{ position: "relative", zIndex: 2, maxWidth: "1180px", margin: "0 auto", padding: "64px clamp(20px, 5vw, 64px) 160px" }}>
+        {/* The hero is a masthead, not a landing page: the survey is the content,
+            so this page keeps the void type scale and shortens it. */}
+        <style>{`
+          .strata-hero .void-title { font-size: clamp(40px, 5.6vw, 68px); margin-bottom: 16px; }
+          .strata-hero .void-lede  { font-size: 17px; line-height: 1.6; margin-bottom: 0; padding-left: 20px; max-width: 760px; }
+        `}</style>
 
-          <div style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "11px", letterSpacing: "0.28em", color: "#c9836a", textTransform: "uppercase", marginBottom: "24px", opacity: 0.75 }}>
+        <div style={{ position: "relative", zIndex: 2, maxWidth: "1180px", margin: "0 auto", padding: "36px clamp(20px, 5vw, 64px) 120px" }}>
+
+          <div className="strata-hero">
+          <div style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "11px", letterSpacing: "0.28em", color: "#c9836a", textTransform: "uppercase", marginBottom: "16px", opacity: 0.75 }}>
             worldview archaeology · core log
           </div>
 
@@ -165,17 +173,17 @@ export default function StrataPage() {
 
           <p className="void-lede" style={{ "--domain-color": "#c9836a" } as React.CSSProperties}>
             What the people inside a source took for granted — and what those assumptions let them
-            do or stopped them doing. Each core is one source, cut chapter by chapter; the logs
-            inside it are the sections of that cut. Solid layers are sourced to the text; hatched
-            layers sit below the line, where the reading turns speculative on purpose. Filter the
-            survey to re-drill it.
+            do or stopped them doing. Each core is one source, cut chapter by chapter. Solid layers
+            are sourced to the text; hatched layers sit below the line, where the reading turns
+            speculative on purpose.
           </p>
+          </div>
 
           <div style={{
-            display: "flex", gap: "28px", flexWrap: "wrap",
+            display: "flex", gap: "22px", flexWrap: "wrap", alignItems: "center",
             fontFamily: "var(--font-jetbrains), monospace", fontSize: "10px",
             letterSpacing: "0.14em", textTransform: "uppercase", color: "#494456",
-            marginTop: "34px", paddingTop: "18px", borderTop: "1px solid rgba(255,255,255,0.07)",
+            marginTop: "22px", paddingTop: "14px", borderTop: "1px solid rgba(255,255,255,0.07)",
           }}>
             <span>{families.length} cores</span>
             <span>{reports.length} logs</span>

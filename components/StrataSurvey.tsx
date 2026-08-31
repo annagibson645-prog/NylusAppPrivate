@@ -19,6 +19,13 @@ import { DomainIcon, DOMAIN_ICON_KEYFRAMES } from "@/components/DomainIcon";
 // re-cuts the survey. Every visible column collapses to nothing and deposits
 // again on a stagger, the way sediment settles into a fresh bore. Nothing else
 // on the site re-runs its own load animation as a response to input.
+//
+// Bands are CAPPED BORES. As the build grows, an all-open survey becomes one
+// long drop again — the thing the rack was built to avoid — so a band opens and
+// closes, and a closed one still shows its seam profile: one tick per core,
+// height by layer count. You can read the shape of a domain without cutting it.
+// Default is the largest band open and the rest capped; filtering opens every
+// band it matches, because a filter that hides its own results is a trap.
 
 export type Stratum = { label: string; deep: boolean };
 
@@ -80,6 +87,7 @@ function T(sepia: boolean) {
     accent:    sepia ? "#a8552f"                : "#c9836a",
     chipBg:    sepia ? "rgba(139,105,20,0.05)"  : "rgba(255,255,255,0.022)",
     fieldBg:   sepia ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.028)",
+    stickyBg:  sepia ? "rgba(240,234,216,0.93)" : "rgba(8,7,14,0.93)",
   };
 }
 
@@ -197,6 +205,35 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
 
   const filtering = domain !== null || query.trim() !== "" || !showSuperseded;
 
+  // ── capped bores ───────────────────────────────────────────────────────────
+  // Which bands are cut open. Default is the largest one; a filter opens every
+  // band that survived it, since a filter that hides its own results is a trap.
+  const [openBands, setOpenBands] = useState<Set<string>>(new Set());
+  const bandSig = bands.map((b) => b.key).join("|");
+  const searching = domain !== null || query.trim() !== "";
+
+  useEffect(() => {
+    if (searching) {
+      setOpenBands(new Set(bands.map((b) => b.key)));
+      return;
+    }
+    const largest = [...bands].sort((a, b) => b.cores - a.cores)[0];
+    setOpenBands(new Set(largest ? [largest.key] : []));
+    // bandSig stands in for `bands`, which is a fresh array on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bandSig, searching]);
+
+  const toggleBand = (key: string) =>
+    setOpenBands((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+
+  const allOpen = bands.length > 0 && bands.every((b) => openBands.has(b.key));
+  const maxLayers = Math.max(1, ...visible.map((f) => f.layers));
+
   return (
     <>
       <style>{`
@@ -225,12 +262,24 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
           100% { transform: translateY(100%); opacity: 0; }
         }
 
-        /* ── filter rack ── */
+        /* ── filter rack — sticky under the 80px nav so the controls stay in
+              reach however deep the survey runs ── */
         .sv-rack {
-          display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-          margin: 40px 0 6px; padding-bottom: 20px;
+          position: sticky; top: 80px; z-index: 20;
+          display: flex; flex-wrap: wrap; gap: 9px; align-items: center;
+          margin: 26px -14px 0; padding: 13px 14px 12px;
+          background: var(--sv-sticky-bg);
+          backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
           border-bottom: 1px solid var(--sv-rule);
         }
+        .sv-rack-tally {
+          margin-left: auto;
+          font-family: var(--font-jetbrains), monospace;
+          font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+          font-variant-numeric: tabular-nums; color: var(--sv-dim);
+          white-space: nowrap;
+        }
+        .sv-rack-tally b { color: var(--sv-accent); font-weight: 400; }
         .sv-rack-lbl {
           font-family: var(--font-jetbrains), monospace;
           font-size: 9.5px; letter-spacing: 0.24em; text-transform: uppercase;
@@ -290,30 +339,53 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
         }
         .sv-clear:hover, .sv-clear:focus-visible { color: var(--sv-accent); outline: none; }
 
-        .sv-count {
-          font-family: var(--font-jetbrains), monospace;
-          font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
-          font-variant-numeric: tabular-nums; color: var(--sv-dim);
-          margin: 14px 0 0;
-        }
-        .sv-count b { color: var(--sv-accent); font-weight: 400; }
-
         /* ── domain band ── */
-        .sv-band { margin-top: 54px; animation: svBandIn 460ms cubic-bezier(0.16,1,0.3,1) both; }
+        .sv-band { margin-top: 30px; animation: svBandIn 460ms cubic-bezier(0.16,1,0.3,1) both; }
         .sv-band-head {
-          display: flex; align-items: center; gap: 14px;
-          padding-bottom: 14px; margin-bottom: 26px;
+          display: flex; align-items: center; gap: 12px;
+          padding: 11px 6px 12px 0;
           border-bottom: 1px solid color-mix(in srgb, var(--bc) 26%, transparent);
-          position: relative;
+          position: relative; cursor: pointer;
+          transition: background 200ms ease;
         }
         .sv-band-head::after {
           content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; width: 64px;
           background: var(--bc); opacity: 0.85;
         }
+        .sv-band-head:hover { background: color-mix(in srgb, var(--bc) 6%, transparent); }
+        .sv-band-head:focus-visible {
+          outline: 1px solid color-mix(in srgb, var(--bc) 55%, transparent);
+          outline-offset: 3px;
+        }
+
+        /* the cap: a cross that loses its upright when the bore is opened */
+        .sv-band-mark { position: relative; width: 11px; height: 11px; flex: 0 0 auto; }
+        .sv-band-mark::before, .sv-band-mark::after {
+          content: ''; position: absolute; background: var(--bc); border-radius: 1px;
+          transition: transform 280ms cubic-bezier(0.16,1,0.3,1);
+        }
+        .sv-band-mark::before { left: 0; right: 0; top: 5px; height: 1px; }
+        .sv-band-mark::after  { top: 0; bottom: 0; left: 5px; width: 1px; }
+        .sv-band.open .sv-band-mark::after { transform: scaleY(0); }
+
         .sv-band-sigil {
-          position: relative; width: 30px; height: 30px; flex: 0 0 auto;
+          position: relative; width: 28px; height: 28px; flex: 0 0 auto;
           display: grid; place-items: center;
         }
+
+        /* ── seam profile: what a capped band still shows ──
+           Deliberately unanimated. The cores carry the motion; this is a gauge,
+           and a gauge that depends on an animation finishing is a gauge that can
+           read empty. */
+        .sv-seam {
+          display: flex; align-items: flex-end; gap: 3px;
+          min-height: 24px; padding: 14px 0 2px 23px; cursor: pointer;
+        }
+        .sv-seam i {
+          display: block; width: 6px; border-radius: 1px; background: var(--bc);
+          opacity: 0.34; transition: opacity 200ms ease;
+        }
+        .sv-seam:hover i { opacity: 0.62; }
         .sv-band-name {
           font-family: 'Fraunces', Georgia, serif;
           font-style: italic; font-weight: 300; font-size: clamp(19px, 2.2vw, 24px);
@@ -328,15 +400,15 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
 
         /* ── the rack: cores across, not down ── */
         .sv-rack-grid {
-          display: grid; gap: 1px;
-          grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+          display: grid; gap: 1px; margin-top: 22px;
+          grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
           background: var(--sv-rule-soft);
           border: 1px solid var(--sv-rule-soft);
         }
         .sv-core {
-          position: relative; display: grid; grid-template-columns: 34px 1fr;
-          gap: 14px; align-items: start;
-          padding: 20px 18px 18px 14px; text-align: left;
+          position: relative; display: grid; grid-template-columns: 30px 1fr;
+          gap: 13px; align-items: start;
+          padding: 15px 14px 14px 12px; text-align: left;
           background: var(--sv-bg-core); border: 0; font: inherit; color: inherit;
           cursor: pointer; overflow: hidden;
           animation: svCoreIn 420ms cubic-bezier(0.16,1,0.3,1) both;
@@ -358,7 +430,7 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
            read as the same instrument at different resolutions */
         .sv-col {
           display: flex; flex-direction: column; gap: 1px;
-          padding: 0 8px; height: 124px;
+          padding: 0 7px; height: 86px;
           border-left: 1px solid var(--sv-rule-soft);
           border-right: 1px solid var(--sv-rule-soft);
         }
@@ -379,8 +451,8 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
 
         .sv-num {
           font-family: 'Fraunces', Georgia, serif;
-          font-style: italic; font-weight: 400; font-size: 15px; line-height: 1;
-          color: var(--cc); opacity: 0.5; margin-bottom: 9px;
+          font-style: italic; font-weight: 400; font-size: 13px; line-height: 1;
+          color: var(--cc); opacity: 0.5; margin-bottom: 7px;
           transition: opacity 240ms ease;
         }
         .sv-core:hover .sv-num { opacity: 1; }
@@ -388,18 +460,20 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
         .sv-title {
           font-family: 'Fraunces', Georgia, serif;
           font-style: italic; font-weight: 300;
-          font-size: 19px; line-height: 1.22; letter-spacing: -0.01em;
-          color: var(--sv-text); margin: 0 0 7px; text-wrap: balance;
+          font-size: 16.5px; line-height: 1.2; letter-spacing: -0.01em;
+          color: var(--sv-text); margin: 0 0 5px; text-wrap: balance;
           transition: color 240ms ease;
         }
         .sv-core:hover .sv-title { color: var(--sv-text-hover); }
         .sv-src {
           font-family: var(--font-newsreader), Georgia, serif;
-          font-size: 13px; font-style: italic; line-height: 1.5;
-          color: var(--sv-body); margin: 0 0 14px; text-wrap: pretty;
+          font-size: 12px; font-style: italic; line-height: 1.45;
+          color: var(--sv-body); margin: 0 0 10px; text-wrap: pretty;
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+          overflow: hidden;
         }
         .sv-meta {
-          display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+          display: flex; flex-wrap: wrap; gap: 9px; align-items: center;
           font-family: var(--font-jetbrains), monospace;
           font-size: 9.5px; letter-spacing: 0.13em;
           font-variant-numeric: tabular-nums; color: var(--sv-dim);
@@ -459,8 +533,15 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
         .sv-reset:hover, .sv-reset:focus-visible { border-bottom-color: var(--sv-accent); letter-spacing: 0.22em; outline: none; }
 
         @media (max-width: 720px) {
+          /* The rack wraps to four rows on a phone. Pinned, it would eat a
+             quarter of the viewport under an 80px nav — so it rides along. */
+          .sv-rack {
+            position: static; margin: 20px 0 0; padding: 12px 0 12px;
+            backdrop-filter: none; -webkit-backdrop-filter: none; background: none;
+          }
+          .sv-rack-tally { margin-left: 0; width: 100%; padding-top: 2px; }
           .sv-rack-grid { grid-template-columns: 1fr; }
-          .sv-band { margin-top: 40px; }
+          .sv-band { margin-top: 34px; }
           .sv-band-meta { margin-left: 0; width: 100%; gap: 12px; }
           .sv-band-head { flex-wrap: wrap; gap: 10px; }
           .sv-core { grid-template-columns: 28px 1fr; gap: 12px; padding: 18px 14px 16px 12px; }
@@ -471,6 +552,8 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
           .sv-seg, .sv-band, .sv-core, .sv-part {
             animation: none !important; opacity: var(--seg-op, 1) !important; transform: none !important;
           }
+          .sv-seam i { animation: none !important; opacity: 0.34 !important; transform: none !important; }
+          .sv-band-mark::before, .sv-band-mark::after { transition: none !important; }
         }
       `}</style>
 
@@ -488,6 +571,7 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
           ["--sv-chip-bg" as any]: t.chipBg,
           ["--sv-field-bg" as any]: t.fieldBg,
           ["--sv-bg-core" as any]: sepia ? "rgba(255,255,255,0.30)" : "rgba(255,255,255,0.014)",
+          ["--sv-sticky-bg" as any]: t.stickyBg,
         }}
       >
         {/* ── filter rack ─────────────────────────────────────────────── */}
@@ -549,14 +633,26 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
               <button className="sv-clear" onClick={() => setQuery("")} aria-label="Clear filter">×</button>
             )}
           </div>
-        </div>
 
-        <p className="sv-count">
-          <b>{totals.cores}</b> {totals.cores === 1 ? "core" : "cores"} ·{" "}
-          <b>{totals.files}</b> {totals.files === 1 ? "log" : "logs"} ·{" "}
-          <b>{totals.layers}</b> layers
-          {filtering ? " · filtered" : ""}
-        </p>
+          {bands.length > 1 && (
+            <button
+              type="button"
+              className="sv-chip"
+              style={{ ["--cc" as any]: t.dim }}
+              onClick={() =>
+                setOpenBands(allOpen ? new Set() : new Set(bands.map((b) => b.key)))
+              }
+            >
+              {allOpen ? "Cap all" : "Open all"}
+            </button>
+          )}
+
+          <span className="sv-rack-tally">
+            <b>{totals.cores}</b> {totals.cores === 1 ? "core" : "cores"} ·{" "}
+            <b>{totals.files}</b> {totals.files === 1 ? "log" : "logs"} ·{" "}
+            <b>{totals.layers}</b> layers{filtering ? " · filtered" : ""}
+          </span>
+        </div>
 
         {/* ── bands ───────────────────────────────────────────────────── */}
         {bands.length === 0 ? (
@@ -573,18 +669,33 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
         ) : (
           bands.map((band, bi) => {
             const color = domColor(band.key);
+            const bandOpen = openBands.has(band.key);
             return (
               <section
                 key={`${drill}-${band.key}`}
-                className="sv-band"
+                className={`sv-band${bandOpen ? " open" : ""}`}
                 style={{
                   ["--bc" as any]: color,
                   animationDelay: `${bi * 70}ms`,
                 }}
               >
-                <header className="sv-band-head">
+                <header
+                  className="sv-band-head"
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={bandOpen}
+                  aria-controls={`sv-band-${band.key}`}
+                  onClick={() => toggleBand(band.key)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggleBand(band.key);
+                    }
+                  }}
+                >
+                  <span className="sv-band-mark" aria-hidden />
                   <span className="sv-band-sigil">
-                    <DomainIcon domainKey={band.key} color={color} style={{ width: 26, height: 26 }} />
+                    <DomainIcon domainKey={band.key} color={color} style={{ width: 24, height: 24 }} />
                   </span>
                   <h2 className="sv-band-name">{domName(band.key)}</h2>
                   <div className="sv-band-meta">
@@ -594,7 +705,25 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
                   </div>
                 </header>
 
-                <div className="sv-rack-grid">
+                {/* capped: the seam still shows its profile — one tick per core */}
+                {!bandOpen && (
+                  <div
+                    className="sv-seam"
+                    onClick={() => toggleBand(band.key)}
+                    title={`Open ${domName(band.key)}`}
+                  >
+                    {band.families.map((f) => (
+                      <i
+                        key={f.key}
+                        style={{ height: `${Math.max(4, Math.round((f.layers / maxLayers) * 24))}px` }}
+                        title={`${f.label} — ${f.layers} layers`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {bandOpen && (
+                <div className="sv-rack-grid" id={`sv-band-${band.key}`}>
                   {band.families.map((f, fi) => {
                     const isOpen = open === f.key;
                     const segs = f.reports.flatMap((r) => r.strata);
@@ -682,6 +811,7 @@ export default function StrataSurvey({ families }: { families: Family[] }) {
                     );
                   })}
                 </div>
+                )}
               </section>
             );
           })
