@@ -169,6 +169,28 @@ function IconTones({ active }: { active: boolean }) {
   );
 }
 
+function IconStrata({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      {/* an extracted core: capped tube, sediment bands, depth ticks */}
+      <rect x="5.5" y="2" width="7" height="14" rx="1"
+        stroke="currentColor" strokeWidth="1.3" opacity={active ? 1 : 0.7}/>
+      <rect x="5.5" y="4.2" width="7" height="2.6"
+        fill="currentColor" opacity={active ? 0.95 : 0.6}/>
+      <rect x="5.5" y="7.6" width="7" height="1.9"
+        fill="currentColor" opacity={active ? 0.5 : 0.3}/>
+      <rect x="5.5" y="10.4" width="7" height="3.2"
+        fill="currentColor" opacity={active ? 0.8 : 0.5}/>
+      <line x1="3" y1="2.4" x2="3" y2="15.6" stroke="currentColor" strokeWidth="1.1"
+        opacity={active ? 0.6 : 0.38} strokeLinecap="round"/>
+      <line x1="1.9" y1="5.5" x2="3.9" y2="5.5" stroke="currentColor" strokeWidth="1.1"
+        opacity={active ? 0.6 : 0.38} strokeLinecap="round"/>
+      <line x1="1.9" y1="12" x2="3.9" y2="12" stroke="currentColor" strokeWidth="1.1"
+        opacity={active ? 0.6 : 0.38} strokeLinecap="round"/>
+    </svg>
+  );
+}
+
 function SunIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 15 15" fill="none">
@@ -234,6 +256,7 @@ export default function MobileNav() {
               {label === 'Essays'     && <IconEssays     active={isActive} />}
               {label === 'Craft'      && <IconCraft      active={isActive} />}
               {label === 'Threads'    && <IconThreads    active={isActive} />}
+              {label === 'Strata'     && <IconStrata     active={isActive} />}
               {label === 'Tomes'      && <IconTones      active={isActive} />}
               {label === 'Council'    && <IconCouncil    active={isActive} />}
             </span>
