@@ -22,6 +22,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   "creative-practice": "#14b8a6",
   "african-spirituality": "#34d399",
   business: "#e879a0",
+  occult: "#d95ae8",
 };
 
 function loadJSON<T>(file: string): T {

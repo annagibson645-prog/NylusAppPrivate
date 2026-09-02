@@ -13,6 +13,7 @@ export const DOMAIN_COLORS: Record<string, string> = {
   "creative-practice": "#14b8a6",
   "african-spirituality": "#34d399",
   business: "#e879a0",
+  occult: "#d95ae8",
 };
 
 export const DOMAIN_LABELS: Record<string, string> = {
@@ -24,6 +25,7 @@ export const DOMAIN_LABELS: Record<string, string> = {
   "creative-practice": "Creative Practice",
   "african-spirituality": "African Spirituality",
   business: "Business",
+  occult: "Occult",
 };
 
 export const DOMAIN_SLUGS = Object.keys(DOMAIN_COLORS);

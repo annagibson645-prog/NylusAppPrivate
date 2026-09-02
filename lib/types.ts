@@ -99,6 +99,7 @@ export const DOMAIN_LABELS: Record<string, string> = {
   "creative-practice": "Creative",
   "african-spirituality": "African",
   "business": "Business",
+  "occult": "Occult",
   unknown: "Other",
 };
 

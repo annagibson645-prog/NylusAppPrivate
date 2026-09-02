@@ -25,21 +25,21 @@ type Spark = {
 const DOMAIN_COLOR: Record<string, string> = {
   "cross-domain": "#38bdf8", psychology: "#3b82f6", "eastern-spirituality": "#dc2626",
   "behavioral-mechanics": "#f97316", "creative-practice": "#14b8a6", history: "#f59e0b",
-  "african-spirituality": "#10b981", business: "#e879a0",
+  "african-spirituality": "#10b981", business: "#e879a0", occult: "#d95ae8",
 };
 const DOMAIN_LABEL: Record<string, string> = {
   "cross-domain": "Cross-Domain", psychology: "Psychology", "eastern-spirituality": "Eastern Spirituality",
   "behavioral-mechanics": "Behavioral Mechanics", "creative-practice": "Creative Practice", history: "History",
-  "african-spirituality": "African Spirituality", business: "Business",
+  "african-spirituality": "African Spirituality", business: "Business", occult: "Occult",
 };
 const DOMAIN_SHORT: Record<string, string> = {
   "cross-domain": "cross", psychology: "psych", "eastern-spirituality": "eastern",
   "behavioral-mechanics": "behavioral", "creative-practice": "creative", history: "history",
-  "african-spirituality": "african", business: "business",
+  "african-spirituality": "african", business: "business", occult: "occult",
 };
 const DOMAIN_ORDER = [
   "cross-domain", "eastern-spirituality", "psychology", "behavioral-mechanics",
-  "creative-practice", "history", "african-spirituality", "business",
+  "creative-practice", "history", "african-spirituality", "business", "occult",
 ];
 
 // ─── Subtype (kind) taxonomy ─────────────────────────────────────────────────

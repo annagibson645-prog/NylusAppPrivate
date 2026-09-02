@@ -69,6 +69,7 @@ const DOMAIN_FULL: Record<string, string> = {
   "creative-practice": "Creative Practice",
   "african-spirituality": "African Spirituality",
   "business": "Business",
+  "occult": "Occult",
   unknown: "Other",
 };
 
@@ -81,6 +82,7 @@ const DOMAIN_BACK: Record<string, string> = {
   "creative-practice": "Creative",
   "african-spirituality": "African",
   "business": "Business",
+  "occult": "Occult",
   unknown: "Other",
 };
 

@@ -100,6 +100,7 @@ const DOMAIN_CONFIG = [
   { key: "creative-practice",    short: "CRTV", name: "Creative Practice",    color: "#14b8a6" },
   { key: "african-spirituality", short: "AFRC", name: "African Spirituality", color: "#34d399" },
   { key: "business",             short: "BSNS", name: "Business",             color: "#e879a0" },
+  { key: "occult",               short: "OCLT", name: "Occult",               color: "#d95ae8" },
 ];
 
 const FALLBACK = "#c9836a";

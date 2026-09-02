@@ -28,6 +28,7 @@ const DOMAIN_FULL: Record<string, string> = {
   'creative-practice':    'Creative Practice',
   'business':             'Business',
   'african-spirituality': 'African Spirituality',
+  'occult':               'Occult',
 };
 
 function nodeToSpineConcept(n: any, hubConceptIds: Set<string>): SpineConcept {

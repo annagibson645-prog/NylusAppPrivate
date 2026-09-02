@@ -25,6 +25,7 @@ const DOMAIN_FULL: Record<string, string> = {
   'creative-practice': 'Creative Practice',
   'african-spirituality': 'African Spirituality',
   'ai-collaboration': 'AI Collaboration',
+  'occult': 'Occult',
   unknown: 'Other',
 };
 
@@ -37,6 +38,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   'creative-practice': '#14b8a6',
   'business': '#e879a0',
   'african-spirituality': '#34d399',
+  'occult': '#d95ae8',
 };
 
 const STATUS_ORDER: Record<string, number> = {

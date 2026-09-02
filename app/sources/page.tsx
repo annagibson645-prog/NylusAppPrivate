@@ -61,6 +61,7 @@ export default function SourcesPage() {
     "creative-practice",
     "cross-domain",
     "business",
+    "occult",
     "uncategorized",
   ].filter((d) => byDomain.has(d));
 

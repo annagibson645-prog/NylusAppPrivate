@@ -71,6 +71,7 @@ const DOMAIN_CONFIG = [
   { key: "creative-practice",    short: "CRTV", color: "#14b8a6" },
   { key: "african-spirituality", short: "AFRC", color: "#34d399" },
   { key: "business",             short: "BSNS", color: "#e879a0" },
+  { key: "occult",               short: "OCLT", color: "#d95ae8" },
 ];
 
 const ROMAN = [

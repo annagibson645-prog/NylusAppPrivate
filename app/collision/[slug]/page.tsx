@@ -20,17 +20,17 @@ function loadJSON<T>(file: string): T {
 const DOMAIN_COLOR: Record<string, string> = {
   "cross-domain": "#38bdf8", "psychology": "#3b82f6", "eastern-spirituality": "#dc2626",
   "behavioral-mechanics": "#f97316", "creative-practice": "#14b8a6", "history": "#f59e0b",
-  "african-spirituality": "#10b981", "business": "#e879a0",
+  "african-spirituality": "#10b981", "business": "#e879a0", "occult": "#d95ae8",
 };
 const DOMAIN_RGB: Record<string, string> = {
   "cross-domain": "56,189,248", "psychology": "59,130,246", "eastern-spirituality": "220,38,38",
   "behavioral-mechanics": "249,115,22", "creative-practice": "20,184,166", "history": "245,158,11",
-  "african-spirituality": "16,185,129", "business": "232,121,160",
+  "african-spirituality": "16,185,129", "business": "232,121,160", "occult": "217,90,232",
 };
 const DOMAIN_LABEL: Record<string, string> = {
   "cross-domain": "Cross-Domain", "psychology": "Psychology", "eastern-spirituality": "Eastern Spirituality",
   "behavioral-mechanics": "Behavioral Mechanics", "creative-practice": "Creative Practice", "history": "History",
-  "african-spirituality": "African Spirituality", "business": "Business",
+  "african-spirituality": "African Spirituality", "business": "Business", "occult": "Occult",
 };
 
 function hexToRgb(hex: string): string {

@@ -83,6 +83,7 @@ const DOMAIN_GLYPH: Record<string, React.ReactNode> = {
   'creative-practice': <><path d="M32 11 47 47H17z" /><path d="M32 29v18" /></>,
   business: <><path d="M13 49h38" /><path d="M18 41l9-11 8 6 12-17" /><path d="M40 19h7v7" /></>,
   'african-spirituality': <><path d="M32 11 47 32 32 53 17 32z" /><path d="M32 21v22M21 32h22" /></>,
+  occult: <><circle cx="32" cy="32" r="19" /><path d="M32 15 L42 45.8 L15.8 26.8 L48.2 26.8 L22 45.8 Z" /></>,
 };
 const DEFAULT_GLYPH = <><circle cx="32" cy="32" r="16" /><circle cx="32" cy="32" r="3.5" /></>;
 

@@ -140,6 +140,19 @@ export function AfricanEmblem(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/* ─── Occult — the pentagram ──────────────────────────────────────────── */
+export function OccultEmblem(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="100" cy="100" r="76" strokeWidth={2.2} />
+      <circle cx="100" cy="100" r="66" strokeWidth={1} opacity={0.35} />
+      <path d="M100 34 L138.8 153.4 L37.2 79.6 L162.8 79.6 L61.2 153.4 Z"
+        strokeWidth={1.8} opacity={0.9} />
+      {rays(20, 80, 92, 86, 100, 100, 0.18)}
+    </svg>
+  );
+}
+
 const MAP: Record<string, (p: SVGProps<SVGSVGElement>) => React.ReactElement> = {
   "psychology":            PsychologyEmblem,
   "history":                HistoryEmblem,
@@ -149,6 +162,7 @@ const MAP: Record<string, (p: SVGProps<SVGSVGElement>) => React.ReactElement> = 
   "creative-practice":      CreativeEmblem,
   "business":               BusinessEmblem,
   "african-spirituality":   AfricanEmblem,
+  "occult":                 OccultEmblem,
 };
 
 export function DomainEmblem({ domain, ...props }: { domain: string } & SVGProps<SVGSVGElement>) {

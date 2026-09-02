@@ -39,6 +39,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   "creative-practice": "#14b8a6",
   "african-spirituality": "#34d399",
   "business": "#e879a0",
+  "occult": "#d95ae8",
   unknown: "#6b7280",
 };
 
@@ -421,7 +422,7 @@ async function buildVault() {
     const ALLOWED_DOMAINS = new Set([
       "history", "eastern-spirituality", "african-spirituality",
       "psychology", "behavioral-mechanics", "cross-domain",
-      "creative-practice", "business", "unknown",
+      "creative-practice", "business", "occult", "unknown",
     ]);
     const rawDomain = fm.domain || inferDomain(relPath);
     const domain = ALLOWED_DOMAINS.has(rawDomain) ? rawDomain : "unknown";
@@ -645,7 +646,7 @@ async function buildVault() {
   const KNOWN_DOMAINS = [
     "history", "eastern-spirituality", "african-spirituality",
     "psychology", "behavioral-mechanics", "cross-domain",
-    "creative-practice", "business",
+    "creative-practice", "business", "occult",
   ];
   const domains = KNOWN_DOMAINS.filter((d) =>
     nodeArray.some((n) => n.domain === d)
@@ -955,6 +956,7 @@ async function buildVault() {
 function inferDomain(relPath: string): string {
   if (relPath.includes("eastern-spirituality")) return "eastern-spirituality";
   if (relPath.includes("african-spirituality")) return "african-spirituality";
+  if (relPath.includes("occult")) return "occult";
   if (relPath.includes("behavioral-mechanics")) return "behavioral-mechanics";
   if (relPath.includes("creative-practice")) return "creative-practice";
   if (relPath.includes("business")) return "business";

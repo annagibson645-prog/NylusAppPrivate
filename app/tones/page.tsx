@@ -37,10 +37,11 @@ const DOMAIN_ICON_KEY: Record<string, string> = {
   "Eastern Spirituality": "eastern-spirituality", History: "history", Psychology: "psychology",
   "Behavioral Mechanics": "behavioral-mechanics", Business: "business", "Creative Practice": "creative-practice",
   "Cross-Domain": "cross-domain", "African Spirituality": "african-spirituality",
+  Occult: "occult",
 };
 const DOMAIN_ORDER = [
   "Eastern Spirituality", "History", "Psychology", "Behavioral Mechanics",
-  "Business", "Creative Practice", "Cross-Domain", "African Spirituality",
+  "Business", "Creative Practice", "Cross-Domain", "African Spirituality", "Occult",
 ];
 const OTHER = "Other Genres";
 const GENRE_COLOR = "var(--tm-genre)";

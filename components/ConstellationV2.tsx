@@ -1841,11 +1841,12 @@ function C2Mobile({ data, page }: { data: NylusData; page: string }) {
 
       {/* ── HUBS ──────────────────────────────────────────────────────── */}
       {page === 'hubs' && (() => {
-        const domainOrder = ['psychology','history','cross-domain','behavioral-mechanics','eastern-spirituality','creative-practice','business','african-spirituality'];
+        const domainOrder = ['psychology','history','cross-domain','behavioral-mechanics','eastern-spirituality','creative-practice','business','african-spirituality','occult'];
         const domainLabels: Record<string,string> = {
           'psychology': 'Psychology', 'history': 'History', 'cross-domain': 'Cross-Domain',
           'behavioral-mechanics': 'Behavioral', 'eastern-spirituality': 'Eastern',
-          'creative-practice': 'Creative', 'business': 'Business', 'african-spirituality': 'African'
+          'creative-practice': 'Creative', 'business': 'Business', 'african-spirituality': 'African',
+          'occult': 'Occult'
         };
         const grouped = domainOrder.map(domain => ({
           domain,

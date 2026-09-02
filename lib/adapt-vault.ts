@@ -144,11 +144,15 @@ const DOMAIN_CONFIG: Record<string, { id: string; name: string; color: string; d
     id: 'afr', name: 'African', color: '#34d399',
     desc: 'African and diaspora spiritual traditions — Ifa, Vodou, Odinala, Kemetic cosmology, and living lineage practice.',
   },
+  'occult': {
+    id: 'occ', name: 'Occult', color: '#d95ae8',
+    desc: 'Western esoteric practice — Qabalah, hermeticism, ceremonial magic, alchemy, and the grimoire traditions.',
+  },
 };
 
 const DOMAIN_ORDER = [
   'psychology','history','behavioral-mechanics','eastern-spirituality',
-  'cross-domain','creative-practice','business','african-spirituality',
+  'cross-domain','creative-practice','business','african-spirituality','occult',
 ];
 
 export function shortId(domain: string): string {

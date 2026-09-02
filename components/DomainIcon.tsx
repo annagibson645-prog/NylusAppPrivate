@@ -9,10 +9,17 @@ const ORB_DEFS = `<linearGradient id="UID-grad" x1="0" y1="0" x2="0" y2="1"><sto
 export const DOMAIN_ICON_KEYS = [
   "eastern-spirituality", "history", "psychology", "business",
   "creative-practice", "african-spirituality", "cross-domain", "behavioral-mechanics",
+  "occult",
 ] as const;
 export type DomainIconKey = (typeof DOMAIN_ICON_KEYS)[number];
 
 export const ORB_ICONS: Record<string, string> = {
+  "occult": `<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><defs>${ORB_DEFS}</defs>
+    <circle cx="20" cy="20" r="17" stroke-width="1.6" opacity="0.85"/>
+    <circle class="cs-blink" cx="20" cy="20" r="12" fill="url(#UID-rad)" stroke="none"/>
+    <g class="cs-spinC"><path d="M20 7 L27.6 30.5 L7.6 16 L32.4 16 L12.4 30.5Z" stroke-width="1.5"/></g>
+    <circle class="cs-tw" cx="20" cy="7" r="1.6" fill="#fff"/></svg>`,
+
   "eastern-spirituality": `<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><defs>${ORB_DEFS}</defs>
     <path d="M3 20 Q20 6 37 20 Q20 34 3 20Z" stroke-width="2"/>
     <g class="cs-blink">

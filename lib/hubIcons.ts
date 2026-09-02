@@ -125,6 +125,7 @@ const DOMAIN_FALLBACK: Record<string, string[]> = {
   "african-spirituality": ["🌳", "🥁", "🛖", "🏺"],
   "cross-domain": ["🧭", "👁️", "🔤", "⏳"],
   "behavioral-mechanics": ["🎯", "♟️", "🕹️", "💰"],
+  "occult": ["🔮", "🕯️", "⚗️", "🗝️"],
 };
 
 /** Deterministic per-hub glyph: keyword match first, then a domain-cycled fallback. */

@@ -69,14 +69,15 @@ interface UngroupedConcept {
 }
 
 const DOMAIN_META = [
-  { key: "psychology",            label: "Psychology",           short: "Psychology",   color: "#f59e0b", angle: -90  },
-  { key: "history",               label: "History",              short: "History",      color: "#e6c068", angle: -45  },
+  { key: "psychology",            label: "Psychology",           short: "Psychology",   color: "#f59e0b", angle: -80  },
+  { key: "history",               label: "History",              short: "History",      color: "#e6c068", angle: -40  },
   { key: "cross-domain",          label: "Cross-Domain",         short: "Cross-Domain", color: "#38bdf8", angle: 0    },
-  { key: "behavioral-mechanics",  label: "Behavioral Mechanics", short: "Behavioral",   color: "#a78bfa", angle: 45   },
-  { key: "eastern-spirituality",  label: "Eastern Spirituality", short: "Eastern",      color: "#dc2626", angle: 90   },
-  { key: "creative-practice",     label: "Creative Practice",    short: "Creative",     color: "#14b8a6", angle: 135  },
-  { key: "business",              label: "Business",             short: "Business",     color: "#e879a0", angle: 180  },
-  { key: "african-spirituality",  label: "African Spirituality", short: "African",      color: "#34d399", angle: -135 },
+  { key: "behavioral-mechanics",  label: "Behavioral Mechanics", short: "Behavioral",   color: "#a78bfa", angle: 40   },
+  { key: "eastern-spirituality",  label: "Eastern Spirituality", short: "Eastern",      color: "#dc2626", angle: 80   },
+  { key: "occult",                label: "Occult",               short: "Occult",       color: "#d95ae8", angle: 120  },
+  { key: "creative-practice",     label: "Creative Practice",    short: "Creative",     color: "#14b8a6", angle: 160  },
+  { key: "business",              label: "Business",             short: "Business",     color: "#e879a0", angle: -160 },
+  { key: "african-spirituality",  label: "African Spirituality", short: "African",      color: "#34d399", angle: -120 },
 ] as const;
 
 const DOMAIN_DESC: Record<string, string> = {
@@ -88,6 +89,7 @@ const DOMAIN_DESC: Record<string, string> = {
   "creative-practice":      "Craft, voice, and the discipline of making things well.",
   "business":               "How work actually gets done — tools, systems, and operators.",
   "african-spirituality":   "Cosmology, healing, and spirit architecture across African traditions.",
+  "occult":                 "Western esoteric practice — Qabalah, hermeticism, ceremonial magic, and the grimoires.",
 };
 
 const CX      = 320;
